@@ -2,9 +2,14 @@
   "name": "shaman-cli",
   "version": "1.0.0",
   "description": "CLI to perform common tasks, like scaffolding source code.",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "typings": "public_api.d.ts",
+  "private": true,
   "scripts": {
     "build": "tsc"
+  },
+  "bin": {
+    "factory": "./dist/cli.js"
   },
   "keywords": [
     "Node",
