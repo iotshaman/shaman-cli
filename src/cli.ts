@@ -6,14 +6,18 @@ const commands: ICommand[] = [
   new EchoCommand()
 ];
 
-export function Invoke() {
-  if (process.argv.length < 3) throw new Error("Invalid number of arguments.");
-  const [command] = process.argv.slice(2);
-  const args = process.argv.slice(3);
+export function Invoke(args: string[]) {
+  if (args.length < 3) return Promise.reject(new Error("Invalid number of arguments."));
+  const [command] = args.slice(2);
+  const commandArgs = args.slice(3);
   let cmd = commands.find(c => c.name == command);
-  if (!cmd) throw new Error(`Invalid command '${command}'.`)
-  return cmd.run(...args);
+  if (!cmd) return Promise.reject(new Error(`Invalid command '${command}'.`));
+  return cmd.run(...commandArgs);
 }
 
 /* istanbul ignore next */
-(function() { Invoke(); })();
+(function() { 
+  Invoke(process.argv).catch(ex => {
+    console.error(ex);
+  });
+})();
