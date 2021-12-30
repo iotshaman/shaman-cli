@@ -10,7 +10,7 @@
     "build": "tsc"
   },
   "bin": {
-    "shaman": "./dist/cli.js"
+    "shaman": "./dist/shaman.js"
   },
   "keywords": [
     "Node",

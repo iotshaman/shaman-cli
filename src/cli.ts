@@ -1,6 +1,6 @@
 import { ICommand } from "./commands/command";
-import { NoopCommand } from "./commands/noop.command";
-import { EchoCommand } from "./commands/echo.command";
+import { NoopCommand } from "./commands/default/noop.command";
+import { EchoCommand } from "./commands/default/echo.command";
 
 const commands: ICommand[] = [
   new NoopCommand(),
