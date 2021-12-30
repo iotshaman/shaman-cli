@@ -1,0 +1,10 @@
+{
+  "templates": [
+    {
+      "environment": "node",
+      "type": "library",
+      "version": "1.0.0",
+      "file": "library-template-v1.0.0.zip"
+    }
+  ]
+}

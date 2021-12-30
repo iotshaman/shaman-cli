@@ -1,10 +1,12 @@
 import { ICommand } from "./commands/command";
 import { NoopCommand } from "./commands/default/noop.command";
 import { EchoCommand } from "./commands/default/echo.command";
+import { ScaffoldCommand } from "./commands/scaffold/scaffold.command";
 
 const commands: ICommand[] = [
   new NoopCommand(),
-  new EchoCommand()
+  new EchoCommand(),
+  new ScaffoldCommand()
 ];
 
 export function Invoke(args: string[]) {
