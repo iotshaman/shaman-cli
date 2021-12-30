@@ -7,7 +7,8 @@
   "private": true,
   "scripts": {
     "test": "nyc mocha",
-    "build": "tsc"
+    "build": "tsc",
+    "sample": "node ./dist/shaman.js scaffold node library sample-library ./.sample"
   },
   "bin": {
     "shaman": "./dist/shaman.js"
