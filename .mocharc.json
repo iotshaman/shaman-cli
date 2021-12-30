@@ -1,0 +1,6 @@
+{
+  "require" : [
+    "./.tsnode"
+  ],
+  "spec": "src/**/*.spec.ts"
+}

@@ -6,10 +6,11 @@
   "typings": "public_api.d.ts",
   "private": true,
   "scripts": {
+    "test": "nyc mocha",
     "build": "tsc"
   },
   "bin": {
-    "factory": "./dist/cli.js"
+    "shaman": "./dist/cli.js"
   },
   "keywords": [
     "Node",
@@ -21,9 +22,36 @@
   ],
   "author": "Kyle Brown",
   "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^10.0.0"
+  },
   "devDependencies": {
+    "@types/chai": "^4.3.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/mocha": "^9.0.0",
     "@types/node": "^14.14.2",
-    "ts-node": "^10.2.1",
-    "typescript": "^4.3.5"
+    "@types/sinon": "^10.0.6",
+    "chai": "^4.3.4",
+    "mocha": "^9.1.3",
+    "nyc": "^15.1.0",
+    "sinon": "^12.0.1",
+    "ts-auto-mock": "^3.5.0",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.4"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "**/*.spec.ts",
+      "**/*.js"
+    ],
+    "reporter": [
+      "html",
+      "lcov"
+    ],
+    "all": true
   }
 }
