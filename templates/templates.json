@@ -11,6 +11,12 @@
       "type": "server",
       "version": "1.0.0",
       "file": "node/server-template-v1.0.0.zip"
+    },
+    {
+      "environment": "node",
+      "type": "database",
+      "version": "1.0.0",
+      "file": "node/database-template-v1.0.0.zip"
     }
   ]
 }
