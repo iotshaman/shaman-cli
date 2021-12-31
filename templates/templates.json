@@ -4,7 +4,13 @@
       "environment": "node",
       "type": "library",
       "version": "1.0.0",
-      "file": "library-template-v1.0.0.zip"
+      "file": "node/library-template-v1.0.0.zip"
+    },
+    {
+      "environment": "node",
+      "type": "server",
+      "version": "1.0.0",
+      "file": "node/server-template-v1.0.0.zip"
     }
   ]
 }
