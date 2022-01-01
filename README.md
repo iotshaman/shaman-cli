@@ -24,8 +24,8 @@ Once you have installed Shaman CLI, you can access it by invoking "shaman" in a 
 shaman [command] [...arguments]
 ```
 
-**[command]:** Available values: *echo, scaffold*
-**[...arguments]:** A list of arguments that vary, depending on the command provided.]
+**[command]:** Available values: *echo, scaffold*  
+**[...arguments]:** A list of arguments that vary, depending on the command provided.]  
 
 ### Echo Command
 
@@ -41,7 +41,7 @@ The scaffold command generated application scaffolding automatically, based on t
 shaman scaffold [environment] [type] [name] [output folder]
 ```
 
-**[environment]:** Indicates the coding environment, which will help determine what type of code files will be generated. Available values are: *node*
-**[type]:** The application component type. Available values are: *library, server, database*
-**[name]:** The name of the component (can be anything).
-**[output folder]:** The folder in which application scaffolding will be generated.
+**[environment]:** Indicates the coding environment, which will help determine what type of code files will be generated. Available values are: *node*  
+**[type]:** The application component type. Available values are: *library, server, database*  
+**[name]:** The name of the component (can be anything).  
+**[output folder]:** The folder in which application scaffolding will be generated.  
