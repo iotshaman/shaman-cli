@@ -40,7 +40,7 @@ export class NodeEnvironmentInstallCommand implements ICommand {
 
   private installProject = (name: string, path: string): Promise<void> => {
     return new Promise((res, err) => {
-      console.log(`Building project ${name}...`)
+      console.log(`Installing project ${name}...`)
       _cmd.exec(`${this.npm} install`, { cwd: path}, function(ex, _stdout, stderr) {
         if (stderr) console.log(stderr);
         if (ex) return err(ex);
