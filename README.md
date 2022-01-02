@@ -16,9 +16,55 @@ npm i -g shaman-cli
 
 *NOTE: You may need elevated permissions to run this command*
 
+## Solution File
+
+Some commands require the existence of a "solution" file, which indicates what projects (servers, libraries, database libraries, etc) are available as part of the solution. This file should be called "shaman.json", and has the following interface:
+
+```ts
+interface Solution {
+  projects: SolutionProject[];
+}
+
+interface SolutionProject {
+  name: string;
+  environment: string;
+  type: string;
+  path: string;
+}
+```
+
+For example, if you have a node js solution that includes a library, a database library, and a server, it could look like this:
+
+```json
+{
+  "projects": [
+    {
+      "name": "sample-database",
+      "environment": "node",
+      "type": "database",
+      "path": "database"
+    },
+    {
+      "name": "sample-library",
+      "environment": "node",
+      "type": "library",
+      "path": "library"
+    },
+    {
+      "name": "sample-server",
+      "environment": "node",
+      "type": "server",
+      "path": "server"
+    }
+  ]
+}
+```
+
+*Note: All paths should be relative to the solution file*
+
 ## CLI Reference
 
-Once you have installed Shaman CLI, you can access it by invoking "shaman" in a command line interface (CMD, bash, etc). The main format for executing commands looks like this:
+Once you have installed Shaman CLI, you can access it by invoking "shaman" in a command line interface (CMD, bash, etc). The format for executing commands looks like this:
 
 ```sh
 shaman [command] [...arguments]
@@ -45,3 +91,25 @@ shaman scaffold [environment] [type] [name] [output folder]
 **[type]:** The application component type. Available values are: *library, server, database*  
 **[name]:** The name of the component (can be anything).  
 **[output folder]:** The folder in which application scaffolding will be generated.  
+
+### Install Command
+
+The install command requires the existence of a solution file, and will iterate over the available projects (that match the provided environment) and install them all. The syntax for the install command is as follows; please note that these arguments must be provided in-order.
+
+```sh
+shaman install [environment] [solutionFilePath]
+```
+
+**[environment]:** Indicates the coding environment, which will help determine how to install the projects. Available values are: *node*  
+**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+
+### Build Command
+
+The build command requires the existence of a solution file, and will iterate over the available projects (that match the provided environment) and build them all. The syntax for the build command is as follows; please note that these arguments must be provided in-order.
+
+```sh
+shaman build [environment] [solutionFilePath]
+```
+
+**[environment]:** Indicates the coding environment, which will help determine how to build the projects. Available values are: *node*  
+**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.

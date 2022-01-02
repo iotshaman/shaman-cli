@@ -2,7 +2,7 @@ import * as _path from 'path';
 import * as _cmd from 'child_process';
 import { ICommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
-import { ShamanModel } from '../../../models/shaman.model';
+import { Solution } from '../../../models/solution';
 
 export class NodeEnvironmentInstallCommand implements ICommand {
 
@@ -11,26 +11,26 @@ export class NodeEnvironmentInstallCommand implements ICommand {
   /* istanbul ignore next */
   private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
-  run = (shamanFilePath: string): Promise<void> => {
-    if (!shamanFilePath) shamanFilePath = _path.join(process.cwd(), 'shaman.json');
-    else shamanFilePath = _path.join(process.cwd(), shamanFilePath);
+  run = (solutionFilePath: string): Promise<void> => {
+    if (!solutionFilePath) solutionFilePath = _path.join(process.cwd(), 'shaman.json');
+    else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
     console.log(`Installing node solution.`);
-    return this.getShamanFile(shamanFilePath)
-      .then(solution => this.installSolution(shamanFilePath, solution))
+    return this.getShamanFile(solutionFilePath)
+      .then(solution => this.installSolution(solutionFilePath, solution))
       .then(_ => {
         console.log("Solution install is complete.");
       });
   }
 
-  private getShamanFile = (shamanFilePath: string): Promise<ShamanModel> => {
-    return this.fileService.pathExists(shamanFilePath).then(exists => {
+  private getShamanFile = (solutionFilePath: string): Promise<Solution> => {
+    return this.fileService.pathExists(solutionFilePath).then(exists => {
       if (!exists) throw new Error("Shaman file does not exist in specified location.");
-      return this.fileService.readJson<ShamanModel>(shamanFilePath);
+      return this.fileService.readJson<Solution>(solutionFilePath);
     });
   }
 
-  private installSolution = (shamanFilePath: string, solution: ShamanModel): Promise<void> => {
-    let cwd = shamanFilePath.replace('shaman.json', '');
+  private installSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
+    let cwd = solutionFilePath.replace('shaman.json', '');
     if (!solution.projects.length) return Promise.resolve();
     return solution.projects.reduce((a, b) => 
       a.then(_ => this.installProject(b.name, _path.join(cwd, b.path))), 
