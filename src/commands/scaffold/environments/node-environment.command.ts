@@ -1,11 +1,10 @@
 import * as _path from 'path';
-import * as _fsx from 'fs-extra';
 import * as _cmd from 'child_process';
-import { Template } from '../../../..';
-import { ICommand } from "../../../command";
-import { FileService, IFileService } from '../../../../services/file.service';
+import { Template } from '../../..';
+import { ICommand } from "../../command";
+import { FileService, IFileService } from '../../../services/file.service';
 
-export class NodeEnvironmentCommand implements ICommand {
+export class NodeEnvironmentScaffoldCommand implements ICommand {
 
   get name(): string { return "scaffold-node"; }
   fileService: IFileService = new FileService();
@@ -61,8 +60,8 @@ export class NodeEnvironmentCommand implements ICommand {
     return new Promise((res, err) => {
       console.log("Installing dependencies...")
       _cmd.exec(`${this.npm} install`, { cwd: outputPath}, function(ex, _stdout, stderr) {
-        if (ex) return err(ex);
         if (stderr) console.log(stderr);
+        if (ex) return err(ex);
         res();
       });
     })
