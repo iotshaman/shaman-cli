@@ -6,4 +6,5 @@ export * from './default/noop.command';
 export * from './install/install.command';
 export * from './install/environments/node-environment.command';
 export * from './scaffold/scaffold.command';
+export * from './scaffold/scaffold-solution.command';
 export * from './scaffold/environments/node-environment.command';

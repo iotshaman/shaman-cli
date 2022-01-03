@@ -8,7 +8,7 @@ export class NodeEnvironmentScaffoldCommand implements ICommand {
 
   get name(): string { return "scaffold-node"; }
   fileService: IFileService = new FileService();
-  private templatesFolder = [__dirname, '..', '..', '..', '..', '..', 'templates'];
+  private templatesFolder = [__dirname, '..', '..', '..', '..', 'templates'];
   /* istanbul ignore next */
   private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
