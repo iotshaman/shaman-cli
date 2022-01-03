@@ -79,9 +79,19 @@ The echo command can be used to test that everything has been installed properly
 
 1. **Echo string:** *(Optional)* a string value which will be "echoed" back to the terminal. 
 
+### Scaffold Solution Command
+
+The scaffold-solution command requires the existence of a solution file, and will iterate over the available projects and scaffold them all. Under the hood, the cli will use the project variables to invoke the ["scaffold" command](#scaffold-command).
+
+```sh
+shaman scaffold-solution
+```
+
+**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+
 ### Scaffold Command
 
-The scaffold command generated application scaffolding automatically, based on the arguments provided. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
+The scaffold command generated application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
 
 ```sh
 shaman scaffold [environment] [type] [name] [output folder]
