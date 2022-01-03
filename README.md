@@ -70,18 +70,22 @@ Once you have installed Shaman CLI, you can access it by invoking "shaman" in a 
 shaman [command] [...arguments]
 ```
 
-**[command]:** Available values: *echo, scaffold*  
+**[command]:** Available values: *echo, scaffold-solution, scaffold, install, build*  
 **[...arguments]:** A list of arguments that vary, depending on the command provided.]  
 
 ### Echo Command
 
-The echo command can be used to test that everything has been installed properly. Below is a list of arguments that need to be provided in-order.
+The echo command can be used to ensure that Shaman CLI has been installed properly. The syntax for the echo command is as follows:
 
-1. **Echo string:** *(Optional)* a string value which will be "echoed" back to the terminal. 
+```sh
+shaman echo [echoString]
+```
+
+**[echoString]:** (Optional) a string value which will be "echoed" back to the terminal. 
 
 ### Scaffold Solution Command
 
-The scaffold-solution command requires the existence of a solution file, and will iterate over the available projects and scaffold them all. Under the hood, the cli will use the project variables to invoke the ["scaffold" command](#scaffold-command).
+The scaffold-solution command requires the existence of a solution file, and will iterate over the available projects and scaffold them all. Under the hood, the cli will use the project variables to invoke the ["scaffold" command](#scaffold-command). The syntax for the scaffold-solution command is as follows:
 
 ```sh
 shaman scaffold-solution
@@ -91,7 +95,7 @@ shaman scaffold-solution
 
 ### Scaffold Command
 
-The scaffold command generated application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
+The scaffold command generates application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
 
 ```sh
 shaman scaffold [environment] [type] [name] [output folder]
@@ -123,3 +127,5 @@ shaman build [environment] [solutionFilePath]
 
 **[environment]:** Indicates the coding environment, which will help determine how to build the projects. Available values are: *node*  
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+
+*Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*
