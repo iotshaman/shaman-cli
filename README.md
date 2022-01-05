@@ -30,6 +30,7 @@ interface SolutionProject {
   environment: string;
   type: string;
   path: string;
+  include?: string[];
 }
 ```
 
@@ -54,7 +55,11 @@ For example, if you have a node js solution that includes a library, a database 
       "name": "sample-server",
       "environment": "node",
       "type": "server",
-      "path": "server"
+      "path": "server",
+      "include": [
+        "sample-database",
+        "sample-library"
+      ]
     }
   ]
 }

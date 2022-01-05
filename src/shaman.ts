@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Invoke } from ".";
+import { Invoke } from "./cli";
 
 /* istanbul ignore next */
 (function() { 

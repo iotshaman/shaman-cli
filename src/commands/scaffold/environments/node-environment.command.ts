@@ -1,6 +1,6 @@
 import * as _path from 'path';
 import * as _cmd from 'child_process';
-import { Template } from '../../..';
+import { Solution, Template } from '../../..';
 import { ICommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
 
@@ -11,6 +11,11 @@ export class NodeEnvironmentScaffoldCommand implements ICommand {
   private templatesFolder = [__dirname, '..', '..', '..', '..', 'templates'];
   /* istanbul ignore next */
   private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+  private solution: Solution;
+
+  assignSolution = (solution: Solution) => {
+    this.solution = solution;
+  }
 
   run = (projectType: string, name: string, output: string): Promise<void> => {
     if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
@@ -49,9 +54,18 @@ export class NodeEnvironmentScaffoldCommand implements ICommand {
   }
 
   private updatePackageDetails = (outputPath: string, name: string): Promise<void> => {
-    let packagePath = _path.join(outputPath, 'package.json')
+    let packagePath = _path.join(outputPath, 'package.json');
+    let project = this.solution?.projects.find(p => p.name == name);
     return this.fileService.readJson<any>(packagePath).then(pkg => {
       pkg.name = name;
+      if (!!project?.include?.length) {
+        project.include.forEach(dep => {
+          let dependentProject = this.solution.projects.find(p => p.name == dep);
+          if (!dependentProject) throw new Error(`Invalid dependency '${dep}'`);
+          if (!pkg.dependencies) pkg.dependencies = {};
+          pkg.dependencies[dep] = `file:${_path.join('../', dependentProject.path)}`;
+        });
+      }
       return this.fileService.writeJson(packagePath, pkg);
     });
   }

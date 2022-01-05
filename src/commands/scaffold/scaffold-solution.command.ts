@@ -3,6 +3,7 @@ import { ICommand } from "../../commands/command";
 import { IFileService, FileService } from "../../services/file.service";
 import { Solution, SolutionProject } from "../../models/solution";
 import { NodeEnvironmentScaffoldCommand } from './environments/node-environment.command';
+import { DependencyTree } from '../../models/dependency-tree';
 
 export class ScaffoldSolutionCommand implements ICommand {
 
@@ -14,6 +15,7 @@ export class ScaffoldSolutionCommand implements ICommand {
 
   run = (solutionFilePath: string): Promise<void> => {
     if (!solutionFilePath) solutionFilePath = './shaman.json'
+    console.log(`Scaffolding solution...`);
     return this.getShamanFile(solutionFilePath)
       .then(solution => this.buildSolution(solutionFilePath, solution))
       .then(_ => {
@@ -35,16 +37,20 @@ export class ScaffoldSolutionCommand implements ICommand {
       console.warn("No projects found in shaman solution file.");
       return Promise.resolve();
     }
-    return solution.projects.reduce((a, b) => 
-      a.then(_ => this.buildProject(b, cwd)), 
-      Promise.resolve()
-    );
+    let dependencyTree = new DependencyTree(solution);
+    let buildOrder = dependencyTree.getOrderedProjectList();
+    return buildOrder.reduce((a, b) => a.then(_ => {
+      let project = solution.projects.find(p => p.name == b);
+      return this.buildProject(project, cwd, solution);
+    }), Promise.resolve());
   }
 
-  private buildProject = (project: SolutionProject, cwd: string): Promise<void> => {    
+  private buildProject = (project: SolutionProject, cwd: string, solution: Solution): Promise<void> => {    
     let cmd = this.scaffoldCommands.find(c => c.name == `scaffold-${project.environment}`);
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${project.environment}'.`));
-    return cmd.run(project.type, project.name, _path.join(cwd, project.path));
+    if (!!cmd.assignSolution) cmd.assignSolution(solution);
+    let projectPath = _path.join(cwd, project.path);
+    return cmd.run(project.type, project.name, projectPath);
   }
 
 }

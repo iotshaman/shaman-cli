@@ -96,13 +96,14 @@ describe('Scaffold Node Environment Command', () => {
     let subject = new NodeEnvironmentScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.run("library", "test", "./test")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("test error");
         done();
       });
   });
 
-  it('run should throw if project type not found', (done) => {
+  it('run should throw if invalid dependency detected', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
     let readJsonStub = sandbox.stub();
@@ -115,6 +116,59 @@ describe('Scaffold Node Environment Command', () => {
     fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
     sandbox.stub(_cmd, 'exec').yields(null, null, "output");
     let subject = new NodeEnvironmentScaffoldCommand();
+    subject.assignSolution({projects: [
+      {name: 'test', environment: 'node', type: 'library', path: './test', include: ['db']}
+    ]});
+    subject.fileService = fileServiceMock;
+    subject.run("library", "test", "./test")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch((ex: Error) => {
+        expect(ex.message).to.equal("Invalid dependency 'db'");
+        done();
+      });
+  });
+
+  it('run should update package.json', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let readJsonStub = sandbox.stub();
+    readJsonStub.onCall(0).returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    readJsonStub.onCall(1).returns(Promise.resolve({name: '', dependencies: {}}));
+    fileServiceMock.readJson = readJsonStub;
+    fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
+    fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve()).callsFake((_path, json) => {
+      expect(json.name).to.equal("test");
+      expect(!!json.dependencies.db).to.be.true;
+    });
+    sandbox.stub(_cmd, 'exec').yields(null, null, "output");
+    let subject = new NodeEnvironmentScaffoldCommand();
+    subject.assignSolution({projects: [
+      {name: 'db', environment: 'node', type: 'database', path: './db'},
+      {name: 'test', environment: 'node', type: 'library', path: './test', include: ['db']}
+    ]});
+    subject.fileService = fileServiceMock;
+    subject.run("library", "test", "./test").then(_ => done());
+  });
+
+  it('run should return resolved promise', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let readJsonStub = sandbox.stub();
+    readJsonStub.onCall(0).returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    readJsonStub.onCall(1).returns(Promise.resolve({name: ''}));
+    fileServiceMock.readJson = readJsonStub;
+    fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
+    fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
+    sandbox.stub(_cmd, 'exec').yields(null, null, "output");
+    let subject = new NodeEnvironmentScaffoldCommand();
+    subject.assignSolution({projects: [
+      {name: 'db', environment: 'node', type: 'database', path: './db'},
+      {name: 'test', environment: 'node', type: 'library', path: './test', include: ['db']}
+    ]});
     subject.fileService = fileServiceMock;
     subject.run("library", "test", "./test").then(_ => done());
   });

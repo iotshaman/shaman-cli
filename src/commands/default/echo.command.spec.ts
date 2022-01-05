@@ -1,8 +1,20 @@
 import 'mocha';
+import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { EchoCommand } from './echo.command';
 
 describe('Echo Command', () => {
+
+  var sandbox: sinon.SinonSandbox;
+
+  beforeEach(() => {
+    sandbox = sinon.createSandbox();
+    sandbox.stub(console, 'log');
+  })
+
+  afterEach(() => {
+    sandbox.restore();
+  });
 
   it('name should equal "echo"', () => {
     let subject = new EchoCommand();

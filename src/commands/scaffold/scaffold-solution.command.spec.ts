@@ -5,6 +5,7 @@ import { createMock } from 'ts-auto-mock';
 import { ICommand } from '../command';
 import { ScaffoldSolutionCommand } from './scaffold-solution.command';
 import { IFileService } from '../../services/file.service';
+import { Solution } from '../../models/solution';
 
 describe('Scaffold Solution Command', () => {
 
@@ -67,6 +68,23 @@ describe('Scaffold Solution Command', () => {
     subject.run("./shaman.json").then(_ => done());
   });
 
+  it('run should not call applySolution', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
+    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+      {
+        name: "sample",
+        path: "sample",
+        environment: "noop"
+      }
+    ]}));
+    let subject = new ScaffoldSolutionCommand();
+    subject.fileService = fileServiceMock;
+    subject.scaffoldCommands = [new NoopScaffoldCommand()];
+    subject.scaffoldCommands[0].assignSolution = undefined;
+    subject.run("./shaman.json").then(_ => done());
+  });
+
   it('run should return resolved promise', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
@@ -92,4 +110,6 @@ class NoopScaffoldCommand implements ICommand {
   run = (): Promise<void> => {
     return Promise.resolve();
   }
+
+  assignSolution = (solution: Solution) => {}
 }

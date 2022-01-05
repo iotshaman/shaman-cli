@@ -7,4 +7,5 @@ export class SolutionProject {
   environment: string;
   type: string;
   path: string;
+  include?: string[];
 }

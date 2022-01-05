@@ -3,6 +3,7 @@ import * as _cmd from 'child_process';
 import { ICommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
 import { Solution } from '../../../models/solution';
+import { DependencyTree } from '../../../models/dependency-tree';
 
 export class NodeEnvironmentBuildCommand implements ICommand {
 
@@ -32,10 +33,12 @@ export class NodeEnvironmentBuildCommand implements ICommand {
   private buildSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
     if (!solution.projects.length) return Promise.resolve();
-    return solution.projects.reduce((a, b) => 
-      a.then(_ => this.buildProject(b.name, _path.join(cwd, b.path))), 
-      Promise.resolve()
-    );
+    let dependencyTree = new DependencyTree(solution);
+    let buildOrder = dependencyTree.getOrderedProjectList();
+    return buildOrder.reduce((a, b) => a.then(_ => {
+      let project = solution.projects.find(p => p.name == b);
+      return this.buildProject(project.name, _path.join(cwd, project.path));
+    }), Promise.resolve());
   }
 
   private buildProject = (name: string, path: string): Promise<void> => {
