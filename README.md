@@ -49,7 +49,10 @@ For example, if you have a node js solution that includes a library, a database 
       "name": "sample-library",
       "environment": "node",
       "type": "library",
-      "path": "library"
+      "path": "library",
+      "include": [
+        "sample-database"
+      ]
     },
     {
       "name": "sample-server",
@@ -134,3 +137,7 @@ shaman build [environment] [solutionFilePath]
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*
+
+## Project Dependencies
+
+Sometimes, one project in a solution will be dependent on another project; when this happens, you may need to instruct the Shaman CLI about these dependencies. If you know these project dependencies when scaffolding a solution (using Shaman CLI), you can simply define these dependencies in your [solution file](#solution-file) by adding the name of the *dependent* project to the "include" property of the *parent* project; then, when you run the "scaffold-solution" command if will automatically install these dependencies and future builds will know the correct order. If you **do not** know the project dependencies when scaffolding, or you do not use the Shaman CLI to scaffold your code, you will need to manually install your dependencies in any *parent* project's package.json file, then update your solution file to reflect the relationship.
