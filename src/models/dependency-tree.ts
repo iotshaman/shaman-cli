@@ -24,7 +24,6 @@ export class DependencyTree {
   }
 
   getOrderedProjectList = (): string[] => {
-    let depth: number = 0;
     let dependencies: string[] = [];
     let batch = this.root.map(n => n);
     while (batch.length > 0) {
@@ -36,7 +35,6 @@ export class DependencyTree {
           newBatch.push(d)
         });
       });
-      depth++;
       batch = newBatch;
     }
     return dependencies.reverse().reduce((a, b) => {
