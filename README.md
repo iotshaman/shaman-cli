@@ -146,11 +146,11 @@ The run command requires the existence of a solution file, and will execute an n
 shaman run [project] [script] [solutionFilePath]
 ```
 
-**[project]:** The name of the project for which you would like to execute the provided (or default) script. The provided project value must match a project name in your solution file.
-**[script]:** (Optional) The npm script to be executed; if no value is provided, the default value is 'start'. Please note that for the run command to work, the specified project must have a script setup in its respective 'package.json' file that corresponds to the provided (or default) script value.
+**[project]:** The name of the project for which you would like to execute the provided (or default) script. The provided project value must match a project name in your solution file.  
+**[script]:** (Optional) The npm script to be executed; if no value is provided, the default value is 'start'. Please note that for the run command to work, the specified project must have a script setup in its respective 'package.json' file that corresponds to the provided (or default) script value.  
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
-*Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*
+*Note: In order for the run command to work, the specified project needs to have a script (in package.json) that corresponds to the provided (or default) script value.*
 
 ## Project Dependencies
 
