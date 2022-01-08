@@ -4,12 +4,12 @@ import * as _cmd from 'child_process';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../../../services/file.service';
-import { NodeEnvironmentBuildCommand } from './node-environment.command';
+import { NodeEnvironmentRunCommand } from './node-environment.run-command';
 
-describe('Build Node Environment Command', () => {
+describe('Run Node Environment Command', () => {
 
   var sandbox: sinon.SinonSandbox;
-
+  
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     sandbox.stub(console, 'log');
@@ -19,17 +19,17 @@ describe('Build Node Environment Command', () => {
     sandbox.restore();
   });
 
-  it('name should equal "build-node"', () => {
-    let subject = new NodeEnvironmentBuildCommand();
-    expect(subject.name).to.equal("build-node");
+  it('name should equal "run-node"', () => {
+    let subject = new NodeEnvironmentRunCommand();
+    expect(subject.name).to.equal("run-node");
   });
 
   it('run should throw if solution file not found', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let subject = new NodeEnvironmentBuildCommand();
+    let subject = new NodeEnvironmentRunCommand();
     subject.fileService = fileServiceMock;
-    subject.run(null)
+    subject.run("sample", null, "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Solution file does not exist in specified location.");
@@ -37,9 +37,8 @@ describe('Build Node Environment Command', () => {
       });
   });
 
-  it('run should throw if build command throws', (done) => {
+  it('run should throw if invalid project provided', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    sandbox.stub(_cmd, 'exec').yields(new Error("test error"), null, "output");
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
       {
@@ -47,28 +46,18 @@ describe('Build Node Environment Command', () => {
         path: "sample"
       }
     ]}));
-    let subject = new NodeEnvironmentBuildCommand();
+    let subject = new NodeEnvironmentRunCommand();
     subject.fileService = fileServiceMock;
-    subject.run("./solution/shaman.json")
+    subject.run("invalid", "start", "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("test error");
+        expect(ex.message).to.equal("Invalid project 'invalid'.");
         done();
       });
   });
 
-  it('run should return resolved promise if no projects defined', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: []}));
-    let subject = new NodeEnvironmentBuildCommand();
-    subject.fileService = fileServiceMock;
-    subject.run("./solution/shaman.json").then(_ => done());
-  });
-
   it('run should return resolved promise', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    sandbox.stub(_cmd, 'exec').yields(null, null, null);
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
       {
@@ -76,9 +65,15 @@ describe('Build Node Environment Command', () => {
         path: "sample"
       }
     ]}));
-    let subject = new NodeEnvironmentBuildCommand();
+    let subject = new NodeEnvironmentRunCommand();
     subject.fileService = fileServiceMock;
-    subject.run("./solution/shaman.json").then(_ => done());
+    let spawnMock: any = {
+      stdout: { on: sandbox.stub().yields("output") },
+      stderr: { on: sandbox.stub().yields("error") },
+      on: sandbox.stub().yields(0)
+    };
+    sandbox.stub(_cmd, 'spawn').returns(spawnMock);
+    subject.run("sample", "start", "shaman.json").then(_ => done()).catch(console.dir);
   });
 
-});
+})

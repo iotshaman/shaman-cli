@@ -96,7 +96,7 @@ shaman echo [echoString]
 The scaffold-solution command requires the existence of a solution file, and will iterate over the available projects and scaffold them all. Under the hood, the cli will use the project variables to invoke the ["scaffold" command](#scaffold-command). The syntax for the scaffold-solution command is as follows:
 
 ```sh
-shaman scaffold-solution
+shaman scaffold-solution [solutionFilePath]
 ```
 
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
@@ -134,6 +134,20 @@ shaman build [environment] [solutionFilePath]
 ```
 
 **[environment]:** Indicates the coding environment, which will help determine how to build the projects. Available values are: *node*  
+**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+
+*Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*
+
+### Run Command
+
+The run command requires the existence of a solution file, and will execute an npm script for a specific project; if no script is specified, it will default to 'start'. The syntax for the run command is as follows; please note that these arguments must be provided in-order.
+
+```sh
+shaman run [project] [script] [solutionFilePath]
+```
+
+**[project]:** The name of the project for which you would like to execute the provided (or default) script. The provided project value must match a project name in your solution file.
+**[script]:** (Optional) The npm script to be executed; if no value is provided, the default value is 'start'. Please note that for the run command to work, the specified project must have a script setup in its respective 'package.json' file that corresponds to the provided (or default) script value.
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*

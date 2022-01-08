@@ -24,7 +24,7 @@ describe('Install Node Environment Command', () => {
     expect(subject.name).to.equal("install-node");
   });
 
-  it('run should throw is solution file not found', (done) => {
+  it('run should throw if solution file not found', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
     let subject = new NodeEnvironmentInstallCommand();
