@@ -24,20 +24,18 @@ export class DependencyTree {
   }
 
   getOrderedProjectList = (): string[] => {
-    let depth: number = 0;
     let dependencies: string[] = [];
-    let batch = this.root.map(n => n);
-    while (batch.length > 0) {
-      let newBatch: DependencyNode[] = [];
-      batch.forEach(b => {
-        dependencies.push(b.name);
-        b.dependents.forEach(d => {
-          if (newBatch.find(bd => bd.name == d.name)) return;
-          newBatch.push(d)
+    let nodes = this.root.map(n => n);
+    while (nodes.length > 0) {
+      let nextNodeDepth: DependencyNode[] = [];
+      nodes.forEach(node => {
+        dependencies.push(node.name);
+        node.dependents.forEach(d => {
+          if (nextNodeDepth.find(bd => bd.name == d.name)) return;
+          nextNodeDepth.push(d)
         });
       });
-      depth++;
-      batch = newBatch;
+      nodes = nextNodeDepth;
     }
     return dependencies.reverse().reduce((a, b) => {
       if (!a.includes(b)) a.push(b);
