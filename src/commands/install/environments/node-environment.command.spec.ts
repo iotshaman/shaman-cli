@@ -24,7 +24,7 @@ describe('Install Node Environment Command', () => {
     expect(subject.name).to.equal("install-node");
   });
 
-  it('run should throw is shaman file not found', (done) => {
+  it('run should throw is solution file not found', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
     let subject = new NodeEnvironmentInstallCommand();
@@ -32,7 +32,7 @@ describe('Install Node Environment Command', () => {
     subject.run(null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Shaman file does not exist in specified location.");
+        expect(ex.message).to.equal("Solution file does not exist in specified location.");
         done();
       });
   });

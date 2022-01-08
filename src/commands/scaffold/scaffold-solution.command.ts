@@ -26,7 +26,7 @@ export class ScaffoldSolutionCommand implements ICommand {
   private getShamanFile = (solutionFilePath: string): Promise<Solution> => {
     let fullPath = _path.join(process.cwd(), solutionFilePath);
     return this.fileService.pathExists(fullPath).then(exists => {
-      if (!exists) throw new Error("Shaman file does not exist in specified location.");
+      if (!exists) throw new Error("Solution file does not exist in specified location.");
       return this.fileService.readJson<Solution>(solutionFilePath);
     });
   }
@@ -34,7 +34,7 @@ export class ScaffoldSolutionCommand implements ICommand {
   private buildSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
     if (!solution.projects.length) {
-      console.warn("No projects found in shaman solution file.");
+      console.warn("No projects found in solution file.");
       return Promise.resolve();
     }
     let dependencyTree = new DependencyTree(solution);

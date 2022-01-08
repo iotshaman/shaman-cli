@@ -24,7 +24,7 @@ export class NodeEnvironmentInstallCommand implements ICommand {
 
   private getShamanFile = (solutionFilePath: string): Promise<Solution> => {
     return this.fileService.pathExists(solutionFilePath).then(exists => {
-      if (!exists) throw new Error("Shaman file does not exist in specified location.");
+      if (!exists) throw new Error("Solution file does not exist in specified location.");
       return this.fileService.readJson<Solution>(solutionFilePath);
     });
   }

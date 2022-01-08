@@ -9,7 +9,7 @@ export class BuildCommand implements ICommand {
   ]
 
   run = (environment: string, solutionFilePath: string): Promise<void> => {
-    if (!environment) return Promise.reject(new Error("Environment argument not provided to scaffold command."));
+    if (!environment) return Promise.reject(new Error("Environment argument not provided to build command."));
     let cmd = this.buildCommands.find(c => c.name == `build-${environment}`);
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${environment}'.`));
     return cmd.run(solutionFilePath);

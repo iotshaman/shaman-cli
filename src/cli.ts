@@ -5,6 +5,7 @@ import { ScaffoldCommand } from "./commands/scaffold/scaffold.command";
 import { ScaffoldSolutionCommand } from "./commands/scaffold/scaffold-solution.command";
 import { BuildCommand } from "./commands/build/build.command";
 import { InstallCommand } from "./commands/install/install.command";
+import { RunCommand } from "./commands/run/run.command";
 
 const commands: ICommand[] = [
   new NoopCommand(),
@@ -12,7 +13,8 @@ const commands: ICommand[] = [
   new ScaffoldCommand(),
   new ScaffoldSolutionCommand(),
   new BuildCommand(),
-  new InstallCommand()
+  new InstallCommand(),
+  new RunCommand()
 ];
 
 export function Invoke(args: string[]) {

@@ -9,7 +9,7 @@ export class InstallCommand implements ICommand {
   ]
 
   run = (environment: string, solutionFilePath: string): Promise<void> => {
-    if (!environment) return Promise.reject(new Error("Environment argument not provided to scaffold command."));
+    if (!environment) return Promise.reject(new Error("Environment argument not provided to install command."));
     let cmd = this.installCommands.find(c => c.name == `install-${environment}`);
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${environment}'.`));
     return cmd.run(solutionFilePath);
