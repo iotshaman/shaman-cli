@@ -3,20 +3,20 @@
     {
       "environment": "node",
       "type": "library",
-      "version": "1.0.1",
-      "file": "node/library-template-v1.0.1.zip"
+      "version": "1.0.2",
+      "file": "node/library-template-v1.0.2.zip"
     },
     {
       "environment": "node",
       "type": "server",
-      "version": "1.0.1",
-      "file": "node/server-template-v1.0.1.zip"
+      "version": "1.0.2",
+      "file": "node/server-template-v1.0.2.zip"
     },
     {
       "environment": "node",
       "type": "database",
-      "version": "1.0.1",
-      "file": "node/database-template-v1.0.1.zip"
+      "version": "1.0.2",
+      "file": "node/database-template-v1.0.2.zip"
     }
   ]
 }
