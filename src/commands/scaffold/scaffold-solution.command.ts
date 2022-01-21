@@ -17,7 +17,7 @@ export class ScaffoldSolutionCommand implements ICommand {
     if (!solutionFilePath) solutionFilePath = './shaman.json'
     console.log(`Scaffolding solution...`);
     return this.getShamanFile(solutionFilePath)
-      .then(solution => this.buildSolution(solutionFilePath, solution))
+      .then(solution => this.scaffoldSolution(solutionFilePath, solution))
       .then(_ => {
         console.log("Solution scaffolding is complete.");
       });
@@ -31,21 +31,21 @@ export class ScaffoldSolutionCommand implements ICommand {
     });
   }
 
-  private buildSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
+  private scaffoldSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
     if (!solution.projects.length) {
       console.warn("No projects found in solution file.");
       return Promise.resolve();
     }
     let dependencyTree = new DependencyTree(solution);
-    let buildOrder = dependencyTree.getOrderedProjectList();
-    return buildOrder.reduce((a, b) => a.then(_ => {
+    let scaffoldOrder = dependencyTree.getOrderedProjectList();
+    return scaffoldOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);
-      return this.buildProject(project, cwd, solution);
+      return this.scaffoldProject(project, cwd, solution);
     }), Promise.resolve());
   }
 
-  private buildProject = (project: SolutionProject, cwd: string, solution: Solution): Promise<void> => {    
+  private scaffoldProject = (project: SolutionProject, cwd: string, solution: Solution): Promise<void> => {    
     let cmd = this.scaffoldCommands.find(c => c.name == `scaffold-${project.environment}`);
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${project.environment}'.`));
     if (!!cmd.assignSolution) cmd.assignSolution(solution);
