@@ -3,11 +3,11 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
 import { ICommand } from '../command';
-import { RunCommand } from './run.command';
+import { ServeCommand } from './serve.command';
 import { IFileService } from '../../services/file.service';
 import { Solution } from '../../models/solution';
 
-describe('Run Command', () => {
+describe('Serve Command', () => {
 
   var sandbox: sinon.SinonSandbox;
 
@@ -20,15 +20,14 @@ describe('Run Command', () => {
     sandbox.restore();
   });
 
-  it('name should equal "run"', () => {
-    let subject = new RunCommand();
-    expect(subject.name).to.equal("run");
+  it('name should equal "serve"', () => {
+    let subject = new ServeCommand();
+    expect(subject.name).to.equal("serve");
   });
 
   it('run should throw error if no project provided', (done) => {
-    let subject = new RunCommand();
-    subject.runCommands = [];
-    subject.run(null, null, null)
+    let subject = new ServeCommand();
+    subject.run(null, null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch(_ => done());
   });
@@ -36,9 +35,9 @@ describe('Run Command', () => {
   it('run should throw if solution file not found', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let subject = new RunCommand();
+    let subject = new ServeCommand();
     subject.fileService = fileServiceMock;
-    subject.run("sample", null, null)
+    subject.run("sample", null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Solution file does not exist in specified location.");
@@ -55,9 +54,9 @@ describe('Run Command', () => {
         path: "sample"
       }
     ]}));
-    let subject = new RunCommand();
+    let subject = new ServeCommand();
     subject.fileService = fileServiceMock;
-    subject.run("invalid", "start", "shaman.json")
+    subject.run("invalid", "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid project 'invalid'.");
@@ -75,9 +74,9 @@ describe('Run Command', () => {
         environment: "invalid"
       }
     ]}));
-    let subject = new RunCommand();
+    let subject = new ServeCommand();
     subject.fileService = fileServiceMock;
-    subject.run("sample", "start", "shaman.json")
+    subject.run("sample", "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid environment 'invalid'.");
@@ -95,11 +94,30 @@ describe('Run Command', () => {
         environment: "noop"
       }
     ]}));
-    let subject = new RunCommand();
+    let subject = new ServeCommand();
     subject.fileService = fileServiceMock;
-    subject.runCommands = [new NoopRunCommand()];
-    subject.runCommands[0].assignSolution = undefined;
-    subject.run("sample", "start", "shaman.json").then(_ => done());
+    subject.runCommands = [
+      {name: 'run-noop', instance: () => new NoopServeCommand(undefined)}
+    ]
+    subject.run("sample", "shaman.json").then(_ => done());
+  });
+
+  it('run should return resolved promise', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
+    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+      {
+        name: "sample",
+        path: "sample",
+        environment: "noop"
+      }
+    ]}));
+    let subject = new ServeCommand();
+    subject.fileService = fileServiceMock;
+    subject.runCommands = [
+      {name: 'run-noop', instance: () => new NoopServeCommand(undefined)}
+    ]
+    subject.run("sample", "shaman.json").then(_ => done());
   });
 
   it('run should call assignSolution', (done) => {
@@ -112,25 +130,32 @@ describe('Run Command', () => {
         environment: "noop"
       }
     ]}));
-    let subject = new RunCommand();
+    let subject = new ServeCommand();
     subject.fileService = fileServiceMock;
-    subject.runCommands = [new NoopRunCommand()];
-    sandbox.stub(subject.runCommands[0], 'assignSolution').callsFake(solution => {
-      expect(solution).not.to.be.null;
-    })
-    subject.run("sample", "start", "shaman.json").then(_ => done());
+    subject.runCommands = [
+      {name: 'run-noop', instance: () => new NoopServeCommand(solution => {
+        expect(solution).not.to.be.null;
+      })}
+    ]
+    subject.run("sample", "shaman.json").then(_ => done());
   });
 
 })
 
-class NoopRunCommand implements ICommand {
+class NoopServeCommand implements ICommand {
 
   get name(): string { return "run-noop"; }
+
+  constructor(assignSolution: (solution: Solution) => void) {
+    this.assignSolution = assignSolution;
+  }
 
   run = (): Promise<void> => {
     return Promise.resolve();
   }
 
   assignSolution = (solution: Solution) => {}
+
+  waitForChildProcesses = undefined;
 
 }

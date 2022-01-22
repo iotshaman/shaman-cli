@@ -8,4 +8,6 @@ export class SolutionProject {
   type: string;
   path: string;
   include?: string[];
+  specs?: string[];
+  runtimeDependencies?: string[];
 }

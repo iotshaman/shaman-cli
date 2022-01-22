@@ -2,8 +2,6 @@ import 'mocha';
 import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
-import { createMock } from 'ts-auto-mock';
-import { IFileService } from '../../../services/file.service';
 import { NodeEnvironmentRunCommand } from './node-environment.run-command';
 
 describe('Run Node Environment Command', () => {
@@ -25,29 +23,25 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should throw if solution file not found', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
     let subject = new NodeEnvironmentRunCommand();
-    subject.fileService = fileServiceMock;
     subject.run("sample", null, "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Solution file does not exist in specified location.");
+        expect(ex.message).to.equal("Solution file has not been assigned to run command.");
         done();
       });
   });
 
   it('run should throw if invalid project provided', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    let subject = new NodeEnvironmentRunCommand();
+    subject.assignSolution({projects: [
       {
         name: "sample",
-        path: "sample"
+        path: "sample",
+        environment: "node",
+        type: "server"
       }
-    ]}));
-    let subject = new NodeEnvironmentRunCommand();
-    subject.fileService = fileServiceMock;
+    ]});
     subject.run("invalid", "start", "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
@@ -57,16 +51,15 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should return resolved promise', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    let subject = new NodeEnvironmentRunCommand();    
+    subject.assignSolution({projects: [
       {
         name: "sample",
-        path: "sample"
+        path: "sample",
+        environment: "node",
+        type: "server"
       }
-    ]}));
-    let subject = new NodeEnvironmentRunCommand();
-    subject.fileService = fileServiceMock;
+    ]});
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
       stderr: { on: sandbox.stub().yields("error") },

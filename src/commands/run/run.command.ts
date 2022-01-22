@@ -22,8 +22,10 @@ export class RunCommand implements ICommand {
         if (!solutionProject) throw new Error(`Invalid project '${project}'.`);
         let cmd = this.runCommands.find(c => c.name == `run-${solutionProject.environment}`);
         if (!cmd) return Promise.reject(new Error(`Invalid environment '${solutionProject.environment}'.`));
-        return cmd.run(project, script, solutionFilePath);
-      });
+        if (!!cmd.assignSolution) cmd.assignSolution(solution);
+        return cmd.run(project, script, solutionFilePath).then(_ => cmd);
+      })
+      .then(cmd => cmd.waitForChildProcesses);
   }
 
   private getShamanFile = (solutionFilePath: string): Promise<Solution> => {

@@ -56,5 +56,16 @@ describe('Dependency Node', () => {
     ]});
     expect(subject.getOrderedProjectList().join(',')).to.equal(['db', 'lib', 'test'].join(','));
   });
+  
+  it('getOrderedProjectListFromNode should return correct ordering of dependencies', () => {
+    let subject = new DependencyTree({projects: [
+      {name: 'db', environment: 'node', type: 'database', path: './db'},
+      {name: 'lib1', environment: 'node', type: 'library', path: './lib1'},
+      {name: 'lib2', environment: 'node', type: 'library', path: './lib2', include: ['lib1']},
+      {name: 'test', environment: 'node', type: 'server', path: './test', include: ['lib2', 'lib1']}
+    ]});
+    let result = subject.getOrderedProjectListFromNode("test");
+    expect(result.join(',')).to.equal(['lib1', 'lib2', 'test'].join(','));
+  });
 
 });

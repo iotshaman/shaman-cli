@@ -18,7 +18,7 @@ npm i -g shaman-cli
 
 ## Solution File
 
-Some commands require the existence of a "solution" file, which indicates what projects (servers, libraries, database libraries, etc) are available as part of the solution. This file should be called "shaman.json", and has the following interface:
+Some commands require the existence of a "solution" file, which indicates what projects (servers, libraries, database libraries, etc.) are available as part of the solution. This file should be called "shaman.json", and has the following interface:
 
 ```ts
 interface Solution {
@@ -31,14 +31,24 @@ interface SolutionProject {
   type: string;
   path: string;
   include?: string[];
+  runtimeDependencies?: string[];
 }
 ```
 
-For example, if you have a node js solution that includes a library, a database library, and a server, it could look like this:
+For example, if you have a node js solution that includes a website, library, database library, and a server, it could look like this:
 
 ```json
 {
   "projects": [
+    {
+      "name": "sample-website",
+      "environment": "node",
+      "type": "client",
+      "path": "client",
+      "runtimeDependencies": [
+        "sample-server"
+      ]
+    },
     {
       "name": "sample-database",
       "environment": "node",
@@ -78,18 +88,8 @@ Once you have installed Shaman CLI, you can access it by invoking "shaman" in a 
 shaman [command] [...arguments]
 ```
 
-**[command]:** Available values: *echo, scaffold-solution, scaffold, install, build*  
+**[command]:** Available values: *scaffold-solution, scaffold, install, build, run, serve*  
 **[...arguments]:** A list of arguments that vary, depending on the command provided.]  
-
-### Echo Command
-
-The echo command can be used to ensure that Shaman CLI has been installed properly. The syntax for the echo command is as follows:
-
-```sh
-shaman echo [echoString]
-```
-
-**[echoString]:** (Optional) a string value which will be "echoed" back to the terminal. 
 
 ### Scaffold Solution Command
 
@@ -151,6 +151,20 @@ shaman run [project] [script] [solutionFilePath]
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the run command to work, the specified project needs to have a script (in package.json) that corresponds to the provided (or default) script value.*
+
+### Serve Command
+
+The serve command requires the existence of a solution file, and will execute the 'start' script for 1-to-many projects. For example, if you have a website and a server, you can use the serve command to start both the server and the website, with 1 command. In order for Shaman CLI to start multiple projects, you must define any "runtime dependencies" in the "runtimeDependencies" property of the respective "parent" project (the one that depends on the other). So, for the previous example (server and website) you would want to register the server project as a runtime dependency of the website project.
+
+The syntax for the serve command is as follows:
+
+```sh
+shaman serve [project]
+```
+
+**[project]:** The name of the project for which you would like to serve. The provided project value must match a project name in your solution file. Note: any project names listed as "runtime dependencies" will be started first, and runtime dependencies can be nested.
+
+*Note: In order for the serve command to work, the specified project (any and runtime dependencies) must have a 'start' script (in package.json).*
 
 ## Project Dependencies
 
