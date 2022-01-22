@@ -5,19 +5,19 @@ export class DependencyTree {
   root: DependencyNode[] = [];
   map: ProjectDependencyMap;
 
-  constructor(solution: Solution) {
+  constructor(solution: Solution, dependencyProperty: string = 'include') {
     this.map = solution.projects.reduce((a, b) => {
-      a[b.name] = !b.include ? [] : b.include;
+      a[b.name] = !b[dependencyProperty] ? [] : b[dependencyProperty];
       return a;
     }, {});
-    this.build(solution.projects);
+    this.build(solution.projects, dependencyProperty);
   }
 
-  private build = (projects: SolutionProject[]) => {
+  private build = (projects: SolutionProject[], dependencyProperty: string) => {
     projects.forEach(project => {
       let node = new DependencyNode(project.name);
-      if (!!project.include?.length) {
-        project.include.forEach(i => node.addDependent(i, this.map));
+      if (!!project[dependencyProperty]?.length) {
+        project[dependencyProperty].forEach(i => node.addDependent(i, this.map));
       }
       this.root.push(node);      
     })
@@ -34,6 +34,23 @@ export class DependencyTree {
           if (nextNodeDepth.find(bd => bd.name == d.name)) return;
           nextNodeDepth.push(d)
         });
+      });
+      nodes = nextNodeDepth;
+    }
+    return dependencies.reverse().reduce((a, b) => {
+      if (!a.includes(b)) a.push(b);
+      return a;
+    }, []);
+  }
+
+  getOrderedProjectListFromNode = (project: string): string[] => {
+    let dependencies: string[] = [];
+    let nodes = [this.root.find(p => p.name == project)];
+    while (nodes.length > 0) {
+      let nextNodeDepth: DependencyNode[] = [];
+      nodes.forEach(node => {
+        dependencies.push(node.name);
+        node.dependents.forEach(d => nextNodeDepth.push(d));
       });
       nodes = nextNodeDepth;
     }

@@ -3,4 +3,5 @@ export class Template {
   type: string;
   version: string;
   file: string;
+  specs?: string[];
 }

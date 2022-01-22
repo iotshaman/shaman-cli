@@ -4,19 +4,25 @@
       "environment": "node",
       "type": "library",
       "version": "1.0.2",
-      "file": "node/library-template-v1.0.2.zip"
+      "file": "node/library-default-v1.0.2.zip"
     },
     {
       "environment": "node",
       "type": "server",
       "version": "1.0.2",
-      "file": "node/server-template-v1.0.2.zip"
+      "file": "node/server-default-v1.0.2.zip"
     },
     {
       "environment": "node",
       "type": "database",
       "version": "1.0.2",
-      "file": "node/database-template-v1.0.2.zip"
+      "file": "node/database-default-v1.0.2.zip"
+    },
+    {
+      "environment": "node",
+      "type": "client",
+      "version": "1.0.0",
+      "file": "node/client-default-v1.0.0.zip"
     }
   ]
 }
