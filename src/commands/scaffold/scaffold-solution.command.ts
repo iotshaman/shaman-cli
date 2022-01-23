@@ -4,11 +4,13 @@ import { IFileService, FileService } from "../../services/file.service";
 import { Solution, SolutionProject } from "../../models/solution";
 import { NodeEnvironmentScaffoldCommand } from './environments/node-environment.command';
 import { DependencyTree } from '../../models/dependency-tree';
+import { ITransformationService, TransformationService } from '../../services/transformation.service';
 
 export class ScaffoldSolutionCommand implements ICommand {
 
   get name(): string { return "scaffold-solution"; }
   fileService: IFileService = new FileService();
+  transformationService: ITransformationService = new TransformationService();
   scaffoldCommands: ICommand[] = [
     new NodeEnvironmentScaffoldCommand()
   ]
@@ -50,7 +52,9 @@ export class ScaffoldSolutionCommand implements ICommand {
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${project.environment}'.`));
     if (!!cmd.assignSolution) cmd.assignSolution(solution);
     let projectPath = _path.join(cwd, project.path);
-    return cmd.run(project.type, project.name, projectPath);
+    return cmd.run(project.type, project.name, projectPath).then(_ => {
+      return this.transformationService.performTransformations(project, cwd, solution);
+    })
   }
 
 }

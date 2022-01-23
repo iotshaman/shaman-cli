@@ -1,5 +1,6 @@
 export class Solution {
   projects: SolutionProject[];
+  transform?: ProjectTransformation[];
 }
 
 export class SolutionProject {
@@ -10,4 +11,11 @@ export class SolutionProject {
   include?: string[];
   specs?: string[];
   runtimeDependencies?: string[];
+}
+
+export class ProjectTransformation {
+  targetProject: string;
+  transformation: string;
+  sourceProject?: string;
+  specs?: string[];
 }
