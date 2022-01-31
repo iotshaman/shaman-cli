@@ -18,8 +18,11 @@ export class ScaffoldSolutionCommand implements ICommand {
   run = (solutionFilePath: string): Promise<void> => {
     if (!solutionFilePath) solutionFilePath = './shaman.json'
     console.log(`Scaffolding solution...`);
+    let solution: Solution;
     return this.getShamanFile(solutionFilePath)
-      .then(solution => this.scaffoldSolution(solutionFilePath, solution))
+      .then(rslt => solution = rslt)
+      .then(_ => this.scaffoldSolution(solutionFilePath, solution))
+      .then(_ => this.transformationService.performTransformations(solution, solutionFilePath))
       .then(_ => {
         console.log("Solution scaffolding is complete.");
       });
@@ -52,9 +55,7 @@ export class ScaffoldSolutionCommand implements ICommand {
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${project.environment}'.`));
     if (!!cmd.assignSolution) cmd.assignSolution(solution);
     let projectPath = _path.join(cwd, project.path);
-    return cmd.run(project.type, project.name, projectPath).then(_ => {
-      return this.transformationService.performTransformations(project, cwd, solution);
-    })
+    return cmd.run(project.type, project.name, projectPath);
   }
 
 }
