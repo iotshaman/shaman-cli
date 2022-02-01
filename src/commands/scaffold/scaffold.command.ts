@@ -1,11 +1,11 @@
+import { NodeScaffoldCommand } from "..";
 import { ICommand } from "../../commands/command";
-import { NodeEnvironmentScaffoldCommand } from "./environments/node-environment.command";
 
 export class ScaffoldCommand implements ICommand {
 
   get name(): string { return "scaffold"; }
   scaffoldCommands: ICommand[] = [
-    new NodeEnvironmentScaffoldCommand()
+    new NodeScaffoldCommand()
   ]
 
   run = (environment: string, projectType: string, name: string, output: string): Promise<void> => {

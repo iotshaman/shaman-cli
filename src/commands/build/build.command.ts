@@ -1,11 +1,11 @@
 import { ICommand } from "../../commands/command";
-import { NodeEnvironmentBuildCommand } from "./environments/node-environment.command";
+import { NodeBuildCommand } from "./node/node-build.command";
 
 export class BuildCommand implements ICommand {
 
   get name(): string { return "build"; }
   buildCommands: ICommand[] = [
-    new NodeEnvironmentBuildCommand()
+    new NodeBuildCommand()
   ]
 
   run = (environment: string, solutionFilePath: string): Promise<void> => {

@@ -2,21 +2,21 @@ import * as _path from 'path';
 import { ICommand } from "../../commands/command";
 import { Solution, SolutionProject } from '../../models/solution';
 import { IFileService, FileService } from "../../services/file.service";
-import { NodeEnvironmentRunCommand } from "../run/environments/node-environment.run-command";
 import { DependencyTree } from '../../models/dependency-tree';
+import { NodeRunCommand } from '..';
 
 export class ServeCommand implements ICommand {
 
   get name(): string { return "serve"; }
   /* istanbul ignore next */
   runCommands: {name: string, instance: () => ICommand}[] = [
-    { name: 'run-node', instance: () => new NodeEnvironmentRunCommand() }
+    { name: 'run-node', instance: () => new NodeRunCommand() }
   ]
   fileService: IFileService = new FileService();
 
   run = (project: string, solutionFilePath: string): Promise<void> => {
     if (!solutionFilePath) solutionFilePath = './shaman.json'
-    return this.getShamanFile(solutionFilePath)
+    return this.fileService.getShamanFile(solutionFilePath)
       .then(solution => {
         let solutionProject = solution.projects.find(p => p.name == project);
         if (!solutionProject) throw new Error(`Invalid project '${project}'.`);
@@ -24,13 +24,6 @@ export class ServeCommand implements ICommand {
       })
       .then(commands => Promise.all(commands.map(cmd => cmd.waitForChildProcesses)))
       .then(_ => (null));
-  }
-
-  private getShamanFile = (solutionFilePath: string): Promise<Solution> => {
-    return this.fileService.pathExists(solutionFilePath).then(exists => {
-      if (!exists) throw new Error("Solution file does not exist in specified location.");
-      return this.fileService.readJson<Solution>(solutionFilePath);
-    });
   }
 
   private serveProject = (projectName: string, solution: Solution, solutionFilePath: string): Promise<ICommand[]> => {   
