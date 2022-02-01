@@ -1,4 +1,5 @@
 import 'mocha';
+import * as _path from 'path';
 import * as _cmd from 'child_process';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
@@ -81,8 +82,8 @@ describe('Node Environment Service', () => {
   it('updateProjectDefinition should create dependency property if it is not already available', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old"}));
-    fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
-      expect(json.dependencies["db"]).to.equal("file:..\\db")
+    fileServiceMock.writeJson = sandbox.stub().callsFake((_outputPath, json) => {
+      expect(json.dependencies["db"]).to.equal(`file:${_path.join("../", "db")}`);
       return Promise.resolve();
     });
     let solution = new Solution();
@@ -92,14 +93,14 @@ describe('Node Environment Service', () => {
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done());
+    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done()).catch(console.dir);
   });
 
   it('updateProjectDefinition should update package dependencies', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old", dependencies: {}}));
-    fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
-      expect(json.dependencies["db"]).to.equal("file:..\\db")
+    fileServiceMock.writeJson = sandbox.stub().callsFake((_outputPath, json) => {
+      expect(json.dependencies["db"]).to.equal(`file:${_path.join("../", "db")}`);
       return Promise.resolve();
     });
     let solution = new Solution();
@@ -109,7 +110,7 @@ describe('Node Environment Service', () => {
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done());
+    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done()).catch(console.dir);
   });
 
   it('addProjectScaffoldFile should add "name" property to output file', (done) => {
