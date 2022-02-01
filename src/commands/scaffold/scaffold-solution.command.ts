@@ -2,15 +2,15 @@ import * as _path from 'path';
 import { ICommand } from "../../commands/command";
 import { IFileService, FileService } from "../../services/file.service";
 import { Solution, SolutionProject } from "../../models/solution";
-import { NodeEnvironmentScaffoldCommand } from './environments/node-environment.command';
 import { DependencyTree } from '../../models/dependency-tree';
+import { NodeScaffoldCommand } from './node/node-scaffold.command';
 
 export class ScaffoldSolutionCommand implements ICommand {
 
   get name(): string { return "scaffold-solution"; }
   fileService: IFileService = new FileService();
   scaffoldCommands: ICommand[] = [
-    new NodeEnvironmentScaffoldCommand()
+    new NodeScaffoldCommand()
   ]
 
   run = (solutionFilePath: string): Promise<void> => {

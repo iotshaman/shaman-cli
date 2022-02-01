@@ -1,14 +1,14 @@
 import * as _path from 'path';
 import { ICommand } from "../../commands/command";
-import { NodeEnvironmentRunCommand } from "./environments/node-environment.run-command";
 import { FileService, IFileService } from '../../services/file.service';
 import { Solution } from '../../models/solution';
+import { NodeRunCommand } from './node/node-run.command';
 
 export class RunCommand implements ICommand {
 
   get name(): string { return "run"; }
   runCommands: ICommand[] = [
-    new NodeEnvironmentRunCommand()
+    new NodeRunCommand()
   ]
   fileService: IFileService = new FileService();
 

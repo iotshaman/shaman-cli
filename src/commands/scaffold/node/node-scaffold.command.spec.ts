@@ -6,7 +6,7 @@ import * as _cmd from 'child_process';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../../../services/file.service';
-import { NodeEnvironmentScaffoldCommand } from './node-environment.command';
+import { NodeScaffoldCommand } from './node-scaffold.command';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 import { Solution } from '../../../models/solution';
 
@@ -25,12 +25,12 @@ describe('Scaffold Node Environment Command', () => {
   });
 
   it('name should equal "scaffold-node"', () => {
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     expect(subject.name).to.equal("scaffold-node");
   });
 
   it('run should throw if project type not provided', (done) => {
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.run(null, "test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
@@ -40,7 +40,7 @@ describe('Scaffold Node Environment Command', () => {
   });
 
   it('run should throw if name not provided', (done) => {
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.run("library", null, "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
@@ -50,7 +50,7 @@ describe('Scaffold Node Environment Command', () => {
   });
 
   it('run should throw if output path not provided', (done) => {
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.run("library", "test", null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
@@ -62,7 +62,7 @@ describe('Scaffold Node Environment Command', () => {
   it('run should throw if path exists', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.run("library", "test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
@@ -76,7 +76,7 @@ describe('Scaffold Node Environment Command', () => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({templates: []}));
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.run("library", "test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
@@ -101,7 +101,7 @@ describe('Scaffold Node Environment Command', () => {
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.assignSolution(new Solution());
@@ -126,7 +126,7 @@ describe('Scaffold Node Environment Command', () => {
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.assignSolution(new Solution());
@@ -151,7 +151,7 @@ describe('Scaffold Node Environment Command', () => {
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.assignSolution(new Solution());
@@ -176,7 +176,7 @@ describe('Scaffold Node Environment Command', () => {
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
-    let subject = new NodeEnvironmentScaffoldCommand();
+    let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.assignSolution(new Solution());

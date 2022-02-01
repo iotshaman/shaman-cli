@@ -7,7 +7,7 @@ import { DependencyTree } from '../../../models/dependency-tree';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 import { NodeEnvironmentService } from '../../../services/environments/node-environment.service';
 
-export class NodeEnvironmentBuildCommand implements ICommand {
+export class NodeBuildCommand implements ICommand {
 
   get name(): string { return "build-node"; }
   fileService: IFileService = new FileService();

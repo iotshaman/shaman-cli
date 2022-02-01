@@ -5,7 +5,7 @@ import { FileService, IFileService } from '../../../services/file.service';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 import { NodeEnvironmentService } from '../../../services/environments/node-environment.service';
 
-export class NodeEnvironmentScaffoldCommand implements ICommand {
+export class NodeScaffoldCommand implements ICommand {
 
   get name(): string { return "scaffold-node"; }
   fileService: IFileService = new FileService();

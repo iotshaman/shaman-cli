@@ -2,15 +2,15 @@ import * as _path from 'path';
 import { ICommand } from "../../commands/command";
 import { Solution, SolutionProject } from '../../models/solution';
 import { IFileService, FileService } from "../../services/file.service";
-import { NodeEnvironmentRunCommand } from "../run/environments/node-environment.run-command";
 import { DependencyTree } from '../../models/dependency-tree';
+import { NodeRunCommand } from '..';
 
 export class ServeCommand implements ICommand {
 
   get name(): string { return "serve"; }
   /* istanbul ignore next */
   runCommands: {name: string, instance: () => ICommand}[] = [
-    { name: 'run-node', instance: () => new NodeEnvironmentRunCommand() }
+    { name: 'run-node', instance: () => new NodeRunCommand() }
   ]
   fileService: IFileService = new FileService();
 
