@@ -43,6 +43,7 @@ export class DependencyTree {
     }, []);
   }
 
+  //TODO: merge getOrderedProjectListFromNode into getOrderedProjectList (with optional parameter)
   getOrderedProjectListFromNode = (project: string): string[] => {
     let dependencies: string[] = [];
     let nodes = [this.root.find(p => p.name == project)];
