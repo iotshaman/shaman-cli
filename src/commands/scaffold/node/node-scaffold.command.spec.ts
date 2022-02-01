@@ -86,7 +86,7 @@ describe('Scaffold Node Environment Command', () => {
       });
   });
 
-  it('run should throw call environmentService.updatePackageDetails', (done) => {
+  it('run should throw call environmentService.updateProjectDefinition', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
     let readJsonStub = sandbox.stub();
@@ -97,7 +97,7 @@ describe('Scaffold Node Environment Command', () => {
     fileServiceMock.readJson = readJsonStub;
     fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
-    environmentServiceMock.updatePackageDetails = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
@@ -106,7 +106,7 @@ describe('Scaffold Node Environment Command', () => {
     subject.environmentService = environmentServiceMock;
     subject.assignSolution(new Solution());
     subject.run("library", "test", "./test").then(_ => {      
-      expect(environmentServiceMock.updatePackageDetails).to.have.been.called;
+      expect(environmentServiceMock.updateProjectDefinition).to.have.been.called;
       done();
     });
   });
@@ -122,7 +122,7 @@ describe('Scaffold Node Environment Command', () => {
     fileServiceMock.readJson = readJsonStub;
     fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
-    environmentServiceMock.updatePackageDetails = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
@@ -147,7 +147,7 @@ describe('Scaffold Node Environment Command', () => {
     fileServiceMock.readJson = readJsonStub;
     fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
-    environmentServiceMock.updatePackageDetails = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
@@ -172,7 +172,7 @@ describe('Scaffold Node Environment Command', () => {
     fileServiceMock.readJson = readJsonStub;
     fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
-    environmentServiceMock.updatePackageDetails = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());

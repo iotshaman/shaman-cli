@@ -20,7 +20,7 @@ describe('Node Environment Service', () => {
     sandbox.restore();
   });
 
-  it('updatePackageDetails should update package name', (done) => {
+  it('updateProjectDefinition should update package name', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old"}));
     fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
@@ -31,10 +31,10 @@ describe('Node Environment Service', () => {
     solution.projects = [];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updatePackageDetails("./sample", "new", solution).then(_ => done());
+    subject.updateProjectDefinition("./sample", "new", solution).then(_ => done());
   });
 
-  it('updatePackageDetails should NOT update package dependencies if solution is null', (done) => {
+  it('updateProjectDefinition should NOT update package dependencies if solution is null', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old", dependencies: {}}));
     fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
@@ -43,10 +43,10 @@ describe('Node Environment Service', () => {
     });
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updatePackageDetails("./sample", "new", null).then(_ => done());
+    subject.updateProjectDefinition("./sample", "new", null).then(_ => done());
   });
 
-  it('updatePackageDetails should NOT update package dependencies if none configure in solution', (done) => {
+  it('updateProjectDefinition should NOT update package dependencies if none configure in solution', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old", dependencies: {}}));
     fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
@@ -57,10 +57,10 @@ describe('Node Environment Service', () => {
     solution.projects = [{name: 'sample', environment: 'node', type: 'library', path: './sample'}];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updatePackageDetails("./sample", "new", solution).then(_ => done());
+    subject.updateProjectDefinition("./sample", "new", solution).then(_ => done());
   });
 
-  it('updatePackageDetails should throw error if "include" config contains invalid project name', (done) => {
+  it('updateProjectDefinition should throw error if "include" config contains invalid project name', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old", dependencies: {}}));
     fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
@@ -70,7 +70,7 @@ describe('Node Environment Service', () => {
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updatePackageDetails("./sample", "sample", solution)
+    subject.updateProjectDefinition("./sample", "sample", solution)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch(ex => {
         expect(ex.message).to.equal("Invalid dependency 'invalid'");
@@ -78,7 +78,7 @@ describe('Node Environment Service', () => {
       });
   });
 
-  it('updatePackageDetails should create dependency property if it is not already available', (done) => {
+  it('updateProjectDefinition should create dependency property if it is not already available', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old"}));
     fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
@@ -92,10 +92,10 @@ describe('Node Environment Service', () => {
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updatePackageDetails("./sample", "sample", solution).then(_ => done());
+    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done());
   });
 
-  it('updatePackageDetails should update package dependencies', (done) => {
+  it('updateProjectDefinition should update package dependencies', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({name: "old", dependencies: {}}));
     fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
@@ -109,7 +109,7 @@ describe('Node Environment Service', () => {
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updatePackageDetails("./sample", "sample", solution).then(_ => done());
+    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done());
   });
 
   it('addProjectScaffoldFile should add "name" property to output file', (done) => {
