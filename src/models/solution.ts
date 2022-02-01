@@ -9,7 +9,7 @@ export class SolutionProject {
   type: string;
   path: string;
   include?: string[];
-  specs?: string[];
+  specs?: {[spec: string]: any};
   runtimeDependencies?: string[];
 }
 

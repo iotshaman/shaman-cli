@@ -2,7 +2,7 @@ import 'mocha';
 import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
-import { NodeEnvironmentRunCommand } from './node-environment.run-command';
+import { NodeRunCommand } from './node-run.command';
 
 describe('Run Node Environment Command', () => {
 
@@ -18,12 +18,12 @@ describe('Run Node Environment Command', () => {
   });
 
   it('name should equal "run-node"', () => {
-    let subject = new NodeEnvironmentRunCommand();
+    let subject = new NodeRunCommand();
     expect(subject.name).to.equal("run-node");
   });
 
   it('run should throw if solution file not found', (done) => {
-    let subject = new NodeEnvironmentRunCommand();
+    let subject = new NodeRunCommand();
     subject.run("sample", null, "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
@@ -33,7 +33,7 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should throw if invalid project provided', (done) => {
-    let subject = new NodeEnvironmentRunCommand();
+    let subject = new NodeRunCommand();
     subject.assignSolution({projects: [
       {
         name: "sample",
@@ -51,7 +51,7 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should return resolved promise', (done) => {
-    let subject = new NodeEnvironmentRunCommand();    
+    let subject = new NodeRunCommand();    
     subject.assignSolution({projects: [
       {
         name: "sample",

@@ -4,7 +4,7 @@ import { ChildProcessWithoutNullStreams } from 'child_process';
 import { ICommand } from "../../command";
 import { Solution } from '../../../models/solution';
 
-export class NodeEnvironmentRunCommand implements ICommand {
+export class NodeRunCommand implements ICommand {
   
   get name(): string { return "run-node"; }
   waitForChildProcesses?: Promise<void>;

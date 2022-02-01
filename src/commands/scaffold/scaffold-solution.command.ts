@@ -2,8 +2,8 @@ import * as _path from 'path';
 import { ICommand } from "../../commands/command";
 import { IFileService, FileService } from "../../services/file.service";
 import { Solution, SolutionProject } from "../../models/solution";
-import { NodeEnvironmentScaffoldCommand } from './environments/node-environment.command';
 import { DependencyTree } from '../../models/dependency-tree';
+import { NodeScaffoldCommand } from './node/node-scaffold.command';
 import { ITransformationService, TransformationService } from '../../services/transformation.service';
 
 export class ScaffoldSolutionCommand implements ICommand {
@@ -12,7 +12,7 @@ export class ScaffoldSolutionCommand implements ICommand {
   fileService: IFileService = new FileService();
   transformationService: ITransformationService = new TransformationService();
   scaffoldCommands: ICommand[] = [
-    new NodeEnvironmentScaffoldCommand()
+    new NodeScaffoldCommand()
   ]
 
   run = (solutionFilePath: string): Promise<void> => {
