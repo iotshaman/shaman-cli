@@ -11,7 +11,7 @@ export class NodeEnvironmentService implements IEnvironmentService {
   /* istanbul ignore next */
   private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 
-  updatePackageDetails = (folderPath: string, projectName: string, solution: Solution): Promise<void> => {
+  updateProjectDefinition = (folderPath: string, projectName: string, solution: Solution): Promise<void> => {
     let packagePath = _path.join(folderPath, 'package.json');
     return this.fileService.readJson<any>(packagePath).then(pkg => {
       pkg.name = projectName;
@@ -39,17 +39,6 @@ export class NodeEnvironmentService implements IEnvironmentService {
     return this.fileService.writeJson(scaffoldFilePath, scaffoldFile);
   }
 
-  installDependencies = (folderPath: string, projectName: string): Promise<void> => {
-    return new Promise((res, err) => {
-      console.log(`Installing dependencies for project '${projectName}'...`)
-      exec(`${this.npm} install`, { cwd: folderPath}, function(ex, _stdout, stderr) {
-        if (stderr) console.log(stderr);
-        if (ex) return err(ex);
-        res();
-      });
-    })
-  }
-
   executeProjectScaffolding = (folderPath: string): Promise<void> => {
     let scaffoldCommand = new Promise((res, err) => {
       let childProcess = spawn('node', ['shaman.scaffold.js'], {cwd: folderPath});
@@ -60,6 +49,17 @@ export class NodeEnvironmentService implements IEnvironmentService {
       ));
     });
     return scaffoldCommand.then(_ => this.fileService.deleteFile(_path.join(folderPath, 'shaman.scaffold.js')));
+  }
+
+  installDependencies = (folderPath: string, projectName: string): Promise<void> => {
+    return new Promise((res, err) => {
+      console.log(`Installing dependencies for project '${projectName}'...`)
+      exec(`${this.npm} install`, { cwd: folderPath}, function(ex, _stdout, stderr) {
+        if (stderr) console.log(stderr);
+        if (ex) return err(ex);
+        res();
+      });
+    })
   }
 
   buildProject = (name: string, path: string): Promise<void> => {

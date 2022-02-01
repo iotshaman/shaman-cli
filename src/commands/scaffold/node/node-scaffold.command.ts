@@ -26,7 +26,7 @@ export class NodeScaffoldCommand implements ICommand {
     return this.checkPath(folderPath)
       .then(_ => this.getTemplate(projectType))
       .then(template => this.unzipProject(template, folderPath))
-      .then(_ => this.environmentService.updatePackageDetails(folderPath, name, this.solution))
+      .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))
       .then(_ => this.environmentService.executeProjectScaffolding(folderPath))
