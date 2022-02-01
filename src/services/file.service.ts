@@ -1,11 +1,14 @@
 import * as _fsx from 'fs-extra';
 import * as Zip from 'node-stream-zip';
+import { Solution } from '../models/solution';
 
 export interface IFileService {
   readJson: <T>(file: string) => Promise<T>;
   writeJson: (file: string, contents: any) => Promise<void>;
   pathExists: (path: string) => Promise<boolean>;
   unzipFile: (file: string, output: string) => Promise<void>;
+  deleteFile: (file: string) => Promise<void>;
+  getShamanFile: (solutionFilePath: string) => Promise<Solution>;
 }
 
 export class FileService implements IFileService {
@@ -33,6 +36,17 @@ export class FileService implements IFileService {
           res();
         });
       });
+    });
+  }
+
+  deleteFile = (file: string): Promise<void> => {
+    return _fsx.remove(file);
+  }
+
+  getShamanFile = (solutionFilePath: string): Promise<Solution> => {
+    return this.pathExists(solutionFilePath).then(exists => {
+      if (!exists) throw new Error("Solution file does not exist in specified location.");
+      return this.readJson<Solution>(solutionFilePath);
     });
   }
 

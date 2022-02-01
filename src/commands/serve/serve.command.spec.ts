@@ -32,23 +32,9 @@ describe('Serve Command', () => {
       .catch(_ => done());
   });
 
-  it('run should throw if solution file not found', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let subject = new ServeCommand();
-    subject.fileService = fileServiceMock;
-    subject.run("sample", null)
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Solution file does not exist in specified location.");
-        done();
-      });
-  });
-
   it('run should throw if invalid project provided', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample"
@@ -66,8 +52,7 @@ describe('Serve Command', () => {
 
   it('run should throw if invalid environment provided', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample",
@@ -86,8 +71,7 @@ describe('Serve Command', () => {
 
   it('run should return resolved promise', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample",
@@ -104,8 +88,7 @@ describe('Serve Command', () => {
 
   it('run should return resolved promise', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample",
@@ -122,8 +105,7 @@ describe('Serve Command', () => {
 
   it('run should call assignSolution', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample",

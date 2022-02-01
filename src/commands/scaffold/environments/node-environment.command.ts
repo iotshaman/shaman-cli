@@ -1,16 +1,16 @@
 import * as _path from 'path';
-import * as _cmd from 'child_process';
 import { Solution, Template } from '../../..';
 import { ICommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
+import { IEnvironmentService } from '../../../services/environments/environment.service';
+import { NodeEnvironmentService } from '../../../services/environments/node-environment.service';
 
 export class NodeEnvironmentScaffoldCommand implements ICommand {
 
   get name(): string { return "scaffold-node"; }
   fileService: IFileService = new FileService();
+  environmentService: IEnvironmentService = new NodeEnvironmentService();
   private templatesFolder = [__dirname, '..', '..', '..', '..', 'templates'];
-  /* istanbul ignore next */
-  private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   private solution: Solution;
 
   assignSolution = (solution: Solution) => {
@@ -21,24 +21,27 @@ export class NodeEnvironmentScaffoldCommand implements ICommand {
     if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
     if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
     if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-node command."));
-    let outputPath = _path.join(process.cwd(), output);
+    let folderPath = _path.join(process.cwd(), output);
     console.log(`Scaffolding node ${projectType}.`);
-    return this.checkPath(outputPath)
+    return this.checkPath(folderPath)
       .then(_ => this.getTemplate(projectType))
-      .then(template => this.unzipProject(template, outputPath))
-      .then(_ => this.updatePackageDetails(outputPath, name))
-      .then(_ => this.installDependencies(outputPath))
+      .then(template => this.unzipProject(template, folderPath))
+      .then(_ => this.environmentService.updatePackageDetails(folderPath, name, this.solution))
+      .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
+      .then(_ => this.environmentService.installDependencies(folderPath, name))
+      .then(_ => this.environmentService.executeProjectScaffolding(folderPath))
       .then(_ => {
         console.log("Scaffolding complete.");
       })
   }
 
-  private checkPath = (outputPath: string): Promise<void> => {
-    return this.fileService.pathExists(outputPath).then(exists => {
+  private checkPath = (folderPath: string): Promise<void> => {
+    return this.fileService.pathExists(folderPath).then(exists => {
       if (!!exists) throw new Error("Output directory already exists.");
     })
   }
 
+  // TODO: move into template service
   private getTemplate = (projectType: string): Promise<Template> => {
     let path = _path.join(...this.templatesFolder, 'templates.json');
     return this.fileService.readJson<{templates: Template[]}>(path).then(data => {
@@ -48,37 +51,9 @@ export class NodeEnvironmentScaffoldCommand implements ICommand {
     });
   }
 
-  private unzipProject = (template: Template, outputPath: string): Promise<void> => {
+  private unzipProject = (template: Template, folderPath: string): Promise<void> => {
     let templatePath = _path.join(...this.templatesFolder, template.file);
-    return this.fileService.unzipFile(templatePath, outputPath);
-  }
-
-  private updatePackageDetails = (outputPath: string, name: string): Promise<void> => {
-    let packagePath = _path.join(outputPath, 'package.json');
-    let project = this.solution?.projects.find(p => p.name == name);
-    return this.fileService.readJson<any>(packagePath).then(pkg => {
-      pkg.name = name;
-      if (!!project?.include?.length) {
-        project.include.forEach(dep => {
-          let dependentProject = this.solution.projects.find(p => p.name == dep);
-          if (!dependentProject) throw new Error(`Invalid dependency '${dep}'`);
-          if (!pkg.dependencies) pkg.dependencies = {};
-          pkg.dependencies[dep] = `file:${_path.join('../', dependentProject.path)}`;
-        });
-      }
-      return this.fileService.writeJson(packagePath, pkg);
-    });
-  }
-
-  private installDependencies = (outputPath: string): Promise<void> => {
-    return new Promise((res, err) => {
-      console.log("Installing dependencies...")
-      _cmd.exec(`${this.npm} install`, { cwd: outputPath}, function(ex, _stdout, stderr) {
-        if (stderr) console.log(stderr);
-        if (ex) return err(ex);
-        res();
-      });
-    })
+    return this.fileService.unzipFile(templatePath, folderPath);
   }
 
 }
