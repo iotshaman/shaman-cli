@@ -1,5 +1,5 @@
 import * as _path from 'path';
-import { NodeSourceFactory } from "../../factories/source/node-source.factory";
+import { TypescriptSourceFactory } from "../../factories/source/typescript-source.factory";
 import { ISourceFactory } from "../../factories/source/source.factory";
 import { SolutionProject } from "../../models/solution";
 import { FileService, IFileService } from '../file.service';
@@ -14,7 +14,7 @@ export interface ITypescriptSourceService {
 export class TypescriptSourceService implements ITypescriptSourceService {
 
   fileService: IFileService = new FileService();
-  sourceFactory: ISourceFactory = new NodeSourceFactory();
+  sourceFactory: ISourceFactory = new TypescriptSourceFactory();
 
   addMySqlAppConfiguration = (solutionFilePath: string, project: SolutionProject): Promise<void> => {
     let projectFolderPath = _path.join(process.cwd(), solutionFilePath, project.path);

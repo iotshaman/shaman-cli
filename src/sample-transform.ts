@@ -1,12 +1,12 @@
 import * as _path from 'path';
 import { ISourceFactory } from './factories/source/source.factory';
-import { NodeSourceFactory } from './factories/source/node-source.factory';
+import { TypescriptSourceFactory } from './factories/source/typescript-source.factory';
 import { IFileService, FileService } from './services/file.service';
 import { SourceFile } from './models/source-file';
 
 // SETUP DEPENDENCIES
 const fileService: IFileService = new FileService();
-const sourceFactory: ISourceFactory = new NodeSourceFactory();
+const sourceFactory: ISourceFactory = new TypescriptSourceFactory();
 const projectFolder = "Z:\\Developers\\kbrown\\_sample\\shaman-cli-test\\scaffold-solution\\server";
 const appConfigFilePath = `${projectFolder}\\src\\models\\app.config.ts`;
 const appConfigFileOutputPath = `${projectFolder}\\src\\models\\app.config.ts`;

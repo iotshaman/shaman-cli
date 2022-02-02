@@ -1,7 +1,7 @@
 import { LineDetail } from '../../models/source-file';
 import { ISourceFactory } from './source.factory';
 
-export class NodeSourceFactory implements ISourceFactory {
+export class TypescriptSourceFactory implements ISourceFactory {
 
   buildImportStatement(line: LineDetail, pathOrPackage: string, importTypes: string[]): LineDetail[] {
     return [new LineDetail({
