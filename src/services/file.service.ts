@@ -1,14 +1,18 @@
 import * as _fsx from 'fs-extra';
 import * as Zip from 'node-stream-zip';
 import { Solution } from '../models/solution';
+import { LineDetail, SourceFile } from '../models/source-file';
 
 export interface IFileService {
   readJson: <T>(file: string) => Promise<T>;
   writeJson: (file: string, contents: any) => Promise<void>;
   pathExists: (path: string) => Promise<boolean>;
+  readFile: (file: string) => Promise<string>;
+  writeFile: (file: string, contents: string) => Promise<void>;
   unzipFile: (file: string, output: string) => Promise<void>;
   deleteFile: (file: string) => Promise<void>;
   getShamanFile: (solutionFilePath: string) => Promise<Solution>;
+  getSourceFile: (file: string) => Promise<SourceFile>;
 }
 
 export class FileService implements IFileService {
@@ -23,6 +27,14 @@ export class FileService implements IFileService {
 
   pathExists = (path: string): Promise<boolean> => {
     return _fsx.pathExists(path);
+  }
+
+  readFile = (file: string): Promise<string> => {
+    return _fsx.readFile(file).then(buffer => buffer.toString());
+  }
+
+  writeFile = (file: string, contents: string): Promise<void> => {
+    return _fsx.writeFile(file, contents);
   }
   
   /* istanbul ignore next */
@@ -47,6 +59,20 @@ export class FileService implements IFileService {
     return this.pathExists(solutionFilePath).then(exists => {
       if (!exists) throw new Error("Solution file does not exist in specified location.");
       return this.readJson<Solution>(solutionFilePath);
+    });
+  }
+
+  getSourceFile = (file: string): Promise<SourceFile> => {
+    return this.readFile(file).then(rslt => {
+      let fileContentAnalysis = new SourceFile();
+      fileContentAnalysis.lines = rslt.split('\n')
+      .map((l, i) => new LineDetail({
+        index: i, 
+        line: l, 
+        indent: l.search(/\S/) > -1 ? l.search(/\S/) : 0,
+        lifecycleHook: l.includes("//shaman:")
+      }));
+      return fileContentAnalysis;
     });
   }
 
