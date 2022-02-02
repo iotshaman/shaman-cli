@@ -5,9 +5,9 @@ import { SolutionProject } from "../../models/solution";
 import { FileService, IFileService } from '../file.service';
 
 export interface ITypescriptSourceService {
-  addMySqlAppConfiguration: (solutionFilePath: string, project: SolutionProject) => Promise<void>;
-  addDataContextCompositionType: (solutionFilePath: string, project: SolutionProject, contextName: string) => Promise<void>;
-  addDataContextComposition: (solutionFilePath: string, project: SolutionProject, 
+  addMySqlAppConfiguration: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
+  addDataContextCompositionType: (solutionFolderPath: string, project: SolutionProject, contextName: string) => Promise<void>;
+  addDataContextComposition: (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string) => Promise<void>;
 }
 
@@ -16,8 +16,8 @@ export class TypescriptSourceService implements ITypescriptSourceService {
   fileService: IFileService = new FileService();
   sourceFactory: ISourceFactory = new TypescriptSourceFactory();
 
-  addMySqlAppConfiguration = (solutionFilePath: string, project: SolutionProject): Promise<void> => {
-    let projectFolderPath = _path.join(process.cwd(), solutionFilePath, project.path);
+  addMySqlAppConfiguration = (solutionFolderPath: string, project: SolutionProject): Promise<void> => {
+    let projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     let configFilePath = _path.join(projectFolderPath, 'src', 'models', 'app.config.ts');
     return this.fileService.getSourceFile(configFilePath).then(sourceFile => {
       const importHook = sourceFile.transformationLines.find(l => l.lifecycleHookData.args.type == "import");
@@ -36,8 +36,8 @@ export class TypescriptSourceService implements ITypescriptSourceService {
     });
   }
   
-  addDataContextCompositionType = (solutionFilePath: string, project: SolutionProject, contextName: string): Promise<void> => {
-    let projectFolderPath = _path.join(process.cwd(), solutionFilePath, project.path);
+  addDataContextCompositionType = (solutionFolderPath: string, project: SolutionProject, contextName: string): Promise<void> => {
+    let projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     let typesFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.types.ts');
     return this.fileService.getSourceFile(typesFilePath).then(sourceFile => {
       const compositionHook = sourceFile.transformationLines
@@ -52,9 +52,9 @@ export class TypescriptSourceService implements ITypescriptSourceService {
     });
   }
 
-  addDataContextComposition = (solutionFilePath: string, project: SolutionProject, 
+  addDataContextComposition = (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string): Promise<void> => {
-    let projectFolderPath = _path.join(process.cwd(), solutionFilePath, project.path);
+    let projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     let compositionFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.ts');
     return this.fileService.getSourceFile(compositionFilePath).then(sourceFile => {
       const importHook = sourceFile.transformationLines.find(l => l.lifecycleHookData.args.type == "import");
@@ -66,7 +66,7 @@ export class TypescriptSourceService implements ITypescriptSourceService {
       const importLineFactory = () => {
         return this.sourceFactory.buildImportStatement(importHook, databaseProjectName, [`I${contextName}`, contextName])
       };
-      const composeLineFactory = () => this.sourceFactory.buildDataContextComposition(compositionHook, "MyDataContext");
+      const composeLineFactory = () => this.sourceFactory.buildDataContextComposition(compositionHook, contextName);
       sourceFile.replaceLines(importHook.index, importLineFactory);
       sourceFile.replaceLines(compositionHook.index, composeLineFactory);
       return this.fileService.writeFile(compositionFilePath, sourceFile.toString());

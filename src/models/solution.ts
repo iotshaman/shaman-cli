@@ -17,5 +17,5 @@ export class ProjectTransformation {
   targetProject: string;
   transformation: string;
   sourceProject?: string;
-  specs?: string[];
+  specs?: {[spec: string]: any};
 }

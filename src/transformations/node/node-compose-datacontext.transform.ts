@@ -9,7 +9,14 @@ export class NodeComposeDataContextTransformation implements ITransformation {
   sourceService: ITypescriptSourceService = new TypescriptSourceService();
 
   transform = (transformation: ProjectTransformation, solution: Solution, solutionFolderPath: string): Promise<void> => {
-    return Promise.reject(new Error("Not implemented"));
+    const project = solution.projects.find(p => p.name == transformation.targetProject);
+    if (!project) return Promise.reject(`Invalid target project in transformation: '${transformation.targetProject}'.`);
+    let databaseProject = solution.projects.find(p => p.name == transformation.sourceProject);
+    if (!databaseProject) return Promise.reject(`Invalid source project in transformation: '${transformation.sourceProject}'.`);
+    const contextName = databaseProject.specs?.contextName ?? "SampleDatabaseContext";
+    return this.sourceService.addMySqlAppConfiguration(solutionFolderPath, project)
+      .then(_ => this.sourceService.addDataContextCompositionType(solutionFolderPath, project, contextName))
+      .then(_ => this.sourceService.addDataContextComposition(solutionFolderPath, project, databaseProject.name, contextName));
   }
 
 }
