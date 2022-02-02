@@ -25,7 +25,7 @@ export class NodeScaffoldCommand implements ICommand {
     console.log(`Scaffolding node ${projectType}.`);
     return this.checkPath(folderPath)
       .then(_ => this.getTemplate(projectType))
-      .then(template => this.unzipProject(template, folderPath))
+      .then(template => this.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))
@@ -51,7 +51,8 @@ export class NodeScaffoldCommand implements ICommand {
     });
   }
 
-  private unzipProject = (template: Template, folderPath: string): Promise<void> => {
+  // TODO: move into template service
+  private unzipProjectTemplate = (template: Template, folderPath: string): Promise<void> => {
     let templatePath = _path.join(...this.templatesFolder, template.file);
     return this.fileService.unzipFile(templatePath, folderPath);
   }

@@ -5,7 +5,8 @@ import { SolutionProject } from "../../models/solution";
 import { FileService, IFileService } from '../file.service';
 
 export interface ITypescriptSourceService {
-  addMySqlAppConfiguration: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
+  addMySqlAppConfigurationJson: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
+  addMySqlAppConfigurationModel: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
   addDataContextCompositionType: (solutionFolderPath: string, project: SolutionProject, contextName: string) => Promise<void>;
   addDataContextComposition: (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string) => Promise<void>;
@@ -16,9 +17,32 @@ export class TypescriptSourceService implements ITypescriptSourceService {
   fileService: IFileService = new FileService();
   sourceFactory: ISourceFactory = new TypescriptSourceFactory();
 
-  addMySqlAppConfiguration = (solutionFolderPath: string, project: SolutionProject): Promise<void> => {
-    let projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
-    let configFilePath = _path.join(projectFolderPath, 'src', 'models', 'app.config.ts');
+  addMySqlAppConfigurationJson = (solutionFolderPath: string, project: SolutionProject): Promise<void> => {
+    const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
+    const configFilePath = _path.join(projectFolderPath, 'app', 'config', 'app.config.json');
+    const sampleConfigFilePath = _path.join(projectFolderPath, 'app', 'config', 'app.config.sample.json');
+    const mysqlConfig: any = {
+      connectionLimit: 10,
+      host: "",
+      user: "",
+      password: "",
+      database: "",
+      waitForConnections: false
+    }
+    const updateConfigFileTask = this.fileService.readJson<any>(configFilePath).then(config => {
+      config.mysqlConfig = mysqlConfig;
+      return this.fileService.writeJson(configFilePath, config);
+    });
+    const updateSampleConfigFileTask = this.fileService.readJson<any>(sampleConfigFilePath).then(config => {
+      config.mysqlConfig = mysqlConfig;
+      return this.fileService.writeJson(sampleConfigFilePath, config);
+    });
+    return Promise.all([updateConfigFileTask, updateSampleConfigFileTask]).then(_ => (null));
+  }
+
+  addMySqlAppConfigurationModel = (solutionFolderPath: string, project: SolutionProject): Promise<void> => {
+    const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
+    const configFilePath = _path.join(projectFolderPath, 'src', 'models', 'app.config.ts');
     return this.fileService.getSourceFile(configFilePath).then(sourceFile => {
       const importHook = sourceFile.transformationLines.find(l => l.lifecycleHookData.args.type == "import");
       const configHook = sourceFile.transformationLines.find(l => l.lifecycleHookData.args.type == "config");
@@ -37,8 +61,8 @@ export class TypescriptSourceService implements ITypescriptSourceService {
   }
   
   addDataContextCompositionType = (solutionFolderPath: string, project: SolutionProject, contextName: string): Promise<void> => {
-    let projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
-    let typesFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.types.ts');
+    const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
+    const typesFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.types.ts');
     return this.fileService.getSourceFile(typesFilePath).then(sourceFile => {
       const compositionHook = sourceFile.transformationLines
         .filter(l => l.lifecycleHookData.args.type == "compose")
@@ -54,8 +78,8 @@ export class TypescriptSourceService implements ITypescriptSourceService {
 
   addDataContextComposition = (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string): Promise<void> => {
-    let projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
-    let compositionFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.ts');
+    const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
+    const compositionFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.ts');
     return this.fileService.getSourceFile(compositionFilePath).then(sourceFile => {
       const importHook = sourceFile.transformationLines.find(l => l.lifecycleHookData.args.type == "import");
       const compositionHook = sourceFile.transformationLines

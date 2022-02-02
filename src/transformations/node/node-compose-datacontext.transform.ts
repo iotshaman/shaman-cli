@@ -1,4 +1,5 @@
 import { ProjectTransformation, Solution } from "../../models/solution";
+import { FileService, IFileService } from "../../services/file.service";
 import { ITypescriptSourceService, TypescriptSourceService } from "../../services/source/typescript-source.service";
 import { ITransformation } from "../transformation";
 
@@ -6,6 +7,7 @@ export class NodeComposeDataContextTransformation implements ITransformation {
 
   get name(): string { return "compose:datacontext"; }
   get environment(): string { return "node"; }
+  fileService: IFileService = new FileService();
   sourceService: ITypescriptSourceService = new TypescriptSourceService();
 
   transform = (transformation: ProjectTransformation, solution: Solution, solutionFolderPath: string): Promise<void> => {
@@ -14,7 +16,8 @@ export class NodeComposeDataContextTransformation implements ITransformation {
     let databaseProject = solution.projects.find(p => p.name == transformation.sourceProject);
     if (!databaseProject) return Promise.reject(`Invalid source project in transformation: '${transformation.sourceProject}'.`);
     const contextName = databaseProject.specs?.contextName ?? "SampleDatabaseContext";
-    return this.sourceService.addMySqlAppConfiguration(solutionFolderPath, project)
+    return this.sourceService.addMySqlAppConfigurationJson(solutionFolderPath, project)
+      .then(_ => this.sourceService.addMySqlAppConfigurationModel(solutionFolderPath, project))
       .then(_ => this.sourceService.addDataContextCompositionType(solutionFolderPath, project, contextName))
       .then(_ => this.sourceService.addDataContextComposition(solutionFolderPath, project, databaseProject.name, contextName));
   }
