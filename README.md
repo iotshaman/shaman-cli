@@ -23,6 +23,7 @@ Some commands require the existence of a "solution" file, which indicates what p
 ```ts
 interface Solution {
   projects: SolutionProject[];
+  transform?: ProjectTransformation[];
 }
 
 interface SolutionProject {
@@ -31,7 +32,14 @@ interface SolutionProject {
   type: string;
   path: string;
   include?: string[];
+  specs?: {[spec: string]: any};
   runtimeDependencies?: string[];
+}
+
+interface ProjectTransformation {
+  targetProject: string;
+  transformation: string;
+  sourceProject?: string;
 }
 ```
 
@@ -74,11 +82,24 @@ For example, if you have a node js solution that includes a website, library, da
         "sample-library"
       ]
     }
+  ],
+  "transform": [
+    {
+      "targetProject": "sample-server",
+      "transformation": "compose:datacontext",
+      "sourceProject": "sample-database"
+    }
   ]
 }
 ```
 
 *Note: All paths should be relative to the solution file*
+
+### Project Specs
+Some project types (for specific environments) allow you to provide "specs" to further customize the auto-generated source code. For more information regarding project specs, please refer to the [project templates](templates/README.md) documentation.
+
+### Transformations
+Some project types (for specific environments) allow you to perform "transformations" on the auto-generated source code, to create custom source code during initial scaffolding. For example, you can use a transformation to automatically write "data context" composition for a server project (that depends on a database library). For more information regarding project transformations, please refer to the [project templates](templates/README.md) documentation.
 
 ## CLI Reference
 
