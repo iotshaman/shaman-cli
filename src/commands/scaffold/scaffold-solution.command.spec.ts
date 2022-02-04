@@ -6,6 +6,7 @@ import { ICommand } from '../command';
 import { ScaffoldSolutionCommand } from './scaffold-solution.command';
 import { IFileService } from '../../services/file.service';
 import { Solution } from '../../models/solution';
+import { ITransformationService } from '../../services/transformation.service';
 
 describe('Scaffold Solution Command', () => {
 
@@ -78,8 +79,11 @@ describe('Scaffold Solution Command', () => {
         environment: "noop"
       }
     ]}));
+    let transformationServiceMock = createMock<ITransformationService>();
+    transformationServiceMock.performTransformations = sandbox.stub().returns(Promise.resolve());
     let subject = new ScaffoldSolutionCommand();
     subject.fileService = fileServiceMock;
+    subject.transformationService = transformationServiceMock;
     subject.scaffoldCommands = [new NoopScaffoldCommand()];
     subject.scaffoldCommands[0].assignSolution = undefined;
     subject.run("./shaman.json").then(_ => done());
@@ -95,8 +99,11 @@ describe('Scaffold Solution Command', () => {
         environment: "noop"
       }
     ]}));
+    let transformationServiceMock = createMock<ITransformationService>();
+    transformationServiceMock.performTransformations = sandbox.stub().returns(Promise.resolve());
     let subject = new ScaffoldSolutionCommand();
     subject.fileService = fileServiceMock;
+    subject.transformationService = transformationServiceMock;
     subject.scaffoldCommands = [new NoopScaffoldCommand()];
     subject.run("./shaman.json").then(_ => done());
   });
