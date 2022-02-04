@@ -66,7 +66,7 @@ describe('Run Node Environment Command', () => {
       on: sandbox.stub().yields(0)
     };
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
-    subject.run("sample", "start", "shaman.json").then(_ => done()).catch(console.dir);
+    subject.run("sample", "start", "shaman.json").then(_ => done());
   });
 
 })

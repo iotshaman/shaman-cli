@@ -52,7 +52,7 @@ export class TypescriptSourceService implements ITypescriptSourceService {
         return this.sourceFactory.buildImportStatement(importHook, "mysql", ["PoolConfig"])
       };
       const buildAppConfigPropertyFactory = () => {
-        return this.sourceFactory.buildClassProperty(configHook, "mysqlConfig: PoolConfig;")
+        return this.sourceFactory.buildClassProperty(configHook, "mysqlConfig", "PoolConfig")
       };
       sourceFile.replaceLines(importHook.index, importLineFactory);
       sourceFile.replaceLines(configHook.index, buildAppConfigPropertyFactory);
@@ -67,9 +67,9 @@ export class TypescriptSourceService implements ITypescriptSourceService {
       const compositionHook = sourceFile.transformationLines
         .filter(l => l.lifecycleHookData.args.type == "compose")
         .find(l => l.lifecycleHookData.args.target == "TYPES");
-      if (!compositionHook) throw new Error("No composition hook found TYPES objects.");
+      if (!compositionHook) throw new Error("No composition hook found in TYPES objects.");
       const buildAppConfigPropertyFactory = () => {
-        return this.sourceFactory.buildClassProperty(compositionHook, `${contextName}: "${contextName}",`)
+        return this.sourceFactory.buildObjectPropertyAssignment(compositionHook, contextName, contextName)
       };
       sourceFile.replaceLines(compositionHook.index, buildAppConfigPropertyFactory);
       return this.fileService.writeFile(typesFilePath, sourceFile.toString());

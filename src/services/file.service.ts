@@ -68,7 +68,7 @@ export class FileService implements IFileService {
       fileContentAnalysis.lines = rslt.split('\n')
       .map((l, i) => new LineDetail({
         index: i, 
-        line: l, 
+        content: l, 
         indent: l.search(/\S/) > -1 ? l.search(/\S/) : 0,
         lifecycleHook: l.includes("//shaman:")
       }));

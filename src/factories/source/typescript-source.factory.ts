@@ -6,17 +6,28 @@ export class TypescriptSourceFactory implements ISourceFactory {
   buildImportStatement(line: LineDetail, pathOrPackage: string, importTypes: string[]): LineDetail[] {
     return [new LineDetail({
       index: line.index,
-      line: `import { ${importTypes.join(", ")} } from '${pathOrPackage}';`,
+      content: `import { ${importTypes.join(", ")} } from '${pathOrPackage}';`,
       indent: line.indent,
       lifecycleHook: false,
       generated: true
     })];
   }
 
-  buildClassProperty(line: LineDetail, propertyText: string): LineDetail[] {
+  buildClassProperty(line: LineDetail, propertyName: string, propertyType: string): LineDetail[] {
     return [new LineDetail({
       index: line.index,
-      line: propertyText,
+      content: `${propertyName}: ${propertyType};`,
+      indent: line.indent,
+      lifecycleHook: false,
+      generated: true
+    })]
+  }
+
+  buildObjectPropertyAssignment(line: LineDetail, propertyName: string, propertyValue: string,
+    operator: string = ": ", suffix: string = ','): LineDetail[] {
+    return [new LineDetail({
+      index: line.index,
+      content: `${propertyName}${operator}${propertyValue}${suffix}`,
       indent: line.indent,
       lifecycleHook: false,
       generated: true
@@ -27,21 +38,21 @@ export class TypescriptSourceFactory implements ISourceFactory {
     let lineDetails: LineDetail[] = [];
     lineDetails.push(new LineDetail({
       index: line.index,
-      line: `let context = new ${contextName}();`,
+      content: `let context = new ${contextName}();`,
       indent: line.indent,
       lifecycleHook: false,
       generated: true
     }));
     lineDetails.push(new LineDetail({
       index: line.index + 1,
-      line: `context.initialize(config.mysqlConfig);`,
+      content: `context.initialize(config.mysqlConfig);`,
       indent: line.indent,
       lifecycleHook: false,
       generated: true
     }));
     lineDetails.push(new LineDetail({
       index: line.index + 2,
-      line: `container.bind<I${contextName}>(TYPES.${contextName}).toConstantValue(context);`,
+      content: `container.bind<I${contextName}>(TYPES.${contextName}).toConstantValue(context);`,
       indent: line.indent,
       lifecycleHook: false,
       generated: true

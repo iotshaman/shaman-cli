@@ -1,6 +1,6 @@
 export class SourceFile {
 
-  lines: LineDetail[];
+  lines: LineDetail[] = [];
 
   replaceLines = (index: number, lineFactory: () => LineDetail[]) => {
     let newLines = lineFactory();
@@ -15,8 +15,8 @@ export class SourceFile {
 
   toString(): string {
     return this.lines.reduce((a, b) => {
-      if (!b.generated) return `${a}${b.line}`;
-      return `${a}${" ".repeat(b.indent)}${b.line}\r\n`
+      if (!b.generated) return `${a}${b.content}`;
+      return `${a}${" ".repeat(b.indent)}${b.content}\r\n`
     }, '');
   }
 
@@ -31,7 +31,7 @@ export class SourceFile {
 
 export class LineDetail {
   index: number;
-  line: string;
+  content: string;
   indent: number;
   lifecycleHook: boolean;
   generated?: boolean;
@@ -42,7 +42,7 @@ export class LineDetail {
   get lifecycleHookData(): {lifecycle: string, args: any} {
     if (!this.lifecycleHook) return {lifecycle: "none", args: {}};
     try {
-      return JSON.parse(this.line.replace("//shaman:", "").trim());
+      return JSON.parse(this.content.replace("//shaman:", "").trim());
     } catch(_ex) {
       return {lifecycle: "none", args: {}};
     }
@@ -51,7 +51,7 @@ export class LineDetail {
 
 interface LineDetailSeed {
   index: number;
-  line: string;
+  content: string;
   indent: number;
   lifecycleHook: boolean;
   generated?: boolean;
