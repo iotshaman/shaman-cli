@@ -18,7 +18,7 @@ describe('Version Command', () => {
 
   it('name should equal "--version"', () => {
     let subject = new VersionCommand();
-    expect(subject.name).to.equal("version");
+    expect(subject.name).to.equal("--version");
   });
 
   it('run should return resolved promise', (done) => {
