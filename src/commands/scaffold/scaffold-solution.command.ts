@@ -4,11 +4,13 @@ import { IFileService, FileService } from "../../services/file.service";
 import { Solution, SolutionProject } from "../../models/solution";
 import { DependencyTree } from '../../models/dependency-tree';
 import { NodeScaffoldCommand } from './node/node-scaffold.command';
+import { ITransformationService, TransformationService } from '../../services/transformation.service';
 
 export class ScaffoldSolutionCommand implements ICommand {
 
   get name(): string { return "scaffold-solution"; }
   fileService: IFileService = new FileService();
+  transformationService: ITransformationService = new TransformationService();
   scaffoldCommands: ICommand[] = [
     new NodeScaffoldCommand()
   ]
@@ -16,8 +18,11 @@ export class ScaffoldSolutionCommand implements ICommand {
   run = (solutionFilePath: string): Promise<void> => {
     if (!solutionFilePath) solutionFilePath = './shaman.json'
     console.log(`Scaffolding solution...`);
+    let solution: Solution;
     return this.getShamanFile(solutionFilePath)
-      .then(solution => this.scaffoldSolution(solutionFilePath, solution))
+      .then(rslt => solution = rslt)
+      .then(_ => this.scaffoldSolution(solutionFilePath, solution))
+      .then(_ => this.transformationService.performTransformations(solution, solutionFilePath))
       .then(_ => {
         console.log("Solution scaffolding is complete.");
       });

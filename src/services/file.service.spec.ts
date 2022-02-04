@@ -39,6 +39,20 @@ describe('File Service', () => {
     subject.pathExists("test.json").then(_ => done());
   });
 
+  it('readFile should return promise', (done) => {
+    let response = new Promise(res => res(""));
+    sandbox.stub(_fsx, 'readFile').returns(<any>response);
+    let subject = new FileService();
+    subject.readFile("test.json").then(_ => done());
+  });
+
+  it('writeFile should return promise', (done) => {
+    let response = new Promise(res => res(null));
+    sandbox.stub(_fsx, 'writeFile').returns(<any>response);
+    let subject = new FileService();
+    subject.writeFile("test.txt", "").then(_ => done());
+  });
+
   it('deleteFile should return promise', (done) => {
     let response = new Promise(res => res(null));
     sandbox.stub(_fsx, 'remove').returns(<any>response);
@@ -61,7 +75,14 @@ describe('File Service', () => {
     sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(true));
     sandbox.stub(_fsx, 'readJSON').returns(<any>Promise.resolve({projects: []}));
     let subject = new FileService();
-    subject.getShamanFile("shaman.json").then(_ => done()).catch(console.dir)
+    subject.getShamanFile("shaman.json").then(_ => done());
+  });
+
+  it('getSourceFile should return promise', (done) => {
+    let response = new Promise(res => res("import { a } from 'b';\r\n\r\nconst test = 1;\r\n"));
+    sandbox.stub(_fsx, 'readFile').returns(<any>response);
+    let subject = new FileService();
+    subject.getSourceFile("test.json").then(_ => done());
   });
 
 });

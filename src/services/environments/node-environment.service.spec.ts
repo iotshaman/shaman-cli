@@ -93,7 +93,7 @@ describe('Node Environment Service', () => {
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done()).catch(console.dir);
+    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done());
   });
 
   it('updateProjectDefinition should update package dependencies', (done) => {
@@ -110,7 +110,7 @@ describe('Node Environment Service', () => {
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
-    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done()).catch(console.dir);
+    subject.updateProjectDefinition("./sample", "sample", solution).then(_ => done());
   });
 
   it('addProjectScaffoldFile should add "name" property to output file', (done) => {
