@@ -9,6 +9,7 @@ import { IFileService } from '../../../services/file.service';
 import { NodeScaffoldCommand } from './node-scaffold.command';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 import { Solution } from '../../../models/solution';
+import { ITemplateService } from '../../../services/template.service';
 
 describe('Scaffold Node Environment Command', () => {
 
@@ -72,38 +73,23 @@ describe('Scaffold Node Environment Command', () => {
       });
   });
 
-  it('run should throw if project type not found', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({templates: []}));
-    let subject = new NodeScaffoldCommand();
-    subject.fileService = fileServiceMock;
-    subject.run("library", "test", "./test")
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Project type not found: node-library");
-        done();
-      });
-  });
-
   it('run should throw call environmentService.updateProjectDefinition', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let readJsonStub = sandbox.stub();
-    readJsonStub.onCall(0).returns(Promise.resolve({templates: [{
-      environment: 'node', type: 'library', file: 'path.zip'
-    }]}));
-    readJsonStub.onCall(1).returns(Promise.resolve({name: ''}));
-    fileServiceMock.readJson = readJsonStub;
-    fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipProjectTemplate = sandbox.stub().returns(Promise.resolve());
     let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
+    subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
     subject.run("library", "test", "./test").then(_ => {      
       expect(environmentServiceMock.updateProjectDefinition).to.have.been.called;
@@ -114,21 +100,20 @@ describe('Scaffold Node Environment Command', () => {
   it('run should throw call environmentService.addProjectScaffoldFile', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let readJsonStub = sandbox.stub();
-    readJsonStub.onCall(0).returns(Promise.resolve({templates: [{
-      environment: 'node', type: 'library', file: 'path.zip'
-    }]}));
-    readJsonStub.onCall(1).returns(Promise.resolve({name: ''}));
-    fileServiceMock.readJson = readJsonStub;
-    fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipProjectTemplate = sandbox.stub().returns(Promise.resolve());
     let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
+    subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
     subject.run("library", "test", "./test").then(_ => {      
       expect(environmentServiceMock.addProjectScaffoldFile).to.have.been.called;
@@ -139,21 +124,20 @@ describe('Scaffold Node Environment Command', () => {
   it('run should throw call environmentService.installDependencies', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let readJsonStub = sandbox.stub();
-    readJsonStub.onCall(0).returns(Promise.resolve({templates: [{
-      environment: 'node', type: 'library', file: 'path.zip'
-    }]}));
-    readJsonStub.onCall(1).returns(Promise.resolve({name: ''}));
-    fileServiceMock.readJson = readJsonStub;
-    fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipProjectTemplate = sandbox.stub().returns(Promise.resolve());
     let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
+    subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
     subject.run("library", "test", "./test").then(_ => {      
       expect(environmentServiceMock.installDependencies).to.have.been.called;
@@ -164,21 +148,20 @@ describe('Scaffold Node Environment Command', () => {
   it('run should throw call environmentService.executeProjectScaffolding', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let readJsonStub = sandbox.stub();
-    readJsonStub.onCall(0).returns(Promise.resolve({templates: [{
-      environment: 'node', type: 'library', file: 'path.zip'
-    }]}));
-    readJsonStub.onCall(1).returns(Promise.resolve({name: ''}));
-    fileServiceMock.readJson = readJsonStub;
-    fileServiceMock.unzipFile = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
     environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipProjectTemplate = sandbox.stub().returns(Promise.resolve());
     let subject = new NodeScaffoldCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
+    subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
     subject.run("library", "test", "./test").then(_ => {      
       expect(environmentServiceMock.executeProjectScaffolding).to.have.been.called;
