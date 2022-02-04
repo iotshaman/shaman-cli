@@ -49,7 +49,7 @@ export class LineDetail {
   }
 }
 
-interface LineDetailSeed {
+type LineDetailSeed = {
   index: number;
   content: string;
   indent: number;

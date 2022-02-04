@@ -11,6 +11,7 @@ describe('Transformation Service', () => {
 
   beforeEach(() => {
     sandbox = sinon.createSandbox();
+    sandbox.stub(console, 'log');
   })
 
   afterEach(() => {
