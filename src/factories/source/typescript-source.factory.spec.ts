@@ -23,7 +23,7 @@ describe('Typescript Source Factory', () => {
     let line = new LineDetail({index: 0, indent: 0, content: '', lifecycleHook: false});
     let subject = new TypescriptSourceFactory();
     let result = subject.buildObjectPropertyAssignment(line, "foo", "Bar");
-    expect(result[0].content).to.equal("foo: Bar,");
+    expect(result[0].content).to.equal(`foo: "Bar",`);
   });
 
   it('buildDataContextComposition should return context instantiation line', () => {    

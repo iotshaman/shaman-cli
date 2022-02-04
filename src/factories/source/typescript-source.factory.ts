@@ -27,7 +27,7 @@ export class TypescriptSourceFactory implements ISourceFactory {
     operator: string = ": ", suffix: string = ','): LineDetail[] {
     return [new LineDetail({
       index: line.index,
-      content: `${propertyName}${operator}${propertyValue}${suffix}`,
+      content: `${propertyName}${operator}"${propertyValue}"${suffix}`,
       indent: line.indent,
       lifecycleHook: false,
       generated: true
