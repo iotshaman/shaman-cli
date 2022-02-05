@@ -13,21 +13,22 @@ export class NodeBuildCommand implements ICommand {
   fileService: IFileService = new FileService();
   environmentService: IEnvironmentService = new NodeEnvironmentService();
 
-  run = (solutionFilePath: string): Promise<void> => {
+  run = (environment: string, solutionFilePath: string): Promise<void> => {
     if (!solutionFilePath) solutionFilePath = _path.join(process.cwd(), 'shaman.json');
     else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
     console.log(`Building node solution.`);
     return this.fileService.getShamanFile(solutionFilePath)
-      .then(solution => this.buildSolution(solutionFilePath, solution))
+      .then(solution => this.buildSolution(environment, solutionFilePath, solution))
       .then(_ => {
         console.log("Solution build is complete.");
       });
   }
 
-  private buildSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
+  private buildSolution = (environment: string, solutionFilePath: string, solution: Solution): Promise<void> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
-    if (!solution.projects.length) return Promise.resolve();
-    let dependencyTree = new DependencyTree(solution);
+    let projects = solution.projects.filter(p => p.environment == environment);
+    if (!projects.length) return Promise.resolve();
+    let dependencyTree = new DependencyTree(projects);
     let buildOrder = dependencyTree.getOrderedProjectList();
     return buildOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);

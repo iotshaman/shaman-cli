@@ -34,7 +34,7 @@ export class ScaffoldSolutionCommand implements ICommand {
       console.warn("No projects found in solution file.");
       return Promise.resolve();
     }
-    let dependencyTree = new DependencyTree(solution);
+    let dependencyTree = new DependencyTree(solution.projects);
     let scaffoldOrder = dependencyTree.getOrderedProjectList();
     return scaffoldOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);

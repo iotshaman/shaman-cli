@@ -28,7 +28,7 @@ export class ServeCommand implements ICommand {
 
   private serveProject = (projectName: string, solution: Solution, solutionFilePath: string): Promise<ICommand[]> => {   
     let commands: ICommand[] = [];
-    let dependencyTree = new DependencyTree(solution, 'runtimeDependencies'); 
+    let dependencyTree = new DependencyTree(solution.projects, 'runtimeDependencies'); 
     let buildOrder = dependencyTree.getOrderedProjectListFromNode(projectName);
     let serveTask = buildOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);
