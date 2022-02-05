@@ -137,24 +137,24 @@ shaman scaffold [environment] [type] [name] [output folder]
 
 ### Install Command
 
-The install command requires the existence of a solution file, and will iterate over the available projects (that match the provided environment) and install them all. The syntax for the install command is as follows; please note that these arguments must be provided in-order.
+The install command requires the existence of a solution file, and will iterate over the available projects and install them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent installs for each. The syntax for the install command is as follows; please note that these arguments must be provided in-order.
 
 ```sh
 shaman install [environment] [solutionFilePath]
 ```
 
-**[environment]:** Indicates the coding environment, which will help determine how to install the projects. Available values are: *node*  
+**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be installed. Available values are: *node*, *\**  
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 ### Build Command
 
-The build command requires the existence of a solution file, and will iterate over the available projects (that match the provided environment) and build them all. The syntax for the build command is as follows; please note that these arguments must be provided in-order.
+The build command requires the existence of a solution file, and will iterate over the available projects and build them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent builds for each. The syntax for the build command is as follows; please note that these arguments must be provided in-order.
 
 ```sh
 shaman build [environment] [solutionFilePath]
 ```
 
-**[environment]:** Indicates the coding environment, which will help determine how to build the projects. Available values are: *node*  
+**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be built. Available values are: *node*, *\**  
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*

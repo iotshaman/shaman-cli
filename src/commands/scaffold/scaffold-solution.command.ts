@@ -19,7 +19,7 @@ export class ScaffoldSolutionCommand implements ICommand {
     if (!solutionFilePath) solutionFilePath = './shaman.json'
     console.log(`Scaffolding solution...`);
     let solution: Solution;
-    return this.getShamanFile(solutionFilePath)
+    return this.fileService.getShamanFile(solutionFilePath)
       .then(rslt => solution = rslt)
       .then(_ => this.scaffoldSolution(solutionFilePath, solution))
       .then(_ => this.transformationService.performTransformations(solution, solutionFilePath))
@@ -28,21 +28,13 @@ export class ScaffoldSolutionCommand implements ICommand {
       });
   }
 
-  private getShamanFile = (solutionFilePath: string): Promise<Solution> => {
-    let fullPath = _path.join(process.cwd(), solutionFilePath);
-    return this.fileService.pathExists(fullPath).then(exists => {
-      if (!exists) throw new Error("Solution file does not exist in specified location.");
-      return this.fileService.readJson<Solution>(solutionFilePath);
-    });
-  }
-
   private scaffoldSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
     if (!solution.projects.length) {
       console.warn("No projects found in solution file.");
       return Promise.resolve();
     }
-    let dependencyTree = new DependencyTree(solution);
+    let dependencyTree = new DependencyTree(solution.projects);
     let scaffoldOrder = dependencyTree.getOrderedProjectList();
     return scaffoldOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);

@@ -13,21 +13,22 @@ export class NodeInstallCommand implements ICommand {
   fileService: IFileService = new FileService();
   environmentService: IEnvironmentService = new NodeEnvironmentService();
 
-  run = (solutionFilePath: string): Promise<void> => {
+  run = (environment: string, solutionFilePath: string): Promise<void> => {
     if (!solutionFilePath) solutionFilePath = _path.join(process.cwd(), 'shaman.json');
     else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
     console.log(`Installing node solution.`);
     return this.fileService.getShamanFile(solutionFilePath)
-      .then(solution => this.installSolution(solutionFilePath, solution))
+      .then(solution => this.installSolution(environment, solutionFilePath, solution))
       .then(_ => {
         console.log("Solution install is complete.");
       });
   }
 
-  private installSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
+  private installSolution = (environment: string, solutionFilePath: string, solution: Solution): Promise<void> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
-    if (!solution.projects.length) return Promise.resolve();
-    let dependencyTree = new DependencyTree(solution);
+    let projects = solution.projects.filter(p => p.environment == environment);
+    if (!projects.length) return Promise.resolve();
+    let dependencyTree = new DependencyTree(projects);
     let buildOrder = dependencyTree.getOrderedProjectList();
     return buildOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);

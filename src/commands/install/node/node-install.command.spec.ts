@@ -29,7 +29,7 @@ describe('Install Node Environment Command', () => {
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: []}));
     let subject = new NodeInstallCommand();
     subject.fileService = fileServiceMock;
-    subject.run(null).then(_ => done());
+    subject.run("node", null).then(_ => done());
   });
 
   it('run should return resolved promise', (done) => {
@@ -37,7 +37,8 @@ describe('Install Node Environment Command', () => {
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
-        path: "sample"
+        path: "sample",
+        environment: "node"
       }
     ]}));
     let environmentServiceMock = createMock<IEnvironmentService>();
@@ -45,7 +46,7 @@ describe('Install Node Environment Command', () => {
     let subject = new NodeInstallCommand();
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
-    subject.run("./solution/shaman.json").then(_ => done());
+    subject.run("node", "./solution/shaman.json").then(_ => done());
   });
 
 });

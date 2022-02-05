@@ -11,7 +11,6 @@ export class NodeRunCommand implements ICommand {
   /* istanbul ignore next */
   private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
   private solution: Solution;
-  private childProcess: ChildProcessWithoutNullStreams;
 
   assignSolution = (solution: Solution) => {
     this.solution = solution;
@@ -22,20 +21,20 @@ export class NodeRunCommand implements ICommand {
     if (!this.solution) return Promise.reject(new Error("Solution file has not been assigned to run command."));
     console.log(`Running node script '${script} for project ${project}.`);
     return this.spawnChildProcess(solutionFilePath, this.solution, project, script)
-      .then(_ => {
-        this.waitForChildProcesses = new Promise<void>((res) => this.childProcess.on('close', (_code) => res()));
+      .then(childProcess => {
+        this.waitForChildProcesses = new Promise<void>((res) => childProcess.on('close', (_code) => res()));
       });
   }
 
-  private spawnChildProcess = (solutionFilePath: string, solution: Solution, project: string, script: string): Promise<void> => {
+  private spawnChildProcess = (solutionFilePath: string, solution: Solution, project: string, script: string): Promise<ChildProcessWithoutNullStreams> => {
     return new Promise((res, err) => {
       let solutionProject = solution.projects.find(p => p.name == project);
       if (!solutionProject) return err(new Error(`Invalid project '${project}'.`));
       let cwd = _path.join(solutionFilePath.replace('shaman.json', ''), solutionProject.path);
-      this.childProcess = _cmd.spawn(this.npm, ['run', script], {cwd});
-      this.childProcess.stdout.on('data', (data) => process.stdout.write(`${data}`));
-      this.childProcess.stderr.on('data', (data) => process.stderr.write(`${data}`));
-      res();
+      let childProcess = _cmd.spawn(this.npm, ['run', script], {cwd});
+      childProcess.stdout.on('data', (data) => process.stdout.write(`${data}`));
+      childProcess.stderr.on('data', (data) => process.stderr.write(`${data}`));
+      res(childProcess);
     });
   }
 

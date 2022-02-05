@@ -1,16 +1,16 @@
-import { Solution, SolutionProject } from "../models/solution";
+import { SolutionProject } from "../models/solution";
 
 export class DependencyTree {
 
   root: DependencyNode[] = [];
   map: ProjectDependencyMap;
 
-  constructor(solution: Solution, dependencyProperty: string = 'include') {
-    this.map = solution.projects.reduce((a, b) => {
+  constructor(projects: SolutionProject[], dependencyProperty: string = 'include') {
+    this.map = projects.reduce((a, b) => {
       a[b.name] = !b[dependencyProperty] ? [] : b[dependencyProperty];
       return a;
     }, {});
-    this.build(solution.projects, dependencyProperty);
+    this.build(projects, dependencyProperty);
   }
 
   private build = (projects: SolutionProject[], dependencyProperty: string) => {
