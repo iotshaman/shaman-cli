@@ -8,11 +8,11 @@ export class ScaffoldCommand implements ICommand {
     new NodeScaffoldCommand()
   ]
 
-  run = (environment: string, projectType: string, name: string, output: string): Promise<void> => {
+  run = (environment: string, projectType: string, name: string, output: string, language?: string): Promise<void> => {
     if (!environment) return Promise.reject(new Error("Environment argument not provided to scaffold command."));
     let cmd = this.scaffoldCommands.find(c => c.name == `scaffold-${environment}`);
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${environment}'.`));
-    return cmd.run(projectType, name, output);
+    return cmd.run(projectType, name, output, language);
   }
 
 }

@@ -47,7 +47,7 @@ export class ScaffoldSolutionCommand implements ICommand {
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${project.environment}'.`));
     if (!!cmd.assignSolution) cmd.assignSolution(solution);
     let projectPath = _path.join(cwd, project.path);
-    return cmd.run(project.type, project.name, projectPath);
+    return cmd.run(project.type, project.name, projectPath, project.language);
   }
 
 }
