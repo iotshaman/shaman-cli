@@ -11,7 +11,7 @@ export class VersionCommand implements ICommand {
         let path = __path.join(__dirname, '../../..', 'package.json');
         return this.getPackageFile(path)
         .then(rslt => {            
-            console.log(`shaman-cli version ${rslt.version}`);
+            console.log(`shaman-cli version: v${rslt.version}`);            
         });
     };
 
