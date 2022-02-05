@@ -13,6 +13,7 @@ export interface IFileService {
   deleteFile: (file: string) => Promise<void>;
   getShamanFile: (solutionFilePath: string) => Promise<Solution>;
   getSourceFile: (file: string) => Promise<SourceFile>;
+  renameFile: (file: string, newFile: string) => Promise<void>;
 }
 
 export class FileService implements IFileService {
@@ -74,6 +75,10 @@ export class FileService implements IFileService {
       }));
       return fileContentAnalysis;
     });
+  }
+
+  renameFile = (file: string, newFile: string): Promise<void> => {
+    return _fsx.move(file, newFile);
   }
 
 }

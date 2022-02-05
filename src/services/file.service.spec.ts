@@ -85,4 +85,10 @@ describe('File Service', () => {
     subject.getSourceFile("test.json").then(_ => done());
   });
 
+  it('getSourceFile should return promise', (done) => {
+    sandbox.stub(_fsx, 'move').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.renameFile("test.json", "test2.json").then(_ => done());
+  });
+
 });
