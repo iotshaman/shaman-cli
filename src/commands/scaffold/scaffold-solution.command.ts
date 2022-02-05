@@ -19,21 +19,13 @@ export class ScaffoldSolutionCommand implements ICommand {
     if (!solutionFilePath) solutionFilePath = './shaman.json'
     console.log(`Scaffolding solution...`);
     let solution: Solution;
-    return this.getShamanFile(solutionFilePath)
+    return this.fileService.getShamanFile(solutionFilePath)
       .then(rslt => solution = rslt)
       .then(_ => this.scaffoldSolution(solutionFilePath, solution))
       .then(_ => this.transformationService.performTransformations(solution, solutionFilePath))
       .then(_ => {
         console.log("Solution scaffolding is complete.");
       });
-  }
-
-  private getShamanFile = (solutionFilePath: string): Promise<Solution> => {
-    let fullPath = _path.join(process.cwd(), solutionFilePath);
-    return this.fileService.pathExists(fullPath).then(exists => {
-      if (!exists) throw new Error("Solution file does not exist in specified location.");
-      return this.fileService.readJson<Solution>(solutionFilePath);
-    });
   }
 
   private scaffoldSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {

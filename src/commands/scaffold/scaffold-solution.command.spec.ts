@@ -25,23 +25,9 @@ describe('Scaffold Solution Command', () => {
     expect(subject.name).to.equal("scaffold-solution");
   });
 
-  it('run should throw if solution file not found', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let subject = new ScaffoldSolutionCommand();
-    subject.fileService = fileServiceMock;
-    subject.run(null)
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Solution file does not exist in specified location.");
-        done();
-      });
-  });
-
   it('run should throw if scaffold environment not found', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample",
@@ -51,7 +37,7 @@ describe('Scaffold Solution Command', () => {
     let subject = new ScaffoldSolutionCommand();
     subject.fileService = fileServiceMock;
     subject.scaffoldCommands = [new NoopScaffoldCommand()];
-    subject.run("./shaman.json")
+    subject.run(null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid environment 'invalid'.");
@@ -61,8 +47,7 @@ describe('Scaffold Solution Command', () => {
 
   it('run should return resolved promise if no projects defined', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: []}));
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: []}));
     let subject = new ScaffoldSolutionCommand();
     subject.fileService = fileServiceMock;
     subject.scaffoldCommands = [new NoopScaffoldCommand()];
@@ -71,8 +56,7 @@ describe('Scaffold Solution Command', () => {
 
   it('run should not call applySolution', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample",
@@ -91,8 +75,7 @@ describe('Scaffold Solution Command', () => {
 
   it('run should return resolved promise', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({projects: [
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample",
         path: "sample",
