@@ -3,7 +3,7 @@ import { Template } from "../models/template";
 import { FileService, IFileService } from './file.service';
 
 export interface ITemplateService {
-  getTemplate: (environment: string, projectType: string) => Promise<Template>;
+  getTemplate: (environment: string, projectType: string, language?: string) => Promise<Template>;
   unzipProjectTemplate: (template: Template, folderPath: string) => Promise<void>;
 }
 
@@ -12,10 +12,12 @@ export class TemplateService implements ITemplateService {
   fileService: IFileService = new FileService();
   templatesFolder: string[] = [__dirname, '..', '..', 'templates'];
 
-  getTemplate = (environment: string, projectType: string): Promise<Template> => {
+  getTemplate = (environment: string, projectType: string, language?: string): Promise<Template> => {
     let path = _path.join(...this.templatesFolder, 'templates.json');
     return this.fileService.readJson<{templates: Template[]}>(path).then(data => {
-      let template = data.templates.find(t => t.environment == environment && t.type == projectType);
+      let template = !language ? 
+        data.templates.find(t => t.environment == environment && t.type == projectType) :
+        data.templates.find(t => t.environment == environment && t.type == projectType && t.language == language);
       if (!template) throw new Error(`Project type not found: ${environment}-${projectType}`);
       return template;
     });
