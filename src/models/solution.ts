@@ -1,4 +1,5 @@
 export class Solution {
+  name: string;
   projects: SolutionProject[];
   transform?: ProjectTransformation[];
 }

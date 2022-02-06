@@ -34,7 +34,7 @@ describe('Run Node Environment Command', () => {
 
   it('run should throw if invalid project provided', (done) => {
     let subject = new NodeRunCommand();
-    subject.assignSolution({projects: [
+    subject.assignSolution({name: 'sample', projects: [
       {
         name: "sample",
         path: "sample",
@@ -52,7 +52,7 @@ describe('Run Node Environment Command', () => {
 
   it('run should return resolved promise', (done) => {
     let subject = new NodeRunCommand();    
-    subject.assignSolution({projects: [
+    subject.assignSolution({name: 'sample', projects: [
       {
         name: "sample",
         path: "sample",

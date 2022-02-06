@@ -1,11 +1,13 @@
-import { NodeScaffoldCommand } from "..";
 import { ICommand } from "../../commands/command";
+import { NodeScaffoldCommand } from "./node/node-scaffold.command";
+import { DotnetScaffoldCommand } from "./dotnet/dotnet-scaffold.command";
 
 export class ScaffoldCommand implements ICommand {
 
   get name(): string { return "scaffold"; }
   scaffoldCommands: ICommand[] = [
-    new NodeScaffoldCommand()
+    new NodeScaffoldCommand(),
+    new DotnetScaffoldCommand()
   ]
 
   run = (environment: string, projectType: string, name: string, output: string, language?: string): Promise<void> => {

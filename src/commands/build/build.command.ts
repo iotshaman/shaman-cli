@@ -1,12 +1,14 @@
 import { ICommand } from "../../commands/command";
 import { FileService, IFileService } from "../../services/file.service";
+import { DotnetBuildCommand } from "./dotnet/dotnet-build.command";
 import { NodeBuildCommand } from "./node/node-build.command";
 
 export class BuildCommand implements ICommand {
 
   get name(): string { return "build"; }
   buildCommands: ICommand[] = [
-    new NodeBuildCommand()
+    new NodeBuildCommand(),
+    new DotnetBuildCommand()
   ]
   fileService: IFileService = new FileService();
 
@@ -19,7 +21,7 @@ export class BuildCommand implements ICommand {
         this.buildEnvironment(b, solutionFilePath)
       ), Promise.resolve());
     });
-    return buildEnvironmentsTask.then(_ => (null));
+    return buildEnvironmentsTask.then(_ => console.log("Solution build is complete."));
   }
 
   private buildEnvironment = (environment: string, solutionFilePath: string): Promise<void> => {

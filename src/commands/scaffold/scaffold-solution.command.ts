@@ -5,6 +5,7 @@ import { Solution, SolutionProject } from "../../models/solution";
 import { DependencyTree } from '../../models/dependency-tree';
 import { NodeScaffoldCommand } from './node/node-scaffold.command';
 import { ITransformationService, TransformationService } from '../../services/transformation.service';
+import { DotnetScaffoldCommand } from './dotnet/dotnet-scaffold.command';
 
 export class ScaffoldSolutionCommand implements ICommand {
 
@@ -12,7 +13,8 @@ export class ScaffoldSolutionCommand implements ICommand {
   fileService: IFileService = new FileService();
   transformationService: ITransformationService = new TransformationService();
   scaffoldCommands: ICommand[] = [
-    new NodeScaffoldCommand()
+    new NodeScaffoldCommand(),
+    new DotnetScaffoldCommand()
   ]
 
   run = (solutionFilePath: string): Promise<void> => {

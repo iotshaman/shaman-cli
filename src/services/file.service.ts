@@ -1,5 +1,7 @@
 import * as _fsx from 'fs-extra';
+import * as _path from 'path';
 import * as Zip from 'node-stream-zip';
+import { XMLParser, XMLBuilder } from 'fast-xml-parser';
 import { Solution } from '../models/solution';
 import { LineDetail, SourceFile } from '../models/source-file';
 
@@ -14,6 +16,9 @@ export interface IFileService {
   getShamanFile: (solutionFilePath: string) => Promise<Solution>;
   getSourceFile: (file: string) => Promise<SourceFile>;
   renameFile: (file: string, newFile: string) => Promise<void>;
+  readXml: <T>(file: string) => Promise<T>;
+  writeXml: (file: string, jsonObject: any) => Promise<void>;
+  createFolder: (parentFolderPath: string, folderName: string) => Promise<void>;
 }
 
 export class FileService implements IFileService {
@@ -79,6 +84,38 @@ export class FileService implements IFileService {
 
   renameFile = (file: string, newFile: string): Promise<void> => {
     return _fsx.move(file, newFile);
+  }
+
+  readXml = <T>(file: string): Promise<T> => {
+    return this.readFile(file).then(contents => {
+      const parser = new XMLParser({
+        ignoreAttributes: false, 
+        preserveOrder: true,
+        attributeNamePrefix : "@_"
+      });
+      return parser.parse(contents);
+    });
+  }
+
+  writeXml = (file: string, jsonObject: any): Promise<void> => {
+    return Promise.resolve().then(_ => {
+      const builder = new XMLBuilder({
+        format: true, 
+        ignoreAttributes: false, 
+        preserveOrder: true,
+        attributeNamePrefix : "@_"
+      });
+      const xmlString: string = builder.build(jsonObject);
+      return this.writeFile(file, xmlString.trim());
+    });
+  }
+
+  createFolder = (parentFolderPath: string, folderName: string): Promise<void> => {
+    const folderPath = _path.join(parentFolderPath, folderName);
+    return this.pathExists(folderPath).then(exists => {
+      if (!!exists) throw new Error(`Folder '${folderName}' already exists in parent directory.`);
+      return _fsx.mkdir(folderPath)
+    })
   }
 
 }

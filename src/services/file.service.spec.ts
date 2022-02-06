@@ -91,4 +91,38 @@ describe('File Service', () => {
     subject.renameFile("test.json", "test2.json").then(_ => done());
   });
 
+  it('readXml should return json representation of xml', (done) => {
+    const xmlString = '<root><foo>Bar</foo></root>'
+    sandbox.stub(_fsx, 'readFile').returns(<any>Promise.resolve(xmlString));
+    let subject = new FileService();
+    subject.readXml<any>("sample.xml").then(rslt => {
+      expect(rslt[0].root).not.to.be.undefined;
+      done();
+    });
+  });
+
+  it('writeXml should return resolved promise', (done) => {
+    sandbox.stub(_fsx, 'writeFile').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.writeXml("sample.xml", [{root: []}]).then(_ => done());
+  });
+
+  it('createFolder should throw error if folder exists', (done) => {
+    sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(true));
+    let subject = new FileService();
+    subject.createFolder("./", "sample")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch(ex => {
+        expect(ex.message).to.equal("Folder 'sample' already exists in parent directory.");
+        done();
+      });
+  });
+
+  it('createFolder should throw error if folder exists', (done) => {
+    sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(false));
+    sandbox.stub(_fsx, 'mkdir').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.createFolder("./", "sample").then(_ => done());
+  });
+
 });

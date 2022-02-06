@@ -23,6 +23,13 @@
       "type": "client",
       "version": "1.0.0",
       "file": "node/client-default-v1.0.0.zip"
+    },
+    {
+      "environment": "dotnet",
+      "type": "library",
+      "version": "1.0.0",
+      "file": "dotnet/library-csharp-v1.0.0.zip",
+      "language": "csharp"
     }
   ]
 }
