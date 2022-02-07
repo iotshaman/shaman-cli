@@ -11,3 +11,4 @@ export * from './serve/serve.command';
 export * from './scaffold/scaffold.command';
 export * from './scaffold/scaffold-solution.command';
 export * from './scaffold/node/node-scaffold.command';
+export * from './version/version.command';
