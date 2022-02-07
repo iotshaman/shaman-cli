@@ -30,6 +30,13 @@
       "version": "1.0.0",
       "file": "dotnet/library-csharp-v1.0.0.zip",
       "language": "csharp"
+    },
+    {
+      "environment": "dotnet",
+      "type": "server",
+      "version": "1.0.0",
+      "file": "dotnet/server-csharp-v1.0.0.zip",
+      "language": "csharp"
     }
   ]
 }

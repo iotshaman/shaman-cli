@@ -41,8 +41,6 @@ describe('Node Environment Service', () => {
       {name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp'}
     ];
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.readXml = sandbox.stub().returns(Promise.resolve([{Project: []}]));
-    fileServiceMock.writeXml = sandbox.stub().returns(Promise.resolve());
     fileServiceMock.renameFile = sandbox.stub().returns(Promise.resolve());
     let subject = new DotnetEnvironmentService();
     subject.fileService = fileServiceMock;
@@ -54,20 +52,47 @@ describe('Node Environment Service', () => {
       });
   });
 
-  it('updateProjectDefinition should update xml to add dependencies', (done) => {
+  it('updateProjectDefinition should throw if child process returns non-zero status code', (done) => {
     let solution = new Solution();
     solution.projects = [
       {name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b']},
       {name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp'}
     ];
+    let spawnMock: any = {
+      stdout: { on: sandbox.stub().yields("output") },
+      stderr: { on: sandbox.stub().yields("error") },
+      on: sandbox.stub().yields(1)
+    };
+    sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.readXml = sandbox.stub().returns(Promise.resolve([{Project: []}]));
-    fileServiceMock.writeXml = sandbox.stub().returns(Promise.resolve());
+    let subject = new DotnetEnvironmentService();
+    subject.fileService = fileServiceMock;
+    subject.updateProjectDefinition("./a", "a", solution)
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch(ex => {
+        expect(ex.message).to.equal("An error occurred while adding dotnet project dependency.");
+        done();
+      });
+  });
+
+  it('updateProjectDefinition should spawn process to add project dependency', (done) => {
+    let solution = new Solution();
+    solution.projects = [
+      {name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b']},
+      {name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp'}
+    ];
+    let spawnMock: any = {
+      stdout: { on: sandbox.stub().yields("output") },
+      stderr: { on: sandbox.stub().yields("error") },
+      on: sandbox.stub().yields(0)
+    };
+    sandbox.stub(_cmd, 'spawn').returns(spawnMock);
+    let fileServiceMock = createMock<IFileService>();
     fileServiceMock.renameFile = sandbox.stub().returns(Promise.resolve());
     let subject = new DotnetEnvironmentService();
     subject.fileService = fileServiceMock;
     subject.updateProjectDefinition("./a", "a", solution).then(_ => {
-      expect(fileServiceMock.renameFile).to.have.been.called;
+      expect(spawnMock.on).to.have.been.called;
       done();
     });
   });
