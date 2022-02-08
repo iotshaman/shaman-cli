@@ -20,12 +20,12 @@ export class DotnetScaffoldCommand implements ICommand {
   }
 
   run = (projectType: string, name: string, output: string, language: string = "csharp"): Promise<void> => {
-    if (!this.solution) Promise.reject("Dotnet projects can only be scaffold as part of a solution.");
-    if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
-    if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
-    if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-node command."));
+    if (!this.solution) return Promise.reject(new Error("Dotnet projects can only be scaffold as part of a solution."));
+    if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-dotnet command."));
+    if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-dotnet command."));
+    if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-dotnet command."));
     let folderPath = _path.join(process.cwd(), output);
-    console.log(`Scaffolding node ${projectType}.`);
+    console.log(`Scaffolding dotnet ${projectType}.`);
     return this.checkPath(folderPath)
       .then(_ => this.addDotnetSolutionFile(this.solution.name))
       .then(_ => this.fileService.createFolder(process.cwd(), output))
@@ -52,21 +52,25 @@ export class DotnetScaffoldCommand implements ICommand {
     const dotnetSolutionFilePath = _path.join(process.cwd(), `${solutionName}.sln`);
     return this.fileService.pathExists(dotnetSolutionFilePath).then(exists => {
       if (!!exists) return Promise.resolve();
-      return new Promise((res) => {
+      return new Promise((res, err) => {
         let childProcess = spawn("dotnet", ["new", "sln", "--name", solutionName], {cwd: process.cwd()});
         childProcess.stdout.on('data', (data) => process.stdout.write(`${data}`));
         childProcess.stderr.on('data', (data) => process.stderr.write(`${data}`));
-        childProcess.on('close', (_code) => res());
+        childProcess.on('close', (code) => code === 0 ? res() : err(
+          new Error("An error occurred while adding dotnet solution file.")
+        ));
       });
     });
   }
 
   private addDotnetProjectToSolutionFile = (solutionName: string, projectFolder: string): Promise<void> => {
-    return new Promise((res) => {
+    return new Promise((res, err) => {
       let childProcess = spawn("dotnet", ["sln", `${solutionName}.sln`, "add", projectFolder], {cwd: process.cwd()});
       childProcess.stdout.on('data', (data) => process.stdout.write(`${data}`));
       childProcess.stderr.on('data', (data) => process.stderr.write(`${data}`));
-      childProcess.on('close', (_code) => res());
+      childProcess.on('close', (code) => code === 0 ? res() : err(
+        new Error("An error occurred while adding dotnet project to solution.")
+      ));
     });
   }
 
