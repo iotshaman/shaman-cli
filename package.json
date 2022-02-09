@@ -1,6 +1,6 @@
 {
   "name": "shaman-cli",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "CLI to perform common tasks, like scaffolding source code.",
   "main": "dist/index.js",
   "typings": "public_api.d.ts",
