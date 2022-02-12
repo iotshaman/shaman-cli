@@ -18,7 +18,7 @@ export class NodeScaffoldCommand implements ICommand {
     this.solution = solution;
   }
 
-  run = (projectType: string, name: string, output: string): Promise<void> => {
+  run = (projectType: string, name: string, output: string, _language: string = "typescript"): Promise<void> => {
     if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
     if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
     if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-node command."));

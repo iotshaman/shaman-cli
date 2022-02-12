@@ -33,7 +33,7 @@ describe('Template Service', () => {
       });
   });
 
-  it('getTemplate should return resolved promise', (done) => {
+  it('getTemplate should return resolved promise for default language', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({templates: [{
       environment: 'node', type: 'library', file: 'path.zip'
@@ -42,6 +42,17 @@ describe('Template Service', () => {
     subject.fileService = fileServiceMock;
     subject.templatesFolder = [__dirname];
     subject.getTemplate("node", "library").then(_ => done());
+  });
+
+  it('getTemplate should return resolved promise for speciied language', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'dotnet', type: 'library', file: 'path.zip', language: "csharp"
+    }]}));
+    let subject = new TemplateService();
+    subject.fileService = fileServiceMock;
+    subject.templatesFolder = [__dirname];
+    subject.getTemplate("dotnet", "library", "csharp").then(_ => done());
   });
 
   it('unzipProjectTemplate should return resolved promise', (done) => {

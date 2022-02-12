@@ -1,4 +1,5 @@
 export class Solution {
+  name: string;
   projects: SolutionProject[];
   transform?: ProjectTransformation[];
 }
@@ -8,6 +9,7 @@ export class SolutionProject {
   environment: string;
   type: string;
   path: string;
+  language?: string;
   include?: string[];
   specs?: {[spec: string]: any};
   runtimeDependencies?: string[];

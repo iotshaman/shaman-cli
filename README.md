@@ -22,6 +22,7 @@ Some commands require the existence of a "solution" file, which indicates what p
 
 ```ts
 interface Solution {
+  name: string;
   projects: SolutionProject[];
   transform?: ProjectTransformation[];
 }
@@ -31,6 +32,7 @@ interface SolutionProject {
   environment: string;
   type: string;
   path: string;
+  language?: string;
   include?: string[];
   specs?: {[spec: string]: any};
   runtimeDependencies?: string[];
@@ -47,6 +49,7 @@ For example, if you have a node js solution that includes a website, library, da
 
 ```json
 {
+  "name": "sample-node-solution",
   "projects": [
     {
       "name": "sample-website",
@@ -96,10 +99,10 @@ For example, if you have a node js solution that includes a website, library, da
 *Note: All paths should be relative to the solution file*
 
 ### Project Specs
-Some project types (for specific environments) allow you to provide "specs" to further customize the auto-generated source code. For more information regarding project specs, please refer to the [project templates](templates/README.md) documentation.
+Some project types (for specific environments) allow you to provide "specs" to further customize the auto-generated source code. For more information regarding project specs, please refer to the [project templates](https://github.com/iotshaman/shaman-cli/tree/main/templates) documentation.
 
 ### Transformations
-Some project types (for specific environments) allow you to perform "transformations" on the auto-generated source code, to create custom source code during initial scaffolding. For example, you can use a transformation to automatically write "data context" composition for a server project (that depends on a database library). For more information regarding project transformations, please refer to the [project templates](templates/README.md) documentation.
+Some project types (for specific environments) allow you to perform "transformations" on the auto-generated source code, to create custom source code during initial scaffolding. For example, you can use a transformation to automatically write "data context" composition for a server project (that depends on a database library). For more information regarding project transformations, please refer to the [project templates](https://github.com/iotshaman/shaman-cli/tree/main/templates) documentation.
 
 ## CLI Reference
 
@@ -110,7 +113,7 @@ shaman [command] [...arguments]
 ```
 
 **[command]:** Available values: *scaffold-solution, scaffold, install, build, run, serve*  
-**[...arguments]:** A list of arguments that vary, depending on the command provided.]  
+**[...arguments]:** A list of arguments that vary, depending on the command provided.  
 
 ### Scaffold Solution Command
 
@@ -186,6 +189,16 @@ shaman serve [project]
 **[project]:** The name of the project for which you would like to serve. The provided project value must match a project name in your solution file. Note: any project names listed as "runtime dependencies" will be started first, and runtime dependencies can be nested.
 
 *Note: In order for the serve command to work, the specified project (any and runtime dependencies) must have a 'start' script (in package.json).*
+
+### Version Command
+
+The version command can be invoked to determine what version of Shaman CLI is currently installed. 
+
+The syntax for the serve command is as follows:
+
+```sh
+shaman --version
+```
 
 ## Project Dependencies
 

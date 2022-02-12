@@ -18,10 +18,7 @@ export class NodeBuildCommand implements ICommand {
     else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
     console.log(`Building node solution.`);
     return this.fileService.getShamanFile(solutionFilePath)
-      .then(solution => this.buildSolution(environment, solutionFilePath, solution))
-      .then(_ => {
-        console.log("Solution build is complete.");
-      });
+      .then(solution => this.buildSolution(environment, solutionFilePath, solution));
   }
 
   private buildSolution = (environment: string, solutionFilePath: string, solution: Solution): Promise<void> => {

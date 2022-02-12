@@ -1,13 +1,15 @@
 import * as _path from 'path';
 import { ICommand } from "../../commands/command";
 import { FileService, IFileService } from '../../services/file.service';
+import { DotnetRunCommand } from './dotnet/dotnet-run.command';
 import { NodeRunCommand } from './node/node-run.command';
 
 export class RunCommand implements ICommand {
 
   get name(): string { return "run"; }
   runCommands: ICommand[] = [
-    new NodeRunCommand()
+    new NodeRunCommand(),
+    new DotnetRunCommand()
   ]
   fileService: IFileService = new FileService();
 

@@ -18,10 +18,7 @@ export class NodeInstallCommand implements ICommand {
     else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
     console.log(`Installing node solution.`);
     return this.fileService.getShamanFile(solutionFilePath)
-      .then(solution => this.installSolution(environment, solutionFilePath, solution))
-      .then(_ => {
-        console.log("Solution install is complete.");
-      });
+      .then(solution => this.installSolution(environment, solutionFilePath, solution));
   }
 
   private installSolution = (environment: string, solutionFilePath: string, solution: Solution): Promise<void> => {

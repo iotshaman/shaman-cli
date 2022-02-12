@@ -1,12 +1,14 @@
 import { ICommand } from "../../commands/command";
 import { FileService, IFileService } from "../../services/file.service";
+import { DotnetInstallCommand } from "./dotnet/dotnet-install.command";
 import { NodeInstallCommand } from './node/node-install.command';
 
 export class InstallCommand implements ICommand {
 
   get name(): string { return "install"; }
   installCommands: ICommand[] = [
-    new NodeInstallCommand
+    new NodeInstallCommand(),
+    new DotnetInstallCommand()
   ]
   fileService: IFileService = new FileService();
 
@@ -19,7 +21,7 @@ export class InstallCommand implements ICommand {
         this.installEnvironment(b, solutionFilePath)
       ), Promise.resolve());
     });
-    return installEnvironmentsTask.then(_ => (null));
+    return installEnvironmentsTask.then(_ => console.log("Solution install is complete."));
   }
 
   private installEnvironment = (environment: string, solutionFilePath: string): Promise<void> => {

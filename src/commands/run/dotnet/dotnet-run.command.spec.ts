@@ -2,9 +2,9 @@ import 'mocha';
 import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
-import { NodeRunCommand } from './node-run.command';
+import { DotnetRunCommand } from './dotnet-run.command';
 
-describe('Run Node Environment Command', () => {
+describe('Run Dotnet Environment Command', () => {
 
   var sandbox: sinon.SinonSandbox;
   
@@ -17,13 +17,13 @@ describe('Run Node Environment Command', () => {
     sandbox.restore();
   });
 
-  it('name should equal "run-node"', () => {
-    let subject = new NodeRunCommand();
-    expect(subject.name).to.equal("run-node");
+  it('name should equal "run-dotnet"', () => {
+    let subject = new DotnetRunCommand();
+    expect(subject.name).to.equal("run-dotnet");
   });
 
   it('run should throw if solution file not found', (done) => {
-    let subject = new NodeRunCommand();
+    let subject = new DotnetRunCommand();
     subject.run("sample", null, "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
@@ -33,16 +33,17 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should throw if invalid project provided', (done) => {
-    let subject = new NodeRunCommand();
+    let subject = new DotnetRunCommand();
     subject.assignSolution({name: 'sample', projects: [
       {
         name: "sample",
         path: "sample",
-        environment: "node",
-        type: "server"
+        environment: "dotnet",
+        type: "server",
+        language: "csharp"
       }
     ]});
-    subject.run("invalid", "start", "shaman.json")
+    subject.run("invalid", null, "shaman.json")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid project 'invalid'.");
@@ -51,7 +52,7 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should return resolved promise', (done) => {
-    let subject = new NodeRunCommand();    
+    let subject = new DotnetRunCommand();    
     subject.assignSolution({name: 'sample', projects: [
       {
         name: "sample",
@@ -66,7 +67,7 @@ describe('Run Node Environment Command', () => {
       on: sandbox.stub().yields(0)
     };
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
-    subject.run("sample", "start", "shaman.json").then(_ => done());
+    subject.run("sample", null, "shaman.json").then(_ => done());
   });
 
 })

@@ -85,4 +85,48 @@ describe('File Service', () => {
     subject.getSourceFile("test.json").then(_ => done());
   });
 
+  it('getSourceFile should count tabs with default tabSize', (done) => {
+    let response = new Promise(res => res("import { a } from 'b';\r\n\tconst test = 1;\r\n"));
+    sandbox.stub(_fsx, 'readFile').returns(<any>response);
+    let subject = new FileService();
+    subject.getSourceFile("test.json").then(rslt => {
+      expect(rslt.lines[1].indent).to.equal(2);
+      done();
+    });
+  });
+
+  it('getSourceFile should count tabs with provided tabSize', (done) => {
+    let response = new Promise(res => res("import { a } from 'b';\r\n\tconst test = 1;\r\n"));
+    sandbox.stub(_fsx, 'readFile').returns(<any>response);
+    let subject = new FileService();
+    subject.getSourceFile("test.json", 4).then(rslt => {
+      expect(rslt.lines[1].indent).to.equal(4);
+      done();
+    });
+  });
+
+  it('renameFile should return promise', (done) => {
+    sandbox.stub(_fsx, 'move').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.renameFile("test.json", "test2.json").then(_ => done());
+  });
+
+  it('createFolder should throw error if folder exists', (done) => {
+    sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(true));
+    let subject = new FileService();
+    subject.createFolder("./", "sample")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch(ex => {
+        expect(ex.message).to.equal("Folder 'sample' already exists in parent directory.");
+        done();
+      });
+  });
+
+  it('createFolder should throw error if folder exists', (done) => {
+    sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(false));
+    sandbox.stub(_fsx, 'mkdir').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.createFolder("./", "sample").then(_ => done());
+  });
+
 });

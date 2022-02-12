@@ -3,5 +3,6 @@ export class Template {
   type: string;
   version: string;
   file: string;
+  language?: string;
   specs?: string[];
 }

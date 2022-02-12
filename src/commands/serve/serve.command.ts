@@ -4,13 +4,15 @@ import { Solution, SolutionProject } from '../../models/solution';
 import { IFileService, FileService } from "../../services/file.service";
 import { DependencyTree } from '../../models/dependency-tree';
 import { NodeRunCommand } from '..';
+import { DotnetRunCommand } from '../run/dotnet/dotnet-run.command';
 
 export class ServeCommand implements ICommand {
 
   get name(): string { return "serve"; }
   /* istanbul ignore next */
   runCommands: {name: string, instance: () => ICommand}[] = [
-    { name: 'run-node', instance: () => new NodeRunCommand() }
+    { name: 'run-node', instance: () => new NodeRunCommand() },
+    { name: 'run-dotnet', instance: () => new DotnetRunCommand() }
   ]
   fileService: IFileService = new FileService();
 
