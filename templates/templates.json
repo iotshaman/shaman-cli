@@ -37,6 +37,13 @@
       "version": "1.0.0",
       "file": "dotnet/server-csharp-v1.0.0.zip",
       "language": "csharp"
+    },
+    {
+      "environment": "dotnet",
+      "type": "database",
+      "version": "1.0.0",
+      "file": "dotnet/database-csharp-v1.0.0.zip",
+      "language": "csharp"
     }
   ]
 }
