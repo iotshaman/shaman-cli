@@ -27,8 +27,7 @@ export class CsharpSourceFactory implements ISourceFactory {
 
   buildObjectPropertyAssignment(line: LineDetail, _propertyName: string, _propertyValue: string,
     _operator: string = ": ", _suffix: string = ','): LineDetail[] {
-    console.warn("buildObjectPropertyAssignment not implemented for csharp");
-    return [line];
+    throw new Error("buildObjectPropertyAssignment not implemented for csharp.");
   }
 
   buildDataContextComposition(line: LineDetail, contextName: string): LineDetail[] {

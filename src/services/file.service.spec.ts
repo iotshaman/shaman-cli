@@ -85,7 +85,27 @@ describe('File Service', () => {
     subject.getSourceFile("test.json").then(_ => done());
   });
 
-  it('getSourceFile should return promise', (done) => {
+  it('getSourceFile should count tabs with default tabSize', (done) => {
+    let response = new Promise(res => res("import { a } from 'b';\r\n\tconst test = 1;\r\n"));
+    sandbox.stub(_fsx, 'readFile').returns(<any>response);
+    let subject = new FileService();
+    subject.getSourceFile("test.json").then(rslt => {
+      expect(rslt.lines[1].indent).to.equal(2);
+      done();
+    });
+  });
+
+  it('getSourceFile should count tabs with provided tabSize', (done) => {
+    let response = new Promise(res => res("import { a } from 'b';\r\n\tconst test = 1;\r\n"));
+    sandbox.stub(_fsx, 'readFile').returns(<any>response);
+    let subject = new FileService();
+    subject.getSourceFile("test.json", 4).then(rslt => {
+      expect(rslt.lines[1].indent).to.equal(4);
+      done();
+    });
+  });
+
+  it('renameFile should return promise', (done) => {
     sandbox.stub(_fsx, 'move').returns(<any>Promise.resolve());
     let subject = new FileService();
     subject.renameFile("test.json", "test2.json").then(_ => done());
