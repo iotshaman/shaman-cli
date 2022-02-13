@@ -6,7 +6,7 @@
 
 *Get started working on core business logic faster by streamlining your application scaffolding and simplifying your development toolchain.*
 
-Shaman CLI is a *polyglot monorepo solution container* (translation below :grin:) that aims to increase productivity by abstracting development requirements that have little-to-zero value for the business. Before we continue, lets translate that to plain-english so we can make sure we are all on the same page. 
+Shaman CLI is a *polyglot monorepo solution container* (translation below :grin:) that aims to increase productivity by abstracting development requirements that have little-to-zero value for the business. Before we continue, lets translate that to plain-english, so we can make sure we are all on the same page. 
 
 A *polyglot solution* is a fancy way of saying you are using more than one coding language to solve a problem. A *monorepo* is a way of organizing source code into separate projects, but storing all of those projects in a single source repository where they can interact with and depend on each other. So, altogether, a *polyglot monorepo solution container* is a tool that allows developers to choose from one-to-many languages when developing a solution, encourages them to break the solution down into distinct projects, then stores the projects together in one source repository, allowing them to depend on one another. 
 
@@ -183,17 +183,17 @@ shaman build [environment] [solutionFilePath]
 
 ### Run Command
 
-The run command requires the existence of a solution file, and will execute an npm script for a specific project; if no script is specified, it will default to 'start'. The syntax for the run command is as follows; please note that these arguments must be provided in-order.
+The run command requires the existence of a solution file, and will execute a "start" script for a specific project; if no script is specified, it will use the project environment's default "start" script. The syntax for the run command is as follows; please note that these arguments must be provided in-order.
 
 ```sh
 shaman run [project] [script] [solutionFilePath]
 ```
 
 **[project]:** The name of the project for which you would like to execute the provided (or default) script. The provided project value must match a project name in your solution file.  
-**[script]:** (Optional) The npm script to be executed; if no value is provided, the default value is 'start'. Please note that for the run command to work, the specified project must have a script setup in its respective 'package.json' file that corresponds to the provided (or default) script value.  
+**[script]:** (Optional) The project script to be executed; if no value is provided, the default value will be the default 'start' script for the project's environment ('start' for Node JS, 'run' for .NET, etc.). 
 **[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
-*Note: In order for the run command to work, the specified project needs to have a script (in package.json) that corresponds to the provided (or default) script value.*
+*Note: In order for the run command to work, the specified project needs to have a script that corresponds to the provided (or default) script value. For Node JS, this means adding a "script" property to your package.json file.*
 
 ### Serve Command
 
