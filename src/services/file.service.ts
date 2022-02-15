@@ -16,6 +16,7 @@ export interface IFileService {
   getSourceFile: (file: string, tabSize?: number) => Promise<SourceFile>;
   renameFile: (file: string, newFile: string) => Promise<void>;
   createFolder: (parentFolderPath: string, folderName: string) => Promise<void>;
+  copyFolder: (source: string, destination: string) => Promise<void>;
 }
 
 export class FileService implements IFileService {
@@ -96,7 +97,6 @@ export class FileService implements IFileService {
   }
 
   copyFolder = (source: string, destination: string): Promise<void> => {
-    console.log(`Copied: ${destination}`);
     return _fsx.copy(source, destination);
   }
 }
