@@ -95,4 +95,8 @@ export class FileService implements IFileService {
     })
   }
 
+  copyFolder = (source: string, destination: string): Promise<void> => {
+    console.log(`Copied: ${destination}`);
+    return _fsx.copy(source, destination);
+  }
 }
