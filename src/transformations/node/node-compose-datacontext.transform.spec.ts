@@ -32,7 +32,12 @@ describe('Node Compose DataContext Transformation', () => {
     expect(subject.environment).to.equal("node");
   });
 
-  it('transform should throw if invalid project found', (done) => {
+  it('language should return "typescript"', () => {
+    let subject = new NodeComposeDataContextTransformation();
+    expect(subject.language).to.equal("typescript");
+  });
+
+  it('transform should throw if invalid target project found', (done) => {
     let solution = new Solution();
     solution.projects = [];
     let transformation = new ProjectTransformation();
@@ -46,7 +51,7 @@ describe('Node Compose DataContext Transformation', () => {
       });
   });
 
-  it('transform should throw if invalid project found', (done) => {
+  it('transform should throw if invalid source project found', (done) => {
     let solution = new Solution();
     solution.projects = [{name: 'svr', environment: "node", type: "server", path: "./svr"}];
     let transformation = new ProjectTransformation();

@@ -15,8 +15,8 @@ export class SourceFile {
 
   toString(): string {
     return this.lines.reduce((a, b) => {
-      if (!b.generated) return `${a}${b.content}`;
-      return `${a}${" ".repeat(b.indent)}${b.content}\r\n`
+      if (!b.generated) return `${a}${b.content.replace(/(\r\n|\n|\r)/gm, "")}\n`;
+      return `${a}${" ".repeat(b.indent)}${b.content}\n`
     }, '');
   }
 

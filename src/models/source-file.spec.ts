@@ -29,7 +29,7 @@ describe('Source File', () => {
     const sourceFile = new SourceFile();
     sourceFile.lines = lines;
     const result = sourceFile.toString();
-    expect(result).to.equal("  const test = 1;\r\n");
+    expect(result).to.equal("  const test = 1;\n");
   });
 
   it('toString should add new line for generated lines', () => {
@@ -37,7 +37,7 @@ describe('Source File', () => {
     const sourceFile = new SourceFile();
     sourceFile.lines = lines;
     const result = sourceFile.toString();
-    expect(result).to.equal("  const test = 1;\r\n");
+    expect(result).to.equal("  const test = 1;\n");
   });
 
   it('transformationLines should return empty array if no lines in source file', () => {

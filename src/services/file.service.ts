@@ -13,7 +13,7 @@ export interface IFileService {
   unzipFile: (file: string, output: string) => Promise<void>;
   deleteFile: (file: string) => Promise<void>;
   getShamanFile: (solutionFilePath: string) => Promise<Solution>;
-  getSourceFile: (file: string) => Promise<SourceFile>;
+  getSourceFile: (file: string, tabSize?: number) => Promise<SourceFile>;
   renameFile: (file: string, newFile: string) => Promise<void>;
   createFolder: (parentFolderPath: string, folderName: string) => Promise<void>;
 }
@@ -65,14 +65,18 @@ export class FileService implements IFileService {
     });
   }
 
-  getSourceFile = (file: string): Promise<SourceFile> => {
+  getSourceFile = (file: string, tabSize = 2): Promise<SourceFile> => {
+    const getIndentLength = (l: string) => {
+      if (l.search(/\t/) > -1) l = l.replace(/\t/g, ' '.repeat(tabSize));
+      return l.search(/\S/) > -1 ? l.search(/\S/) : 0;
+    }
     return this.readFile(file).then(rslt => {
       let fileContentAnalysis = new SourceFile();
       fileContentAnalysis.lines = rslt.split('\n')
       .map((l, i) => new LineDetail({
         index: i, 
         content: l, 
-        indent: l.search(/\S/) > -1 ? l.search(/\S/) : 0,
+        indent: getIndentLength(l),
         lifecycleHook: l.includes("//shaman:")
       }));
       return fileContentAnalysis;

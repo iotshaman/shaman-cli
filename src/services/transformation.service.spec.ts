@@ -87,6 +87,18 @@ describe('Transformation Service', () => {
     subject.performTransformations(solution, "").then(_ => done());
   });
 
+  it('performTransformations (with provided project language) should return resolved promise', (done) => {
+    let subject = new TransformationService();
+    subject.transformations = [new MockTransformation()];
+    subject.transformations[0].language = "csharp";
+    let project1: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', type: 'server', language: 'csharp'};
+    let project2: SolutionProject = {name: 'sample-database', environment: 'node', path: './database', type: 'database'};
+    let solution: Solution = {name: 'sample', projects: [project1, project2], transform: [
+      {targetProject: 'sample-server', transformation: 'mock-transformation', sourceProject: 'sample-database'}
+    ]};
+    subject.performTransformations(solution, "").then(_ => done());
+  });
+
 });
 
 export class MockTransformation implements ITransformation {
