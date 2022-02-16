@@ -58,11 +58,10 @@ export class DotnetEnvironmentService extends EnvironmentServiceBase {
     });
   }
 
-  publishProject = (_name: string, path: string): Promise<void> => {
+  publishProject = (_name: string, path: string, destinationPath: string): Promise<void> => {
     return new Promise((res, err) => {
       console.log(`Publishing dotnet projects...`)
-      let folderPath = `${path}/bin/dotnet/`;
-      exec(`dotnet publish --output ${folderPath}`, { cwd: path}, function(ex, _stdout, stderr) {
+      exec(`dotnet publish --output ${destinationPath}`, { cwd: path}, function(ex, _stdout, stderr) {
         if (stderr) console.log(stderr);
         if (ex) return err(ex);
         res();
