@@ -10,7 +10,7 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
   fileService: IFileService = new FileService();
   /* istanbul ignore next */
   private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  
+
   updateProjectDefinition = (folderPath: string, projectName: string, solution: Solution): Promise<void> => {
     let packagePath = _path.join(folderPath, 'package.json');
     return this.fileService.readJson<any>(packagePath).then(pkg => {
@@ -51,6 +51,7 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
   }
 
   publishProject = (name: string, path: string, destinationPath: string): Promise<void> => {
+    // FIXME: This is still running after 'Solution publish is complete' (publish.command)?
     return new Promise((res, err) => {
       console.log(`Publishing project '${name}'...`)
       exec(`${this.npm} run build`, { cwd: path}, function(ex, _stdout, stderr) {
