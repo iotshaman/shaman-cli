@@ -6,20 +6,30 @@ import { DotnetEnvironmentService } from '../../../services/environments/dotnet-
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 
 export class DotnetPublishCommand implements ICommand {
+
     get name(): string { return "publish-dotnet" };
     fileService = new FileService();
     environmentService: IEnvironmentService = new DotnetEnvironmentService();
     
-    run = (environment: string, solutionFilePath: string): Promise<void> => {
+    run = (_environment: string, solutionFilePath: string): Promise<void> => {
+        let binPath = solutionFilePath.replace('shaman.json', 'bin/');
+        this.fileService.pathExists(`${binPath}dotnet`)
+            .then(exists => { if (!exists) this.fileService.createFolder(binPath, 'dotnet')});
         if (!solutionFilePath) solutionFilePath = _path.join(process.cwd(), 'shaman.json');
         else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
-        console.log(`Publishing dotnet solution.`);     
+        console.log(`Publishing dotnet solutions...`);     
         return this.fileService.getShamanFile(solutionFilePath)
-        .then(solution => this.publishSolution(environment, solutionFilePath, solution));
+            .then(solution => this.publishSolution(solutionFilePath, solution));
     }
     
-    publishSolution(environment: string, solutionFilePath: string, solution: Solution): Promise<void> {            
-        // TODO: implement 
-        throw new Error('Not implemented');        
+    private publishSolution(solutionFilePath: string, solution: Solution): Promise<void> {            
+        if (!solution.projects.some(p => p.environment == "dotnet")) {
+            console.log("No dotnet project detected, skipping dotnet build.");
+            return Promise.resolve();
+          } 
+          let solutionFolderPath = solutionFilePath.replace('shaman.json', '');
+          let destinationPath = solutionFilePath.replace('shaman.json', 'bin/dotnet');
+          return this.environmentService.publishProject(solution.name, solutionFolderPath, destinationPath);          
     }
+
 }
