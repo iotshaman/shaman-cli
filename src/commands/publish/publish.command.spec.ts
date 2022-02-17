@@ -7,9 +7,6 @@ import { ICommand } from '../command';
 import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../../services/file.service';
 import { PublishCommand } from './publish.command';
-import { Solution } from '../../models/solution';
-import { findSourceMap } from 'module';
-import { NoopCommand } from '..';
 
 describe('Publish Command', () => {
 
@@ -31,8 +28,11 @@ describe('Publish Command', () => {
   });
 
   it('run should throw error if invalid environment provided', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({ projects: [] }));
     let subject = new PublishCommand();
     subject.publishCommands = [];
+    subject.fileService = fileServiceMock;
     subject.run("invalid", null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch(ex => {
@@ -42,8 +42,11 @@ describe('Publish Command', () => {
   })
 
   it('run should return resolved promise for single environment publish', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({ projects: [] }));
     let subject = new PublishCommand();
     subject.publishCommands = [new MockNodePublishCommand()];
+    subject.fileService = fileServiceMock;
     subject.run("node", "./shaman.json").then(_ => done());
   })
 
@@ -100,7 +103,31 @@ describe('Publish Command', () => {
     subject.publishCommands = [new MockNodePublishCommand, new MockDotnetPublishCommand];
     subject.run("*", "./shaman.json").then(_ => done());
   });
-  
+
+  it('run should not make bin directory if bin directory exists', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve(
+      {
+        projects: [
+          {
+            name: "sample-node",
+            path: "sample-node",
+            environment: "node"
+          },
+          {
+            name: "sample-dotnet",
+            path: "sample-dotnet",
+            environment: "dotnet"
+          }
+        ]
+      }));
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
+    let subject = new PublishCommand();
+    subject.fileService = fileServiceMock;
+    subject.publishCommands = [new MockNodePublishCommand, new MockDotnetPublishCommand];
+    subject.run("*", "./shaman.json").then(_ => done());
+  });
+
 });
 
 class MockNodePublishCommand implements ICommand {

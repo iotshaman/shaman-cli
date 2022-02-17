@@ -15,8 +15,8 @@ export class PublishCommand implements ICommand {
 
     run = (environment: string = "*", solutionFilePath: string = "./shaman.json"): Promise<void> => {
         console.log("Publishing solution...");
-        if (environment != "*") return this.publishEnvironment(environment, solutionFilePath);
         let publishEnvironmentsTask = this.fileService.getShamanFile(solutionFilePath).then(solution => {
+            if (environment != "*") return this.publishEnvironment(environment, solutionFilePath);
             let projectEnvironments = solution.projects.map(p => p.environment);
             let environmetsSet = [...new Set(projectEnvironments)];
             return environmetsSet.reduce((a, b) => a.then(_ =>
@@ -30,9 +30,9 @@ export class PublishCommand implements ICommand {
         let cmd = this.publishCommands.find(c => c.name == `publish-${environment}`)
         if (!cmd) return Promise.reject(new Error(`Invalid environment '${environment}'.`));
         let cwd = solutionFilePath.replace("shaman.json", "");
-        this.fileService.pathExists(`${cwd}/bin`)
-            .then(exists => { if (!exists) this.fileService.createFolder(cwd, "bin") });
-        return cmd.run(environment, solutionFilePath);
+        return this.fileService.pathExists(`${cwd}/bin`)
+            .then(exists => { if (!exists) this.fileService.createFolder(cwd, "bin") })
+            .then(_ => cmd.run(solutionFilePath));
     }
 }
 

@@ -147,4 +147,10 @@ describe('Node Environment Service', () => {
     subject.buildProject("./sample", "sample").then(_ => done());
   });
 
+  it('publishProject should return resolved promise', (done) => {
+    let subject = new NodeEnvironmentService();
+    subject.buildProject = sandbox.stub().returns(Promise.resolve());
+    subject.publishProject(null, null, null).then(_ => done());
+  });
+
 })

@@ -60,7 +60,7 @@ export class DotnetEnvironmentService extends EnvironmentServiceBase {
 
   publishProject = (name: string, path: string, destinationPath: string): Promise<void> => {
     return new Promise((res, err) => {
-      console.log(`Publishing dotnet ${name}...`)
+      console.log(`Publishing project '${name}...'`)
       exec(`dotnet publish --no-build --no-restore --output ${destinationPath}`, { cwd: path}, function(ex, _stdout, stderr) {
         if (stderr) console.log(stderr);
         if (ex) return err(ex);

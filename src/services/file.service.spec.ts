@@ -129,4 +129,10 @@ describe('File Service', () => {
     subject.createFolder("./", "sample").then(_ => done());
   });
 
+  it('copyFolder should return promise', (done) => {
+    sandbox.stub(_fsx, 'copy').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.copyFolder("./test1", "./test2").then(_ => done());
+  });
+
 });

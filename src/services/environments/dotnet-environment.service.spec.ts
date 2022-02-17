@@ -131,4 +131,21 @@ describe('Node Environment Service', () => {
     subject.buildProject(null, "sample").then(_ => done());
   });
 
+  it('publishProject should throw if child process throws', (done) => {
+    sandbox.stub(_cmd, 'exec').yields(new Error("test error"), null, "output");
+    let subject = new DotnetEnvironmentService();
+    subject.publishProject(null, "sample1", "sample2")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch(ex => {
+        expect(ex.message).to.equal("test error");
+        done();
+      });
+  });
+
+  it('publishProject should return resolved promise', (done) => {
+    sandbox.stub(_cmd, 'exec').yields(null, null, null);
+    let subject = new DotnetEnvironmentService();
+    subject.publishProject(null, "sample1", "sample2").then(_ => done());
+  });
+
 });

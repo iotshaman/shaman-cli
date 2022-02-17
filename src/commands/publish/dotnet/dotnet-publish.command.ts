@@ -10,19 +10,19 @@ export class DotnetPublishCommand implements ICommand {
     fileService = new FileService();
     environmentService: IEnvironmentService = new DotnetEnvironmentService();
 
-    run = (environment: string, solutionFilePath: string): Promise<void> => {
-        if (!solutionFilePath) solutionFilePath = _path.join(process.cwd(), 'shaman.json');
-        else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
+    run = (solutionFilePath: string): Promise<void> => {
+        solutionFilePath = _path.join(process.cwd(), solutionFilePath);
         return this.fileService.getShamanFile(solutionFilePath)
-            .then(solution => this.publishSolution(environment, solutionFilePath, solution));
+            .then(solution => this.publishSolution(solutionFilePath, solution));
     }
 
-    private publishSolution(environment: string, solutionFilePath: string, solution: Solution): Promise<void> {
+    private publishSolution(solutionFilePath: string, solution: Solution): Promise<void> {
         let cwd = solutionFilePath.replace('shaman.json', '');
         let binPath = _path.join(cwd, 'bin/');
-        let projects = solution.projects.filter(p => p.environment == environment);
-        let projectNames = projects.map(p => p.name);
+        let projects = solution.projects.filter(p => p.environment == "dotnet");
         if (!projects.length) return Promise.resolve();
+        console.log("Publishing dotnet projects...");
+        let projectNames = projects.map(p => p.name);
         return this.environmentService.buildProject(solution.name, cwd)
             .then(_ => this.fileService.pathExists(`${binPath}dotnet`))
             .then(exists => { if (!exists) this.fileService.createFolder(binPath, 'dotnet') })
