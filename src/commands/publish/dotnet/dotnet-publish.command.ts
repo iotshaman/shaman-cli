@@ -24,14 +24,19 @@ export class DotnetPublishCommand implements ICommand {
         console.log("Publishing dotnet projects...");
         let projectNames = projects.map(p => p.name);
         return this.environmentService.buildProject(solution.name, cwd)
-            .then(_ => this.fileService.pathExists(`${binPath}dotnet`))
-            .then(exists => { if (!exists) this.fileService.createFolder(binPath, 'dotnet') })
+            .then(_ => this.createEnvironmentPublishFolder(binPath))
             .then(_ => projectNames.reduce((a, b) => a.then(_ => {
                 let project = projects.find(p => p.name == b);
-                let destinationPath = _path.join(cwd, `bin/dotnet/${project.path}`);
+                let destinationPath = _path.join(binPath, "dotnet",project.path);
                 return this.environmentService.publishProject(project.name, _path.join(cwd, project.path), destinationPath);
             }), Promise.resolve()))
             .then(_ => console.log("Dotnet projects published successfully..."));
+    }
+
+    private createEnvironmentPublishFolder = (binPath: string): Promise<void> => {
+        let dotnetPublishFolder = _path.join(binPath, "dotnet");
+        return this.fileService.pathExists(dotnetPublishFolder)
+            .then(exists => { if (!exists) this.fileService.createFolder(binPath, "dotnet") })
     }
 
 }
