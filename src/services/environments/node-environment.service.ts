@@ -50,16 +50,6 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
     });
   }
 
-  publishProject = (name: string, path: string, destinationPath: string): Promise<void> => {
-    // FIXME: This is still running after 'Solution publish is complete' (publish.command)?
-    return new Promise((res, err) => {
-      console.log(`Publishing project '${name}'...`)
-      exec(`${this.npm} run build`, { cwd: path}, function(ex, _stdout, stderr) {
-        if (stderr) console.log(stderr);
-        if (ex) return err(ex);
-      });
-      this.fileService.copyFolder(_path.join(path, 'dist/'), destinationPath).then(_ => res());
-    });
-  }
+  publishProject = (name: string, path: string): Promise<void> => this.buildProject(name, path);
 
 }
