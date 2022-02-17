@@ -9,7 +9,7 @@ import { DotnetEnvironmentService } from './dotnet-environment.service';
 import { Solution } from '../../models/solution';
 
 describe('Node Environment Service', () => {
-  
+
   var sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {

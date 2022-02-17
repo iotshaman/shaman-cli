@@ -73,7 +73,7 @@ describe('File Service', () => {
 
   it('getShamanFile should return resolved promise', (done) => {
     sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(true));
-    sandbox.stub(_fsx, 'readJSON').returns(<any>Promise.resolve({projects: []}));
+    sandbox.stub(_fsx, 'readJSON').returns(<any>Promise.resolve({ projects: [] }));
     let subject = new FileService();
     subject.getShamanFile("shaman.json").then(_ => done());
   });

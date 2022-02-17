@@ -26,7 +26,7 @@ describe('Node Build Command', () => {
 
   it('run should return resolved promise if no projects defined', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: []}));
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({ projects: [] }));
     let subject = new NodePublishCommand();
     subject.fileService = fileServiceMock;
     subject.run("shaman.json").then(_ => done());
@@ -34,13 +34,15 @@ describe('Node Build Command', () => {
 
   it('run should return resolved promise', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "node"
-      }
-    ]}));
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+      projects: [
+        {
+          name: "sample",
+          path: "sample",
+          environment: "node"
+        }
+      ]
+    }));
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.publishProject = sandbox.stub().returns(Promise.resolve());
     let subject = new NodePublishCommand();
@@ -50,22 +52,24 @@ describe('Node Build Command', () => {
   });
 
   it('run should not make bin/node directory if bin/node directory exists', (done) => {
-      let fileServiceMock = createMock<IFileService>();
-      fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+      projects: [
         {
           name: "sample",
           path: "sample",
           environment: "node"
         }
-      ]}));
-      fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-      let environmentServiceMock = createMock<IEnvironmentService>();
-      environmentServiceMock.publishProject = sandbox.stub().returns(Promise.resolve());
-      let subject = new NodePublishCommand();
-      subject.fileService = fileServiceMock;
-      subject.environmentService = environmentServiceMock;
-      subject.run("shaman.json").then(_ => done());
-    });
+      ]
+    }));
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
+    let environmentServiceMock = createMock<IEnvironmentService>();
+    environmentServiceMock.publishProject = sandbox.stub().returns(Promise.resolve());
+    let subject = new NodePublishCommand();
+    subject.fileService = fileServiceMock;
+    subject.environmentService = environmentServiceMock;
+    subject.run("shaman.json").then(_ => done());
+  });
 
 
 });
