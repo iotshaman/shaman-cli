@@ -16,7 +16,7 @@
   },
   "include": [
     "src/**/*.ts"
-, "src/commands/publish/node"  ],
+  ],
   "exclude": [
     "node_modules",
     "src/**/*spec.ts"
