@@ -66,7 +66,14 @@ export class NodePublishCommand implements ICommand {
     let outputFilePath = _path.join(publishFolder, 'shaman.json');
     let shamanJsonFile: Solution = {
       name: name,
-      projects: projects
+      projects: projects.map(project => ({
+        name: project.name,
+        environment: project.environment,
+        type: project.type,
+        path: project.path,
+        language: project.language,
+        include: project.include
+      }))
     }
     return this.fileService.writeJson(outputFilePath, shamanJsonFile);
   }
