@@ -50,9 +50,9 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
     });
   }
 
-  publishProject = (name: string, path: string, _destinationPath: string): Promise<void> => {
-    return this.buildProject(name, path)
-    .then(_ => console.log(`Publishing project '${name}'`));
+  publishProject = (name: string, buildFolderPath: string, destinationPath: string): Promise<void> => {
+    console.log(`Publishing project '${name}'...`)
+    return this.fileService.copyFolder(buildFolderPath, destinationPath);
   }
 
 }

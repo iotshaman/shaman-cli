@@ -1,5 +1,7 @@
 import 'mocha';
+import * as chai from 'chai';
 import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 import * as _fsx from 'fs-extra';
 import * as _cmd from 'child_process';
 import { FileService } from './file.service';
@@ -7,6 +9,7 @@ import { expect } from 'chai';
 
 describe('File Service', () => {
 
+  chai.use(sinonChai);
   var sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {
@@ -122,17 +125,29 @@ describe('File Service', () => {
       });
   });
 
-  it('createFolder should throw error if folder exists', (done) => {
+  it('createFolder should return resolved promise', (done) => {
     sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(false));
     sandbox.stub(_fsx, 'mkdir').returns(<any>Promise.resolve());
     let subject = new FileService();
     subject.createFolder("./", "sample").then(_ => done());
   });
 
+  it('ensureFolderExists should return promise', (done) => {
+    sandbox.stub(_fsx, 'ensureDir').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.ensureFolderExists("./", "sample").then(_ => done());
+  });
+
   it('copyFolder should return promise', (done) => {
     sandbox.stub(_fsx, 'copy').returns(<any>Promise.resolve());
     let subject = new FileService();
     subject.copyFolder("./test1", "./test2").then(_ => done());
+  });
+
+  it('copyFile should return promise', (done) => {
+    sandbox.stub(_fsx, 'copy').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.copyFile("./test1.txt", "./test2.txt").then(_ => done());
   });
 
 });

@@ -1,7 +1,9 @@
 import 'mocha';
 import * as _path from 'path';
 import * as _cmd from 'child_process';
+import * as chai from 'chai';
 import * as sinon from 'sinon';
+import * as sinonChai from 'sinon-chai';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../file.service';
@@ -10,6 +12,7 @@ import { Solution } from '../../models/solution';
 
 describe('Node Environment Service', () => {
   
+  chai.use(sinonChai);
   var sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {
@@ -147,10 +150,15 @@ describe('Node Environment Service', () => {
     subject.buildProject("./sample", "sample").then(_ => done());
   });
 
-  it('publishProject should return resolved promise', (done) => {
+  it('publishProject should call copyFolder', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.copyFolder = sandbox.stub().returns(Promise.resolve());
     let subject = new NodeEnvironmentService();
-    subject.buildProject = sandbox.stub().returns(Promise.resolve());
-    subject.publishProject(null, null, null).then(_ => done());
+    subject.fileService = fileServiceMock;
+    subject.publishProject(null, null, null).then(_ => {
+      expect(fileServiceMock.copyFolder).to.have.been.called;
+      done();
+    });
   });
 
 })
