@@ -9,7 +9,7 @@ import { DotnetEnvironmentService } from './dotnet-environment.service';
 import { Solution } from '../../models/solution';
 
 describe('Node Environment Service', () => {
-  
+
   var sandbox: sinon.SinonSandbox;
 
   beforeEach(() => {
@@ -23,7 +23,7 @@ describe('Node Environment Service', () => {
 
   it('updateProjectDefinition should call renameFile', (done) => {
     let solution = new Solution();
-    solution.projects = [{name: 'sample', environment: 'dotnet', type: 'library', path: './sample'}];
+    solution.projects = [{ name: 'sample', environment: 'dotnet', type: 'library', path: './sample' }];
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.renameFile = sandbox.stub().returns(Promise.resolve());
     let subject = new DotnetEnvironmentService();
@@ -37,8 +37,8 @@ describe('Node Environment Service', () => {
   it('updateProjectDefinition should throw if invalid dependency provided', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['c']},
-      {name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp'}
+      { name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['c'] },
+      { name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp' }
     ];
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.renameFile = sandbox.stub().returns(Promise.resolve());
@@ -55,8 +55,8 @@ describe('Node Environment Service', () => {
   it('updateProjectDefinition should throw if child process returns non-zero status code', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b']},
-      {name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp'}
+      { name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b'] },
+      { name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp' }
     ];
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
@@ -78,8 +78,8 @@ describe('Node Environment Service', () => {
   it('updateProjectDefinition should spawn process to add project dependency', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b']},
-      {name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp'}
+      { name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b'] },
+      { name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp' }
     ];
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
@@ -129,6 +129,33 @@ describe('Node Environment Service', () => {
     sandbox.stub(_cmd, 'exec').yields(null, null, null);
     let subject = new DotnetEnvironmentService();
     subject.buildProject(null, "sample").then(_ => done());
+  });
+
+  it('checkNamingConvention should return resolved promise', (done) => {
+    let subject = new DotnetEnvironmentService();
+    subject.checkNamingConvention("Test", "Test").then(_ => done());
+  });
+
+  it('checkNamingConvention should throw if project name does not follow proper dotnet naming conventions', (done) => {
+    let subject = new DotnetEnvironmentService();
+    subject.checkNamingConvention("test", "Test")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch((ex: Error) => {
+        expect(ex.message).to.equal("Project name \"test\" does not meet proper dotnet naming conventions. " +
+          "It's recommended that the project name be changed to \"Test\".");
+        done();
+      });
+  });
+
+  it('checkNamingConvention should throw if solution name does not follow proper dotnet naming conventions', (done) => {
+    let subject = new DotnetEnvironmentService();
+    subject.checkNamingConvention("Test", "test")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch((ex: Error) => {
+        expect(ex.message).to.equal("Solution name \"test\" does not meet proper dotnet naming conventions. " +
+          "It's recommended that the solution name be changed to \"Test\".");
+        done();
+      });
   });
 
 });

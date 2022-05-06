@@ -111,10 +111,10 @@ describe('Scaffold Node Environment Command', () => {
     };
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let subject = new DotnetScaffoldCommand();
-    let solution = new Solution(); solution.name = "test";
+    let solution = new Solution(); solution.name = "Test";
     subject.assignSolution(solution);
     subject.fileService = fileServiceMock;
-    subject.run("library", "test", "./test")
+    subject.run("library", "Test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("An error occurred while adding dotnet solution file.");

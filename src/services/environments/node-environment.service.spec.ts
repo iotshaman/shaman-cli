@@ -147,4 +147,9 @@ describe('Node Environment Service', () => {
     subject.buildProject("./sample", "sample").then(_ => done());
   });
 
-})
+  it('checkNamingConvention should return resolved promise', (done) => {
+    let subject = new NodeEnvironmentService();
+    subject.checkNamingConvention("test").then(_ => done());
+  });
+
+});
