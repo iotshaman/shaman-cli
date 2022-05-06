@@ -25,6 +25,7 @@ export class NodeScaffoldCommand implements ICommand {
     let folderPath = _path.join(process.cwd(), output);
     console.log(`Scaffolding node ${projectType}.`);
     return this.checkPath(folderPath)
+      .then(_ => this.environmentService.checkNamingConvention(name))
       .then(_ => this.templateService.getTemplate("node", projectType))
       .then(template => this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
