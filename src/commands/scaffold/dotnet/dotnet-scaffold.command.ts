@@ -27,7 +27,7 @@ export class DotnetScaffoldCommand implements ICommand {
     let folderPath = _path.join(process.cwd(), output);
     console.log(`Scaffolding dotnet ${projectType}.`);
     return this.checkPath(folderPath)
-      .then(_ => this.environmentService.checkNamingConvention(this.solution.name, name))
+      .then(_ => this.environmentService.checkNamingConvention(name, this.solution.name))
       .then(_ => this.addDotnetSolutionFile(this.solution.name))
       .then(_ => this.fileService.createFolder(process.cwd(), output))
       .then(_ => this.templateService.getTemplate("dotnet", projectType, language))
@@ -49,7 +49,6 @@ export class DotnetScaffoldCommand implements ICommand {
   }
 
   private addDotnetSolutionFile = (solutionName: string): Promise<void> => {
-    if (!solutionName) return Promise.reject(new Error("Dotnet solutions require a name, please update your shaman.json file."));
     const dotnetSolutionFilePath = _path.join(process.cwd(), `${solutionName}.sln`);
     return this.fileService.pathExists(dotnetSolutionFilePath).then(exists => {
       if (!!exists) return Promise.resolve();
