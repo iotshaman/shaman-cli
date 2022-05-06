@@ -27,6 +27,7 @@ export class DotnetScaffoldCommand implements ICommand {
     let folderPath = _path.join(process.cwd(), output);
     console.log(`Scaffolding dotnet ${projectType}.`);
     return this.checkPath(folderPath)
+      .then(_ => this.environmentService.checkNamingConvention(this.solution.name, name))
       .then(_ => this.addDotnetSolutionFile(this.solution.name))
       .then(_ => this.fileService.createFolder(process.cwd(), output))
       .then(_ => this.templateService.getTemplate("dotnet", projectType, language))

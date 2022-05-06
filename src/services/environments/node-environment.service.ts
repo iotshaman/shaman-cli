@@ -50,4 +50,8 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
     });
   }
 
+  checkNamingConvention = (_solutionName: string, _projectName: string): Promise<void> => {
+    return Promise.resolve();
+  };
+
 }

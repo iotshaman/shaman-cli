@@ -140,4 +140,8 @@ class FakeEnvironmentService extends EnvironmentServiceBase {
     return Promise.reject(new Error("Not implemented."));
   }
 
+  checkNamingConvention = (solutionName: string, projectName: string): Promise<void> => {
+    return Promise.reject(new Error("Not implemented."));
+  };
+
 }
