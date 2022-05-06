@@ -62,7 +62,6 @@ export class DotnetEnvironmentService extends EnvironmentServiceBase {
     if (!solutionName) return Promise.reject(new Error("Dotnet solutions require a name, please update your shaman.json file."));
     let namingConvention = new RegExp('^[A-Z][a-zA-Z]*$');
     if (!namingConvention.test(solutionName)) {
-      // TODO: suggest correction to name
       let recommendedName = solutionName.charAt(0).toUpperCase() + solutionName.slice(1);
       return Promise.reject(
         new Error(`Solution name "${solutionName}" does not meet proper dotnet naming conventions. ` + 
@@ -70,7 +69,6 @@ export class DotnetEnvironmentService extends EnvironmentServiceBase {
         ));
     }
     if (!namingConvention.test(projectName)) {
-      // TODO: suggest correction to name
       let recommendedName = projectName.charAt(0).toUpperCase() + projectName.slice(1);
       return Promise.reject(
         new Error(`Project name "${projectName}" does not meet proper dotnet naming conventions. ` + 
