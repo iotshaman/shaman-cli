@@ -62,11 +62,12 @@ describe('Node Build Command', () => {
         {
           name: "sample",
           path: "sample",
-          environment: "node"
+          environment: "node",
+          specs: {executable: true}
         }
       ]
     }));
-    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({}));
+    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({scripts: {start: 'test'}}));
     fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
     let environmentServiceMock = createMock<IEnvironmentService>();
     let subject = new NodePublishCommand();
