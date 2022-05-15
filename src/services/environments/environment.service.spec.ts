@@ -140,4 +140,8 @@ class FakeEnvironmentService extends EnvironmentServiceBase {
     return Promise.reject(new Error("Not implemented."));
   }
 
+  publishProject = (name: string, path: string, destination: string): Promise<void> => {
+    return Promise.reject(new Error("Not implemented."));
+  }
+
 }

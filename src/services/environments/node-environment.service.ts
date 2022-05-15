@@ -10,7 +10,7 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
   fileService: IFileService = new FileService();
   /* istanbul ignore next */
   private npm: string = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  
+
   updateProjectDefinition = (folderPath: string, projectName: string, solution: Solution): Promise<void> => {
     let packagePath = _path.join(folderPath, 'package.json');
     return this.fileService.readJson<any>(packagePath).then(pkg => {
@@ -48,6 +48,11 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
         res();
       });
     });
+  }
+
+  publishProject = (name: string, buildFolderPath: string, destinationPath: string): Promise<void> => {
+    console.log(`Publishing project '${name}'...`)
+    return this.fileService.copyFolder(buildFolderPath, destinationPath);
   }
 
 }

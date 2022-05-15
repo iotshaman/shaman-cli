@@ -8,6 +8,7 @@ import { InstallCommand } from "./commands/install/install.command";
 import { RunCommand } from "./commands/run/run.command";
 import { ServeCommand } from "./commands/serve/serve.command";
 import { VersionCommand } from "./commands/version/version.command";
+import { PublishCommand } from "./commands/publish/publish.command";
 
 const commands: ICommand[] = [
   new NoopCommand(),
@@ -18,7 +19,8 @@ const commands: ICommand[] = [
   new InstallCommand(),
   new RunCommand(),
   new ServeCommand(),
-  new VersionCommand()
+  new VersionCommand(),
+  new PublishCommand()
 ];
 
 export function Invoke(args: string[]) {
