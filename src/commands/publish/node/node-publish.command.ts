@@ -30,7 +30,7 @@ export class NodePublishCommand implements ICommand {
     let dependencyTree = new DependencyTree(projects);
     let publishOrder = dependencyTree.getOrderedProjectList();
     return this.fileService.ensureFolderExists(binPath, "node")
-      .then(_ => this.createSolutionPackageJsonFile(publishFolder, name))
+      .then(_ => this.createSolutionPackageJsonFile(publishFolder, name, projects))
       .then(_ => this.createShamanJsonPublishFile(publishFolder, projects, name))
       .then(_ => publishOrder.reduce((a, b) => a.then(_ => {
         let project = projects.find(p => p.name == b);
@@ -44,7 +44,8 @@ export class NodePublishCommand implements ICommand {
       }), Promise.resolve()));
   }
 
-  private createSolutionPackageJsonFile = (publishFolder: string, name: string): Promise<void> => {
+  private createSolutionPackageJsonFile = (publishFolder: string, name: string, 
+    projects: SolutionProject[]): Promise<void> => {
     let outputFilePath = _path.join(publishFolder, 'package.json');
     let publishPkg = {
       name: name,
@@ -56,8 +57,16 @@ export class NodePublishCommand implements ICommand {
         restore: "shaman install node"
       },
       dependencies: {
-        "shaman-cli": "^1.0.17"
+        "shaman-cli": "^1.0.18"
       }
+    }
+    let executableProjects = projects.filter(p => !!p.specs?.executable);
+    if (!!executableProjects.length) {
+      let scripts = executableProjects.reduce((a, b) => {
+        a[b.name] = `shaman serve ${b.name}`;
+        return a;
+      }, {});
+      publishPkg.scripts = {...publishPkg.scripts, ...scripts};
     }
     return this.fileService.writeJson(outputFilePath, publishPkg);
   }
@@ -86,6 +95,7 @@ export class NodePublishCommand implements ICommand {
         name: pkg.name,
         version: pkg.version,
         main: !!pkg.main ? pkg.main.replace('dist/', 'bin/') : undefined,
+        scripts: !!pkg.scripts?.start ? {start: pkg.scripts.start.replace('dist/', 'bin/')} : undefined,
         description: pkg.description,
         author: pkg.author,
         license: pkg.licence,
