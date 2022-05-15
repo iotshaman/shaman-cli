@@ -22,3 +22,4 @@ Below is a catalog of the different templates that are available, per-environmen
 * [Server Template](https://github.com/iotshaman/shaman-cli/tree/main/templates/dotnet#server-template)
 * [Database Library Template](https://github.com/iotshaman/shaman-cli/tree/main/templates/dotnet#database-library-template)
 * [Library Template](https://github.com/iotshaman/shaman-cli/tree/main/templates/dotnet#library-template)
+* [Command Line Utility Template](https://github.com/iotshaman/shaman-cli/tree/main/templates/dotnet#command-line-utility-template)
