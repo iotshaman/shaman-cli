@@ -80,7 +80,7 @@ The server project does not yet have any specs defined.
 ### Transformations
 The following transformations can be applied to a scaffolded server project.
 
-#### Comose Data Context
+#### Compose Data Context
 If you have both a server project and a database project included in your solution file, then you can use this transformation to automatically add your "data context" (the thing that abstracts database object access) to your server configuration and composition. This will save you time after scaffolding, so you don't have to manually add the database configuration to your server project and setup dependency injection. Below is a sample solution file that shows how to leverage this transformation:
 
 ```json
