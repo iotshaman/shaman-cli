@@ -68,7 +68,7 @@ describe('Scaffold Node Environment Command', () => {
     subject.run("library", "test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Output directory already exists.");
+        expect(ex.message).to.equal("Project already scaffolded: library.");
         done();
       });
   });

@@ -5,6 +5,7 @@ import { SolutionProject } from "../../models/solution";
 import { FileService, IFileService } from '../file.service';
 
 export interface ITypescriptSourceService {
+  doesDataContextCompositionExist: (solutionFolderPath: string, project: SolutionProject, contextName: string) => Promise<void>
   addMySqlAppConfigurationJson: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
   addMySqlAppConfigurationModel: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
   addDataContextCompositionType: (solutionFolderPath: string, project: SolutionProject, contextName: string) => Promise<void>;
@@ -16,6 +17,16 @@ export class TypescriptSourceService implements ITypescriptSourceService {
 
   fileService: IFileService = new FileService();
   sourceFactory: ISourceFactory = new TypescriptSourceFactory();
+
+  doesDataContextCompositionExist = (solutionFolderPath: string, project: SolutionProject, contextName: string): Promise<void> => {
+    const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
+    const typesFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.types.ts');
+    return this.fileService.getSourceFile(typesFilePath).then(sourceFile => {
+      sourceFile.lines.forEach(l => {
+        if (l.content.includes(contextName)) throw new Error(`Context already exists: ${contextName}.`);
+      });
+    });
+  }
 
   addMySqlAppConfigurationJson = (solutionFolderPath: string, project: SolutionProject): Promise<void> => {
     const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);

@@ -24,21 +24,20 @@ export class NodeScaffoldCommand implements ICommand {
     if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-node command."));
     let folderPath = _path.join(process.cwd(), output);
     console.log(`Scaffolding node ${projectType}.`);
-    return this.checkPath(folderPath)
+    return this.checkPath(folderPath, projectType)
       .then(_ => this.templateService.getTemplate("node", projectType))
       .then(template => this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))
       .then(_ => this.environmentService.executeProjectScaffolding(folderPath))
-      .then(_ => {
-        console.log("Scaffolding complete.");
-      })
+      .then(_ => console.log("Scaffolding complete."))
+      .catch(err => console.log(err.message));
   }
 
-  private checkPath = (folderPath: string): Promise<void> => {
+  private checkPath = (folderPath: string, projectType: string): Promise<void> => {
     return this.fileService.pathExists(folderPath).then(exists => {
-      if (!!exists) throw new Error("Output directory already exists.");
+      if (!!exists) throw new Error(`Project already scaffolded: ${projectType}.`);
     })
   }
 
