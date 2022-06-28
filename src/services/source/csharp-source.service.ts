@@ -27,7 +27,6 @@ export class CsharpSourceService implements ICsharpSourceService {
     return new Promise((resolve, _reject) => {
       this.fileService.getSourceFile(compositionFilePath, 4).then(sourceFile => {
         sourceFile.lines.forEach(l => {
-          // console.log(l.content.includes(contextName)); // NOTE: remove
           if (l.content.includes(contextName)) resolve(true);
         });
         resolve(false);

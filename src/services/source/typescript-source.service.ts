@@ -24,7 +24,6 @@ export class TypescriptSourceService implements ITypescriptSourceService {
     return new Promise((resolve, _reject) => {
       this.fileService.getSourceFile(typesFilePath).then(sourceFile => {
         sourceFile.lines.forEach(l => {
-          // console.log(l.content.includes(contextName)); // NOTE: remove
           if (l.content.includes(contextName)) resolve(true);
         });
         resolve(false);
