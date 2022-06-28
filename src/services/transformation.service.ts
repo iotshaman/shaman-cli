@@ -4,7 +4,7 @@ import { NodeComposeDataContextTransformation } from "../transformations/node/no
 import { ITransformation } from "../transformations/transformation";
 
 export interface ITransformationService {
-  performTransformations: (solution: Solution, solutionFilePath: string) => Promise<void>;
+  performTransformations: (solution: Solution, solutionFilePath: string, newProjects: string[]) => Promise<void>;
 }
 
 export class TransformationService implements ITransformationService {
@@ -15,9 +15,11 @@ export class TransformationService implements ITransformationService {
     new CsharpComposeDataContextTransformation()
   ]
 
-  performTransformations = (solution: Solution, solutionFilePath: string): Promise<void> => {
+  performTransformations = (solution: Solution, solutionFilePath: string, newProjects: string[]): Promise<void> => {
     if (!solution.transform?.length) return Promise.resolve();
-    const transformationTaskChain = solution.transform.reduce((a, b) => a.then(_ => {
+    const newTransformations = solution.transform.filter(t => newProjects.includes(t.targetProject));
+    if (!newTransformations.length) return Promise.resolve();
+    const transformationTaskChain = newTransformations.reduce((a, b) => a.then(_ => {
       let targetProject = solution.projects.find(p => p.name == b.targetProject);
       if (!targetProject) throw new Error(`Invalid target project in transformation: ${b.transformation} -> ${b.targetProject}`);
       if (!!b.sourceProject) {

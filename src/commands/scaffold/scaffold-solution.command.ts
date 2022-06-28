@@ -24,17 +24,18 @@ export class ScaffoldSolutionCommand implements ICommand {
     return this.fileService.getShamanFile(solutionFilePath)
       .then(rslt => solution = rslt)
       .then(_ => this.scaffoldSolution(solutionFilePath, solution))
-      .then(_ => this.transformationService.performTransformations(solution, solutionFilePath))
+      .then(newProjects => this.transformationService.performTransformations(solution, solutionFilePath, newProjects))
       .then(_ => {
         console.log("Solution scaffolding is complete.");
       });
   }
 
-  private scaffoldSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
+  private scaffoldSolution = (solutionFilePath: string, solution: Solution): Promise<string[]> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
+    let newProjects = [];
     if (!solution.projects.length) {
       console.warn("No projects found in solution file.");
-      return Promise.resolve();
+      return Promise.resolve(null);
     }
     let dependencyTree = new DependencyTree(solution.projects);
     let scaffoldOrder = dependencyTree.getOrderedProjectList();
@@ -42,9 +43,13 @@ export class ScaffoldSolutionCommand implements ICommand {
       let project = solution.projects.find(p => p.name == b);
       return this.fileService.pathExists(_path.join(cwd, project.path))
         .then(pathExists => {
-          if (!pathExists) return this.scaffoldProject(project, cwd, solution);
+          if (!pathExists) {
+            newProjects.push(project.name)
+            return this.scaffoldProject(project, cwd, solution);
+          }
         });
-    }), Promise.resolve());
+    }), Promise.resolve())
+    .then(_=> Promise.resolve(newProjects));
   }
 
   private scaffoldProject = (project: SolutionProject, cwd: string, solution: Solution): Promise<void> => {    
