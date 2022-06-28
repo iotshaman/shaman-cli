@@ -25,9 +25,10 @@ export class DotnetScaffoldCommand implements ICommand {
     if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-dotnet command."));
     if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-dotnet command."));
     let folderPath = _path.join(process.cwd(), output);
+    let dotnetSolutionFolderPath = _path.join(folderPath, '..');
     if (this.fileService.pathExistsSync(folderPath)) return Promise.resolve();
     console.log(`Scaffolding dotnet ${projectType}.`);
-    return this.addDotnetSolutionFile(this.solution.name)
+    return this.addDotnetSolutionFile(this.solution.name, dotnetSolutionFolderPath)
       .then(_ => this.fileService.createFolder(process.cwd(), output))
       .then(_ => this.templateService.getTemplate("dotnet", projectType, language))
       .then(template => this.templateService.unzipProjectTemplate(template, folderPath)) 
@@ -35,19 +36,19 @@ export class DotnetScaffoldCommand implements ICommand {
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))
       .then(_ => this.environmentService.executeProjectScaffolding(folderPath))
-      .then(_ => this.addDotnetProjectToSolutionFile(this.solution.name, output))
+      .then(_ => this.addDotnetProjectToSolutionFile(this.solution.name, folderPath, dotnetSolutionFolderPath))
       .then(_ => {
         console.log("Scaffolding is complete.");
       })
   }
 
-  private addDotnetSolutionFile = (solutionName: string): Promise<void> => {
+  private addDotnetSolutionFile = (solutionName: string, dotnetSolutionFolderPath: string): Promise<void> => {
     if (!solutionName) return Promise.reject(new Error("Dotnet solutions require a name, please update your shaman.json file."));
-    const dotnetSolutionFilePath = _path.join(process.cwd(), `${solutionName}.sln`);
+    const dotnetSolutionFilePath = _path.join(dotnetSolutionFolderPath, `${solutionName}.sln`);
     return this.fileService.pathExists(dotnetSolutionFilePath).then(exists => {
       if (!!exists) return Promise.resolve();
       return new Promise((res, err) => {
-        let childProcess = spawn("dotnet", ["new", "sln", "--name", solutionName], {cwd: process.cwd()});
+        let childProcess = spawn("dotnet", ["new", "sln", "--name", solutionName], {cwd: dotnetSolutionFolderPath});
         childProcess.stdout.on('data', (data) => process.stdout.write(`${data}`));
         childProcess.stderr.on('data', (data) => process.stderr.write(`${data}`));
         childProcess.on('close', (code) => code === 0 ? res() : err(
@@ -57,9 +58,9 @@ export class DotnetScaffoldCommand implements ICommand {
     });
   }
 
-  private addDotnetProjectToSolutionFile = (solutionName: string, projectFolder: string): Promise<void> => {
+  private addDotnetProjectToSolutionFile = (solutionName: string, projectFolder: string, dotnetSolutionFolderPath: string): Promise<void> => {
     return new Promise((res, err) => {
-      let childProcess = spawn("dotnet", ["sln", `${solutionName}.sln`, "add", projectFolder], {cwd: process.cwd()});
+      let childProcess = spawn("dotnet", ["sln", `${solutionName}.sln`, "add", projectFolder], {cwd: dotnetSolutionFolderPath});
       childProcess.stdout.on('data', (data) => process.stdout.write(`${data}`));
       childProcess.stderr.on('data', (data) => process.stderr.write(`${data}`));
       childProcess.on('close', (code) => code === 0 ? res() : err(
