@@ -23,7 +23,6 @@ export class NodeScaffoldCommand implements ICommand {
     if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
     if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-node command."));
     let folderPath = _path.join(process.cwd(), output);
-    if (this.fileService.pathExistsSync(folderPath)) return Promise.resolve();
     console.log(`Scaffolding node ${projectType}.`);
     return this.templateService.getTemplate("node", projectType)
       .then(template => this.templateService.unzipProjectTemplate(template, folderPath))

@@ -26,7 +26,7 @@ export class DotnetScaffoldCommand implements ICommand {
     if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-dotnet command."));
     let folderPath = _path.join(process.cwd(), output);
     let dotnetSolutionFolderPath = _path.join(folderPath, '..');
-    if (this.fileService.pathExistsSync(folderPath)) return Promise.resolve();
+    
     console.log(`Scaffolding dotnet ${projectType}.`);
     return this.addDotnetSolutionFile(this.solution.name, dotnetSolutionFolderPath)
       .then(_ => this.fileService.createFolder(process.cwd(), output))
