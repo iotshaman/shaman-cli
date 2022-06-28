@@ -40,7 +40,10 @@ export class ScaffoldSolutionCommand implements ICommand {
     let scaffoldOrder = dependencyTree.getOrderedProjectList();
     return scaffoldOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);
-      return this.scaffoldProject(project, cwd, solution);
+      return this.fileService.pathExists(_path.join(cwd, project.path))
+        .then(pathExists => {
+          if (!pathExists) return this.scaffoldProject(project, cwd, solution);
+        });
     }), Promise.resolve());
   }
 
