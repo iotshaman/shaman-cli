@@ -11,7 +11,7 @@ import { IEnvironmentService } from '../../../services/environments/environment.
 import { Solution } from '../../../models/solution';
 import { ITemplateService } from '../../../services/template.service';
 
-describe('Scaffold Node Environment Command', () => {
+describe('Scaffold DotNet Environment Command', () => {
 
   chai.use(sinonChai);
   var sandbox: sinon.SinonSandbox;
