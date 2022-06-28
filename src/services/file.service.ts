@@ -8,6 +8,7 @@ export interface IFileService {
   readJson: <T>(file: string) => Promise<T>;
   writeJson: (file: string, contents: any) => Promise<void>;
   pathExists: (path: string) => Promise<boolean>;
+  pathExistsSync: (path: string) => boolean;
   readFile: (file: string) => Promise<string>;
   writeFile: (file: string, contents: string) => Promise<void>;
   unzipFile: (file: string, output: string) => Promise<void>;
@@ -33,6 +34,10 @@ export class FileService implements IFileService {
 
   pathExists = (path: string): Promise<boolean> => {
     return _fsx.pathExists(path);
+  }
+
+  pathExistsSync = (path: string): boolean => {
+    return _fsx.pathExistsSync(path);
   }
 
   readFile = (file: string): Promise<string> => {

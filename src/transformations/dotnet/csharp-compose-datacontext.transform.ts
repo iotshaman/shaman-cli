@@ -17,9 +17,14 @@ export class CsharpComposeDataContextTransformation implements ITransformation {
     let databaseProject = solution.projects.find(p => p.name == transformation.sourceProject);
     if (!databaseProject) return Promise.reject(new Error(`Invalid source project in transformation: '${transformation.sourceProject}'.`));
     const contextName = databaseProject.specs?.contextName ?? "SampleDataContext";
-    return this.sourceService.addDatabaseConnectionStringToAppsettingsJson(solutionFolderPath, project, contextName)
-      .then(_ => this.sourceService.addConnectionStringToAppConfig(solutionFolderPath, project, contextName))
-      .then(_ => this.sourceService.addDataContextComposition(solutionFolderPath, project, databaseProject.name, contextName));
+    const compositionCheck = this.sourceService.checkIfComposed(solutionFolderPath, project, contextName);
+    return compositionCheck.then(rslt => {
+      if (rslt) return Promise.resolve();
+      console.log(`Performing transformation '${transformation.transformation}' on project '${transformation.targetProject}'.`);
+      this.sourceService.addDatabaseConnectionStringToAppsettingsJson(solutionFolderPath, project, contextName)
+        .then(_ => this.sourceService.addConnectionStringToAppConfig(solutionFolderPath, project, contextName))
+        .then(_ => this.sourceService.addDataContextComposition(solutionFolderPath, project, databaseProject.name, contextName));
+    });
   }
 
 }

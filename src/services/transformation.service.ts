@@ -30,7 +30,6 @@ export class TransformationService implements ITransformationService {
         t => t.name == b.transformation && t.environment == targetProject.environment
       );
       if (!transformation) throw new Error(`Invalid transformation: ${b.transformation} (${targetProject.environment}).`);
-      console.log(`Performing transformation '${b.transformation}' on project '${b.targetProject}'.`)
       return transformation.transform(b, solution, solutionFilePath.replace('shaman.json', ''));
     }), Promise.resolve());
     return transformationTaskChain.then(_ => console.log("All transformations have been applied."));
