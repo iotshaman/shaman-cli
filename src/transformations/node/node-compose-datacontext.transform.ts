@@ -17,15 +17,10 @@ export class NodeComposeDataContextTransformation implements ITransformation {
     let databaseProject = solution.projects.find(p => p.name == transformation.sourceProject);
     if (!databaseProject) return Promise.reject(new Error(`Invalid source project in transformation: '${transformation.sourceProject}'.`));
     const contextName = databaseProject.specs?.contextName ?? "SampleDatabaseContext";
-    const checkIfComposed = this.sourceService.checkIfComposed(solutionFolderPath, project, contextName);
-    return checkIfComposed.then(isComposed => {
-      if (isComposed) return Promise.resolve();
-      console.log(`Performing transformation '${transformation.transformation}' on project '${transformation.targetProject}'.`);
-      this.sourceService.addMySqlAppConfigurationJson(solutionFolderPath, project)
-        .then(_ => this.sourceService.addMySqlAppConfigurationModel(solutionFolderPath, project))
-        .then(_ => this.sourceService.addDataContextCompositionType(solutionFolderPath, project, contextName))
-        .then(_ => this.sourceService.addDataContextComposition(solutionFolderPath, project, databaseProject.name, contextName));
-    })
+    return this.sourceService.addMySqlAppConfigurationJson(solutionFolderPath, project)
+      .then(_ => this.sourceService.addMySqlAppConfigurationModel(solutionFolderPath, project))
+      .then(_ => this.sourceService.addDataContextCompositionType(solutionFolderPath, project, contextName))
+      .then(_ => this.sourceService.addDataContextComposition(solutionFolderPath, project, databaseProject.name, contextName));
   }
 
 }
