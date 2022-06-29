@@ -5,8 +5,6 @@ import { FileService, IFileService } from '../file.service';
 import { CsharpSourceFactory } from '../../factories/source/csharp-source.factory';
 
 export interface ICsharpSourceService {
-  checkIfComposed: (solutionFolderPath: string, project: SolutionProject, 
-    contextName: string) => Promise<boolean>;
   addDatabaseConnectionStringToAppsettingsJson: (solutionFolderPath: string,
     project: SolutionProject, contextName: string) => Promise<void>;
   addConnectionStringToAppConfig: (solutionFolderPath: string, project: SolutionProject,
@@ -19,20 +17,6 @@ export class CsharpSourceService implements ICsharpSourceService {
 
   fileService: IFileService = new FileService();
   sourceFactory: ISourceFactory = new CsharpSourceFactory();
-
-  checkIfComposed = (solutionFolderPath: string, project: SolutionProject, 
-    contextName: string): Promise<boolean> => {
-    const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
-    const compositionFilePath = _path.join(projectFolderPath, 'Composition', 'ServiceCollectionExtensions.cs');
-    return new Promise((resolve, _reject) => {
-      this.fileService.getSourceFile(compositionFilePath, 4).then(sourceFile => {
-        sourceFile.lines.forEach(l => {
-          if (l.content.includes(contextName)) resolve(true);
-        });
-        resolve(false);
-      });
-    });
-  }
 
   addDatabaseConnectionStringToAppsettingsJson = (solutionFolderPath: string,
     project: SolutionProject, contextName: string): Promise<void> => {

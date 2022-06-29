@@ -5,7 +5,6 @@ import { SolutionProject } from "../../models/solution";
 import { FileService, IFileService } from '../file.service';
 
 export interface ITypescriptSourceService {
-  checkIfComposed: (solutionFolderPath: string, project: SolutionProject, contextName: string) => Promise<boolean>;
   addMySqlAppConfigurationJson: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
   addMySqlAppConfigurationModel: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
   addDataContextCompositionType: (solutionFolderPath: string, project: SolutionProject, contextName: string) => Promise<void>;
@@ -17,20 +16,6 @@ export class TypescriptSourceService implements ITypescriptSourceService {
 
   fileService: IFileService = new FileService();
   sourceFactory: ISourceFactory = new TypescriptSourceFactory();
-
-  checkIfComposed = (solutionFolderPath: string, project: SolutionProject, contextName: string): Promise<boolean> => {
-    const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
-    const typesFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.types.ts');
-    return new Promise((resolve, _reject) => {
-      this.fileService.getSourceFile(typesFilePath).then(sourceFile => {
-        sourceFile.lines.forEach(l => {
-          if (l.content.includes(contextName)) resolve(true);
-        });
-        resolve(false);
-      });
-    });
-
-  }
 
   addMySqlAppConfigurationJson = (solutionFolderPath: string, project: SolutionProject): Promise<void> => {
     const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
