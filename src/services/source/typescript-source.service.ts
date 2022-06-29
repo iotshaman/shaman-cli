@@ -8,7 +8,7 @@ export interface ITypescriptSourceService {
   addMySqlAppConfigurationJson: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
   addMySqlAppConfigurationModel: (solutionFolderPath: string, project: SolutionProject) => Promise<void>;
   addDataContextCompositionType: (solutionFolderPath: string, project: SolutionProject, contextName: string) => Promise<void>;
-  addDataContextComposition: (solutionFolderPath: string, project: SolutionProject,
+  addDataContextComposition: (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string) => Promise<void>;
 }
 
@@ -59,7 +59,7 @@ export class TypescriptSourceService implements ITypescriptSourceService {
       return this.fileService.writeFile(configFilePath, sourceFile.toString());
     });
   }
-
+  
   addDataContextCompositionType = (solutionFolderPath: string, project: SolutionProject, contextName: string): Promise<void> => {
     const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     const typesFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.types.ts');
@@ -76,7 +76,7 @@ export class TypescriptSourceService implements ITypescriptSourceService {
     });
   }
 
-  addDataContextComposition = (solutionFolderPath: string, project: SolutionProject,
+  addDataContextComposition = (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string): Promise<void> => {
     const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     const compositionFilePath = _path.join(projectFolderPath, 'src', 'composition', 'app.composition.ts');
