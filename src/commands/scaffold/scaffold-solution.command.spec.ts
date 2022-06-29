@@ -75,7 +75,6 @@ describe('Scaffold Solution Command', () => {
   });
 
   it('run should not call scaffoldProject if the projects path alreay exists', (done) => {
-    // TODO: test should confirm subject.scaffoldProject was not called.
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
