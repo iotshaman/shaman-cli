@@ -17,9 +17,9 @@ export class TransformationService implements ITransformationService {
 
   performTransformations = (solution: Solution, solutionFilePath: string, newProjects: string[]): Promise<void> => {
     if (!solution.transform?.length) return Promise.resolve();
-    const newTransformations = solution.transform.filter(t => newProjects.includes(t.targetProject));
-    if (!newTransformations.length) return Promise.resolve();
-    const transformationTaskChain = newTransformations.reduce((a, b) => a.then(_ => {
+    // const newTransformations = solution.transform.filter(t => newProjects.includes(t.targetProject));
+    // if (!newTransformations.length) return Promise.resolve();
+    const transformationTaskChain = solution.transform.reduce((a, b) => a.then(_ => {
       let targetProject = solution.projects.find(p => p.name == b.targetProject);
       if (!targetProject) throw new Error(`Invalid target project in transformation: ${b.transformation} -> ${b.targetProject}`);
       if (!!b.sourceProject) {
@@ -32,7 +32,8 @@ export class TransformationService implements ITransformationService {
         t => t.name == b.transformation && t.environment == targetProject.environment
       );
       if (!transformation) throw new Error(`Invalid transformation: ${b.transformation} (${targetProject.environment}).`);
-      console.log(`Performing transformation '${b.transformation}' on project '${b.targetProject}'.`)
+      if (!newProjects.includes(b.targetProject)) return Promise.resolve();
+      console.log(`Performing transformation '${b.transformation}' on project '${b.targetProject}'.`);
       return transformation.transform(b, solution, solutionFilePath.replace('shaman.json', ''));
     }), Promise.resolve());
     return transformationTaskChain.then(_ => console.log("All transformations have been applied."));
