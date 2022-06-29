@@ -21,5 +21,5 @@ export class CsharpComposeDataContextTransformation implements ITransformation {
       .then(_ => this.sourceService.addConnectionStringToAppConfig(solutionFolderPath, project, contextName))
       .then(_ => this.sourceService.addDataContextComposition(solutionFolderPath, project, databaseProject.name, contextName));
   }
-  
+
 }
