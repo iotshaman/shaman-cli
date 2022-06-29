@@ -60,19 +60,6 @@ describe('Scaffold Node Environment Command', () => {
       });
   });
 
-  it('run should throw if path exists', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    let subject = new NodeScaffoldCommand();
-    subject.fileService = fileServiceMock;
-    subject.run("library", "test", "./test")
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Output directory already exists.");
-        done();
-      });
-  });
-
   it('run should throw call environmentService.updateProjectDefinition', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));

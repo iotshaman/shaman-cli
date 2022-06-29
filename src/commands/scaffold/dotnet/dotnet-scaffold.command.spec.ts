@@ -73,20 +73,6 @@ describe('Scaffold DotNet Environment Command', () => {
       });
   });
 
-  it('run should throw if path exists', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    let subject = new DotnetScaffoldCommand();
-    subject.assignSolution(new Solution());
-    subject.fileService = fileServiceMock;
-    subject.run("library", "test", "./test")
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Output directory already exists.");
-        done();
-      });
-  });
-
   it('run should throw if no solution name provided', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
@@ -124,10 +110,7 @@ describe('Scaffold DotNet Environment Command', () => {
 
   it('run should not add solution file if solution file already exists', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    let pathExistsStub = sandbox.stub();
-    pathExistsStub.onCall(0).returns(Promise.resolve(false));
-    pathExistsStub.onCall(1).returns(Promise.resolve(true));
-    fileServiceMock.pathExists = pathExistsStub;
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
       stderr: { on: sandbox.stub().yields("error") },
