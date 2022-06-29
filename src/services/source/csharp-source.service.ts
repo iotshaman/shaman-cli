@@ -5,11 +5,11 @@ import { FileService, IFileService } from '../file.service';
 import { CsharpSourceFactory } from '../../factories/source/csharp-source.factory';
 
 export interface ICsharpSourceService {
-  addDatabaseConnectionStringToAppsettingsJson: (solutionFolderPath: string,
+  addDatabaseConnectionStringToAppsettingsJson: (solutionFolderPath: string, 
     project: SolutionProject, contextName: string) => Promise<void>;
-  addConnectionStringToAppConfig: (solutionFolderPath: string, project: SolutionProject,
-    contextName: string) => Promise<void>;
-  addDataContextComposition: (solutionFolderPath: string, project: SolutionProject,
+  addConnectionStringToAppConfig: (solutionFolderPath: string, project: SolutionProject, 
+    contextName: string) =>Promise<void>;
+  addDataContextComposition: (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string) => Promise<void>;
 }
 
@@ -23,18 +23,18 @@ export class CsharpSourceService implements ICsharpSourceService {
     const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     const appConfigFilePath = _path.join(projectFolderPath, 'appsettings.json');
     const devConfigFilePath = _path.join(projectFolderPath, 'appsettings.Development.json');
-    const updateConfigFileTask = this.fileService.readJson<{ AppConfig: any }>(appConfigFilePath).then(config => {
+    const updateConfigFileTask = this.fileService.readJson<{AppConfig: any}>(appConfigFilePath).then(config => {
       config.AppConfig[`${contextName}ConnectionString`] = "";
       return this.fileService.writeJson(appConfigFilePath, config);
     });
-    const updateSampleConfigFileTask = this.fileService.readJson<{ AppConfig: any }>(devConfigFilePath).then(config => {
-      config.AppConfig[`${contextName}ConnectionString`] = "";
+    const updateSampleConfigFileTask = this.fileService.readJson<{AppConfig: any}>(devConfigFilePath).then(config => {
+      config.AppConfig[`${contextName}ConnectionString`] = "";      
       return this.fileService.writeJson(devConfigFilePath, config);
     });
     return Promise.all([updateConfigFileTask, updateSampleConfigFileTask]).then(_ => (null));
   }
 
-  addConnectionStringToAppConfig = (solutionFolderPath: string, project: SolutionProject,
+  addConnectionStringToAppConfig = (solutionFolderPath: string, project: SolutionProject, 
     contextName: string): Promise<void> => {
     const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     const configFilePath = _path.join(projectFolderPath, 'Configuration', 'AppConfig.cs');
@@ -49,7 +49,7 @@ export class CsharpSourceService implements ICsharpSourceService {
     });
   }
 
-  addDataContextComposition = (solutionFolderPath: string, project: SolutionProject,
+  addDataContextComposition = (solutionFolderPath: string, project: SolutionProject, 
     databaseProjectName: string, contextName: string): Promise<void> => {
     const projectFolderPath = _path.join(process.cwd(), solutionFolderPath, project.path);
     const compositionFilePath = _path.join(projectFolderPath, 'Composition', 'ServiceCollectionExtensions.cs');
