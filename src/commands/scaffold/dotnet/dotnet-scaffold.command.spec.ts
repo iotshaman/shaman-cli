@@ -32,7 +32,7 @@ describe('Scaffold DotNet Environment Command', () => {
 
   it('run should throw if solution not assigned', (done) => {
     let subject = new DotnetScaffoldCommand();
-    subject.run(null, "./test", "test", "./test")
+    subject.run(null, "./test", "Test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Dotnet projects can only be scaffold as part of a solution.");
@@ -43,7 +43,7 @@ describe('Scaffold DotNet Environment Command', () => {
   it('run should throw if project type not provided', (done) => {
     let subject = new DotnetScaffoldCommand();
     subject.assignSolution(new Solution());
-    subject.run(null, "./test", "test", "./test")
+    subject.run(null, "./test", "Test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Project type argument not provided to scaffold-dotnet command.");
@@ -54,7 +54,7 @@ describe('Scaffold DotNet Environment Command', () => {
   it('run should throw if project path not provided', (done) => {
     let subject = new DotnetScaffoldCommand();
     subject.assignSolution(new Solution());
-    subject.run("library", null, "test", "./test")
+    subject.run("library", null, "Test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Project path argument not provided to scaffold-dotnet command.");
@@ -76,7 +76,7 @@ describe('Scaffold DotNet Environment Command', () => {
   it('run should throw if solution folder path not provided', (done) => {
     let subject = new DotnetScaffoldCommand();
     subject.assignSolution(new Solution());
-    subject.run("library", "./test", "test", null)
+    subject.run("library", "./test", "Test", null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Solution folder argument not provided to scaffold-dotnet command.");
@@ -100,7 +100,7 @@ describe('Scaffold DotNet Environment Command', () => {
     subject.environmentService = environmentServiceMock;
     subject.assignSolution(solution);
     subject.fileService = fileServiceMock;
-    subject.run("library", "./test", "test", "./test")
+    subject.run("library", "./test", "Test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("An error occurred while adding dotnet solution file.");
@@ -123,7 +123,7 @@ describe('Scaffold DotNet Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.templateService = createMock<ITemplateService>();
     subject.environmentService = createMock<IEnvironmentService>();
-    subject.run("library", "./test", "test", "./test").then(_ => {
+    subject.run("library", "./test", "Test", "./test").then(_ => {
       expect(_cmd.spawn).to.have.been.calledOnce; 
       done()
     });
@@ -146,7 +146,7 @@ describe('Scaffold DotNet Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.templateService = createMock<ITemplateService>();
     subject.environmentService = createMock<IEnvironmentService>();
-    subject.run("library", "./test", "test", "./test")
+    subject.run("library", "./test", "Test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("An error occurred while adding dotnet project to solution.");
@@ -169,7 +169,7 @@ describe('Scaffold DotNet Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.templateService = createMock<ITemplateService>();
     subject.environmentService = createMock<IEnvironmentService>();
-    subject.run("library", "./test", "test", "./test").then(_ => {
+    subject.run("library", "./test", "Test", "./test").then(_ => {
       expect(_cmd.spawn).to.have.been.calledTwice;
       done();
     });
