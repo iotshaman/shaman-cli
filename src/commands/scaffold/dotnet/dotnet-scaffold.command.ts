@@ -43,7 +43,6 @@ export class DotnetScaffoldCommand implements ICommand {
   }
 
   private addDotnetSolutionFile = (solutionName: string, solutionFolder: string): Promise<void> => {
-    if (!solutionName) return Promise.reject(new Error("Dotnet solutions require a name, please update your shaman.json file."));
     const dotnetSolutionFilePath = _path.join(solutionFolder, `${solutionName}.sln`);
     return this.fileService.pathExists(dotnetSolutionFilePath).then(exists => {
       if (!!exists) return Promise.resolve();
