@@ -26,8 +26,7 @@ export class DotnetScaffoldCommand implements ICommand {
     if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-dotnet command."));
     let folderPath = _path.join(process.cwd(), output);
     console.log(`Scaffolding dotnet ${projectType}.`);
-    return this.checkPath(folderPath)
-      .then(_ => this.addDotnetSolutionFile(this.solution.name))
+    return this.addDotnetSolutionFile(this.solution.name)
       .then(_ => this.fileService.createFolder(process.cwd(), output))
       .then(_ => this.templateService.getTemplate("dotnet", projectType, language))
       .then(template => this.templateService.unzipProjectTemplate(template, folderPath)) 
@@ -39,12 +38,6 @@ export class DotnetScaffoldCommand implements ICommand {
       .then(_ => {
         console.log("Scaffolding is complete.");
       })
-  }
-
-  private checkPath = (folderPath: string): Promise<void> => {
-    return this.fileService.pathExists(folderPath).then(exists => {
-      if (!!exists) throw new Error("Output directory already exists.");
-    })
   }
 
   private addDotnetSolutionFile = (solutionName: string): Promise<void> => {
