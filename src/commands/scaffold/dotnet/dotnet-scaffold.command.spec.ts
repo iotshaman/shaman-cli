@@ -84,20 +84,6 @@ describe('Scaffold DotNet Environment Command', () => {
       });
   });
 
-  it('run should throw if no solution name provided', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let subject = new DotnetScaffoldCommand();
-    subject.assignSolution(new Solution());
-    subject.fileService = fileServiceMock;
-    subject.run("library", "./test", "test", "./test")
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Dotnet solutions require a name, please update your shaman.json file.");
-        done();
-      });
-  });
-
   it('run should throw if child process throws when adding dotnet solution file', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));

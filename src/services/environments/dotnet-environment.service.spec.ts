@@ -136,6 +136,16 @@ describe('DotNet Environment Service', () => {
     subject.checkNamingConvention("Test", "Test").then(_ => done());
   });
 
+  it('checkNamingConvention should throw if solution name is not provided.', (done) => {
+    let subject = new DotnetEnvironmentService();
+    subject.checkNamingConvention("test", null)
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch((ex: Error) => {
+        expect(ex.message).to.equal("Dotnet solutions require a name, please update your shaman.json file.");
+          done();
+      });
+  });
+
   it('checkNamingConvention should throw if project name does not follow proper dotnet naming conventions', (done) => {
     let subject = new DotnetEnvironmentService();
     subject.checkNamingConvention("test", "Test")
