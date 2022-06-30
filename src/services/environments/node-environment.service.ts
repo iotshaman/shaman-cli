@@ -50,6 +50,10 @@ export class NodeEnvironmentService extends EnvironmentServiceBase {
     });
   }
 
+  checkNamingConvention = (_projectName: string): Promise<void> => {
+    return Promise.resolve();
+  };
+  
   publishProject = (name: string, buildFolderPath: string, destinationPath: string): Promise<void> => {
     console.log(`Publishing project '${name}'...`)
     return this.fileService.copyFolder(buildFolderPath, destinationPath);

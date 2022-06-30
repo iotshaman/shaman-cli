@@ -9,6 +9,7 @@ export interface IEnvironmentService {
   executeProjectScaffolding: (folderPath: string) => Promise<void>;
   installDependencies: (folderPath: string, projectName?: string) => Promise<void>;
   buildProject: (name: string, path: string) => Promise<void>;
+  checkNamingConvention: (projectName: string, solutionName?: string) => Promise<void>;
   publishProject: (name: string, folderPath: string, destinationPath: string) => Promise<void>;
 }
 
@@ -18,6 +19,7 @@ export abstract class EnvironmentServiceBase implements IEnvironmentService {
   abstract updateProjectDefinition: (folderPath: string, projectName: string, solution: Solution) => Promise<void>;
   abstract installDependencies: (folderPath: string, projectName?: string) => Promise<void>;
   abstract buildProject: (name: string, path: string) => Promise<void>;
+  abstract checkNamingConvention: (projectName: string, solutionName?: string,) => Promise<void>;
   abstract publishProject: (name: string, folderPath: string, destinationPath: string) => Promise<void>;
 
   addProjectScaffoldFile = (folderPath: string, projectName: string, solution: Solution): Promise<void> => {

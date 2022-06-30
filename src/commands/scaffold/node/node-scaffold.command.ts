@@ -25,7 +25,8 @@ export class NodeScaffoldCommand implements ICommand {
     if (!solutionFolder) return Promise.reject(new Error("Solution folder argument not provided to scaffold-node command."));
     let folderPath = _path.join(solutionFolder, projectPath);
     console.log(`Scaffolding node ${projectType}.`);
-    return this.templateService.getTemplate("node", projectType)
+    return this.environmentService.checkNamingConvention(name)
+      .then(_ => this.templateService.getTemplate("node", projectType))
       .then(template => this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
