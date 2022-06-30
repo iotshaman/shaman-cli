@@ -146,6 +146,8 @@ shaman scaffold-solution [solutionFilePath]
 
 ### Scaffold Command
 
+**DEPRECATED**: Use `scaffold-solution` instead.
+
 The scaffold command generates application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
 
 ```sh
@@ -208,6 +210,48 @@ shaman serve [project]
 **[project]:** The name of the project for which you would like to serve. The provided project value must match a project name in your solution file. Note: any project names listed as "runtime dependencies" will be started first, and runtime dependencies can be nested.
 
 *Note: In order for the serve command to work, the specified project (any and runtime dependencies) must have a 'start' script (in package.json).*
+
+### Publish Command
+
+The publish command requires the existence of a solution file, and will execute a production build for 1-to-many projects. Every environment creates a different type of production build (for example, a C# server will create an executable file, and a Node JS server will generate several .js files). The syntax for the publish command is as follows; please note that these arguments must be provided in-order.
+
+```sh
+shaman publish [environment] [solutionFilePath]
+```
+
+**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be built. Available values are: *node*, *\**  
+**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+
+The publish command has built-in helpers for common production build needs (for example, copying configuration files). In order to leverage these helpers (called "instructions") you will need to add a spec named "publish" to the desired solution project configuration, and provide an array of instructions. The interface for publish instructions is as follows:
+
+```ts
+export interface IPublishInstruction {
+  instruction: string;
+  arguments: any;
+}
+```
+
+#### Publish Instructions
+
+**Copy Files**
+To copy resource files add a publish instruction like the following:
+
+```json
+{
+  ...
+  "specs": {
+    "publish": [
+      {
+        "instruction": "copy",
+        "arguments": [
+          "relative/path/from/project/root/foobar.txt"
+        ]
+      }
+    ]
+  }
+  ...
+}
+```
 
 ### Version Command
 

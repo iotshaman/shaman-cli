@@ -43,7 +43,7 @@ To prevent issues with scaffolding, please make sure all .NET project definition
 ```
 
 ## Server Template
-The .NET server template is built on top of .NET 5 and comes pre-built with the following features:
+The .NET server template is built on top of .NET 6 and comes pre-built with the following features:
 
 1. Application Configuration
 2. Default CORS configuration
@@ -80,7 +80,7 @@ The server project does not yet have any specs defined.
 ### Transformations
 The following transformations can be applied to a scaffolded server project.
 
-#### Comose Data Context
+#### Compose Data Context
 If you have both a server project and a database project included in your solution file, then you can use this transformation to automatically add your "data context" (the thing that abstracts database object access) to your server configuration and composition. This will save you time after scaffolding, so you don't have to manually add the database configuration to your server project and setup dependency injection. Below is a sample solution file that shows how to leverage this transformation:
 
 ```json
@@ -188,3 +188,34 @@ The library project does not yet have any specs defined.
 
 ### Transformations
 The library project does not yet have any transformations defined.
+
+## Command Line Utility Template
+The .NET command line utility contains all the code scaffolding necessary to provide a simple command line interface. The project is built using .NET 6 and leverages .NET's built-in dependency injection capabilities. It comes pre-built with app configuration, a default control loop, a default menu command, and a sample echo command.
+
+To create a project based on the .NET command line utility template, use the following project configuration:
+
+```json
+{
+  "name": "NameOfYourSolution",
+  "projects": [
+    {
+      "name": "[name of your library project]",
+      "environment": "dotnet",
+      "type": "cli",
+      "path": "[where you want to store your code]",
+      "language": "csharp",
+      "include": [ //optional
+        "SomeDependentProject",
+        "AnotherDependentProject",
+        "YouGetTheIdea"
+      ]
+    }
+  ]
+}
+```
+
+### Specs
+The command line utility project does not yet have any specs defined.
+
+### Transformations
+The command line utility project does not yet have any transformations defined.

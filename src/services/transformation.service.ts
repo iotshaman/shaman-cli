@@ -4,7 +4,7 @@ import { NodeComposeDataContextTransformation } from "../transformations/node/no
 import { ITransformation } from "../transformations/transformation";
 
 export interface ITransformationService {
-  performTransformations: (solution: Solution, solutionFilePath: string) => Promise<void>;
+  performTransformations: (solution: Solution, solutionFilePath: string, newProjects: string[]) => Promise<void>;
 }
 
 export class TransformationService implements ITransformationService {
@@ -15,7 +15,7 @@ export class TransformationService implements ITransformationService {
     new CsharpComposeDataContextTransformation()
   ]
 
-  performTransformations = (solution: Solution, solutionFilePath: string): Promise<void> => {
+  performTransformations = (solution: Solution, solutionFilePath: string, newProjects: string[]): Promise<void> => {
     if (!solution.transform?.length) return Promise.resolve();
     const transformationTaskChain = solution.transform.reduce((a, b) => a.then(_ => {
       let targetProject = solution.projects.find(p => p.name == b.targetProject);
@@ -30,7 +30,8 @@ export class TransformationService implements ITransformationService {
         t => t.name == b.transformation && t.environment == targetProject.environment
       );
       if (!transformation) throw new Error(`Invalid transformation: ${b.transformation} (${targetProject.environment}).`);
-      console.log(`Performing transformation '${b.transformation}' on project '${b.targetProject}'.`)
+      if (!newProjects.includes(b.targetProject)) return Promise.resolve();
+      console.log(`Performing transformation '${b.transformation}' on project '${b.targetProject}'.`);
       return transformation.transform(b, solution, solutionFilePath.replace('shaman.json', ''));
     }), Promise.resolve());
     return transformationTaskChain.then(_ => console.log("All transformations have been applied."));

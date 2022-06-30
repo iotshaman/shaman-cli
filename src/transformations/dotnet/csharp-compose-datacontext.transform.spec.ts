@@ -8,7 +8,7 @@ import { ProjectTransformation, Solution } from '../../models/solution';
 import { CsharpComposeDataContextTransformation } from "./csharp-compose-datacontext.transform";
 import { ICsharpSourceService } from "../../services/source/csharp-source.service";
 
-describe('Node Compose DataContext Transformation', () => {
+describe('Csharp Compose DataContext Transformation', () => {
   
   chai.use(sinonChai);
   var sandbox: sinon.SinonSandbox;

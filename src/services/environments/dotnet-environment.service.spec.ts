@@ -8,7 +8,7 @@ import { IFileService } from '../file.service';
 import { DotnetEnvironmentService } from './dotnet-environment.service';
 import { Solution } from '../../models/solution';
 
-describe('Node Environment Service', () => {
+describe('DotNet Environment Service', () => {
 
   var sandbox: sinon.SinonSandbox;
 
@@ -143,7 +143,7 @@ describe('Node Environment Service', () => {
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Project name \"test\" does not meet proper dotnet naming conventions. " +
           "It's recommended that the project name be changed to \"Test\".");
-        done();
+          done();
       });
   });
 
@@ -156,6 +156,23 @@ describe('Node Environment Service', () => {
           "It's recommended that the solution name be changed to \"Test\".");
         done();
       });
+  });
+
+  it('publishProject should throw if child process throws', (done) => {
+    sandbox.stub(_cmd, 'exec').yields(new Error("test error"), null, "output");
+    let subject = new DotnetEnvironmentService();
+    subject.publishProject(null, "sample1", "sample2")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch(ex => {
+        expect(ex.message).to.equal("test error");
+        done();
+      });
+  });
+
+  it('publishProject should return resolved promise', (done) => {
+    sandbox.stub(_cmd, 'exec').yields(null, null, null);
+    let subject = new DotnetEnvironmentService();
+    subject.publishProject(null, "sample1", "sample2").then(_ => done());
   });
 
 });

@@ -24,32 +24,39 @@ export class ScaffoldSolutionCommand implements ICommand {
     return this.fileService.getShamanFile(solutionFilePath)
       .then(rslt => solution = rslt)
       .then(_ => this.scaffoldSolution(solutionFilePath, solution))
-      .then(_ => this.transformationService.performTransformations(solution, solutionFilePath))
+      .then(newProjects => this.transformationService.performTransformations(solution, solutionFilePath, newProjects))
       .then(_ => {
         console.log("Solution scaffolding is complete.");
       });
   }
 
-  private scaffoldSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
+  private scaffoldSolution = (solutionFilePath: string, solution: Solution): Promise<string[]> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
+    let newProjects = [];
     if (!solution.projects.length) {
       console.warn("No projects found in solution file.");
-      return Promise.resolve();
+      return Promise.resolve(null);
     }
     let dependencyTree = new DependencyTree(solution.projects);
     let scaffoldOrder = dependencyTree.getOrderedProjectList();
     return scaffoldOrder.reduce((a, b) => a.then(_ => {
       let project = solution.projects.find(p => p.name == b);
-      return this.scaffoldProject(project, cwd, solution);
-    }), Promise.resolve());
+      return this.fileService.pathExists(_path.join(cwd, project.path))
+        .then(pathExists => {
+          if (!pathExists) {
+            newProjects.push(project.name)
+            return this.scaffoldProject(project, cwd, solution);
+          }
+        });
+    }), Promise.resolve())
+    .then(_=> Promise.resolve(newProjects));
   }
 
   private scaffoldProject = (project: SolutionProject, cwd: string, solution: Solution): Promise<void> => {    
     let cmd = this.scaffoldCommands.find(c => c.name == `scaffold-${project.environment}`);
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${project.environment}'.`));
     if (!!cmd.assignSolution) cmd.assignSolution(solution);
-    let projectPath = _path.join(cwd, project.path);
-    return cmd.run(project.type, project.name, projectPath, project.language);
+    return cmd.run(project.type, project.path, project.name, cwd, project.language);
   }
 
 }

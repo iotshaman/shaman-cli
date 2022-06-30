@@ -18,14 +18,14 @@ export class NodeScaffoldCommand implements ICommand {
     this.solution = solution;
   }
 
-  run = (projectType: string, name: string, output: string, _language: string = "typescript"): Promise<void> => {
+  run = (projectType: string, projectPath: string, name: string, solutionFolder: string, _language: string = "typescript"): Promise<void> => {
     if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
+    if (!projectPath) return Promise.reject(new Error("Project path argument not provided to scaffold-node command."))
     if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
-    if (!output) return Promise.reject(new Error("Output argument not provided to scaffold-node command."));
-    let folderPath = _path.join(process.cwd(), output);
+    if (!solutionFolder) return Promise.reject(new Error("Solution folder argument not provided to scaffold-node command."));
+    let folderPath = _path.join(solutionFolder, projectPath);
     console.log(`Scaffolding node ${projectType}.`);
-    return this.checkPath(folderPath)
-      .then(_ => this.environmentService.checkNamingConvention(name))
+    return this.environmentService.checkNamingConvention(name)
       .then(_ => this.templateService.getTemplate("node", projectType))
       .then(template => this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
@@ -36,11 +36,4 @@ export class NodeScaffoldCommand implements ICommand {
         console.log("Scaffolding complete.");
       })
   }
-
-  private checkPath = (folderPath: string): Promise<void> => {
-    return this.fileService.pathExists(folderPath).then(exists => {
-      if (!!exists) throw new Error("Output directory already exists.");
-    })
-  }
-
 }

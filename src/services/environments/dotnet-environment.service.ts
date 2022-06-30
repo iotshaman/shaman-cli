@@ -6,7 +6,7 @@ import { FileService, IFileService } from '../file.service';
 
 export class DotnetEnvironmentService extends EnvironmentServiceBase {
 
-  fileService: IFileService = new FileService(); 
+  fileService: IFileService = new FileService();
 
   updateProjectDefinition = (folderPath: string, projectName: string, solution: Solution): Promise<void> => {
     let updateProjectTask = Promise.resolve();
@@ -25,16 +25,16 @@ export class DotnetEnvironmentService extends EnvironmentServiceBase {
           ));
         })
       }
-      updateProjectTask = project.include.reduce((a, b) => 
-        a.then(_ => childProcessPromiseFactory(b)), 
-      Promise.resolve());
+      updateProjectTask = project.include.reduce((a, b) =>
+        a.then(_ => childProcessPromiseFactory(b)),
+        Promise.resolve());
     }
     return updateProjectTask.then(_ => {
       let defaultProjecFilePath = _path.join(folderPath, `shaman.${ project.language ?? "csharp"}.csproj`);
       let newProjectFilePath = _path.join(folderPath, `${projectName}.csproj`);
       return this.fileService.renameFile(defaultProjecFilePath, newProjectFilePath);
     });
-  }  
+  }
 
   installDependencies = (folderPath: string): Promise<void> => {
     return new Promise((res, err) => {
@@ -77,5 +77,16 @@ export class DotnetEnvironmentService extends EnvironmentServiceBase {
     }
     return Promise.resolve();
   };
+  
+  publishProject = (name: string, path: string, destinationPath: string): Promise<void> => {
+    return new Promise((res, err) => {
+      console.log(`Publishing project '${name}...'`)
+      exec(`dotnet publish --no-build --no-restore --output ${destinationPath}`, { cwd: path}, function(ex, _stdout, stderr) {
+        if (stderr) console.log(stderr);
+        if (ex) return err(ex);
+        res();
+      });
+    });
+  }
 
 }

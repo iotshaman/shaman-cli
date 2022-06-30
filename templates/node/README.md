@@ -38,12 +38,15 @@ To create a project based on the NodeJS server template, use the following proje
 ```
 
 ### Specs
-The server project does not yet have any specs defined.
+The following specs can be configured to customize your server project:
+
+#### Executable
+When publishing, this property will instruct Shaman CLI to create an npm script in the publish output (recommended). To configure, provide a property named "exectuable" to your server's "specs" property, and set the value (boolean) to true.
 
 ### Transformations
 The following transformations can be applied to a scaffolded server project.
 
-#### Comose Data Context
+#### Compose Data Context
 If you have both a server project and a database project included in your solution file, then you can use this transformation to automatically add your "data context" (the thing that abstracts database object access) to your server configuration and composition. This will save you time after scaffolding, so you don't have to manually add the database configuration to your server project and setup dependency injection. Below is a sample solution file that shows how to leverage this transformation:
 
 ```json

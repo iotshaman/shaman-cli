@@ -32,7 +32,7 @@ describe('Scaffold Node Environment Command', () => {
 
   it('run should throw if project type not provided', (done) => {
     let subject = new NodeScaffoldCommand();
-    subject.run(null, "test", "./test")
+    subject.run(null, "./test", "test", "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Project type argument not provided to scaffold-node command.");
@@ -40,9 +40,19 @@ describe('Scaffold Node Environment Command', () => {
       });
   });
 
+  it('run should throw if project path not provided', (done) => {
+    let subject = new NodeScaffoldCommand();
+    subject.run("test", null, "test", "./test")
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch((ex: Error) => {
+        expect(ex.message).to.equal("Project path argument not provided to scaffold-node command.");
+        done();
+      });
+  });
+
   it('run should throw if name not provided', (done) => {
     let subject = new NodeScaffoldCommand();
-    subject.run("library", null, "./test")
+    subject.run("library", "./test", null, "./test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Name argument not provided to scaffold-node command.");
@@ -50,25 +60,12 @@ describe('Scaffold Node Environment Command', () => {
       });
   });
 
-  it('run should throw if output path not provided', (done) => {
+  it('run should throw if solution folder path not provided', (done) => {
     let subject = new NodeScaffoldCommand();
-    subject.run("library", "test", null)
+    subject.run("library", "./test", "test", null)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Output argument not provided to scaffold-node command.");
-        done();
-      });
-  });
-
-  it('run should throw if path exists', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
-    let subject = new NodeScaffoldCommand();
-    subject.fileService = fileServiceMock;
-    subject.run("library", "test", "./test")
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Output directory already exists.");
+        expect(ex.message).to.equal("Solution folder argument not provided to scaffold-node command.");
         done();
       });
   });
@@ -91,7 +88,7 @@ describe('Scaffold Node Environment Command', () => {
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
-    subject.run("library", "test", "./test").then(_ => {      
+    subject.run("library", "./test", "test", "./test").then(_ => {      
       expect(environmentServiceMock.updateProjectDefinition).to.have.been.called;
       done();
     });
@@ -115,7 +112,7 @@ describe('Scaffold Node Environment Command', () => {
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
-    subject.run("library", "test", "./test").then(_ => {      
+    subject.run("library", "./test", "test", "./test").then(_ => {      
       expect(environmentServiceMock.addProjectScaffoldFile).to.have.been.called;
       done();
     });
@@ -139,7 +136,7 @@ describe('Scaffold Node Environment Command', () => {
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
-    subject.run("library", "test", "./test").then(_ => {      
+    subject.run("library", "./test", "test", "./test").then(_ => {      
       expect(environmentServiceMock.installDependencies).to.have.been.called;
       done();
     });
@@ -163,7 +160,7 @@ describe('Scaffold Node Environment Command', () => {
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
     subject.assignSolution(new Solution());
-    subject.run("library", "test", "./test").then(_ => {      
+    subject.run("library", "./test", "test", "./test").then(_ => {      
       expect(environmentServiceMock.executeProjectScaffolding).to.have.been.called;
       done();
     });
