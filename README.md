@@ -146,6 +146,8 @@ shaman scaffold-solution [solutionFilePath]
 
 ### Scaffold Command
 
+**DEPRECATED**: Use `scaffold-solution` instead.
+
 The scaffold command generates application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
 
 ```sh
