@@ -1,6 +1,6 @@
 import * as _path from 'path';
 import { spawn } from 'child_process';
-import { Solution } from '../../../models/solution';
+import { Solution, SolutionProject } from '../../../models/solution';
 import { ICommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
@@ -14,16 +14,22 @@ export class DotnetScaffoldCommand implements ICommand {
   environmentService: IEnvironmentService = new DotnetEnvironmentService();
   templateService: ITemplateService = new TemplateService();
   private solution: Solution;
+  private project: SolutionProject;
 
   assignSolution = (solution: Solution) => {
     this.solution = solution;
   }
 
-  run = (projectType: string, projectPath: string, name: string, solutionFolder: string, language: string = "csharp"): Promise<void> => {
+  assignProject = (project: SolutionProject) => {
+    this.project = project;
+  };
+
+  run = (solutionFolder: string, language: string = "csharp"): Promise<void> => {
     if (!this.solution) return Promise.reject(new Error("Dotnet projects can only be scaffold as part of a solution."));
-    if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-dotnet command."));
-    if (!projectPath) return Promise.reject(new Error("Project path argument not provided to scaffold-dotnet command."))
-    if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-dotnet command."));
+    if (!this.project.type) return Promise.reject(new Error("Project type argument not provided to scaffold-dotnet command."));
+    if (!this.project.path) return Promise.reject(new Error("Project path argument not provided to scaffold-dotnet command."))
+    if (!this.project.name) return Promise.reject(new Error("Name argument not provided to scaffold-dotnet command."));
+    let projectType = this.project.type, projectPath = this.project.path, name = this.project.name;
     if (!solutionFolder) return Promise.reject(new Error("Solution folder argument not provided to scaffold-dotnet command."));
     let folderPath = _path.join(solutionFolder, projectPath);
     console.log(`Scaffolding dotnet ${projectType}.`);

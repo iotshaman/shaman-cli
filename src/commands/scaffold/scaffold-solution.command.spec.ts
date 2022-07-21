@@ -5,7 +5,7 @@ import { createMock } from 'ts-auto-mock';
 import { ICommand } from '../command';
 import { ScaffoldSolutionCommand } from './scaffold-solution.command';
 import { IFileService } from '../../services/file.service';
-import { Solution } from '../../models/solution';
+import { Solution, SolutionProject } from '../../models/solution';
 import { ITransformationService } from '../../services/transformation.service';
 
 describe('Scaffold Solution Command', () => {
@@ -122,4 +122,6 @@ class NoopScaffoldCommand implements ICommand {
   }
 
   assignSolution = (solution: Solution) => {}
+
+  assignProject = (project: SolutionProject) => {}
 }

@@ -1,5 +1,5 @@
 import * as _path from 'path';
-import { Solution } from '../../../models/solution';
+import { Solution, SolutionProject } from '../../../models/solution';
 import { ICommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
@@ -13,15 +13,21 @@ export class NodeScaffoldCommand implements ICommand {
   environmentService: IEnvironmentService = new NodeEnvironmentService();
   templateService: ITemplateService = new TemplateService();
   private solution: Solution;
+  private project: SolutionProject;
 
   assignSolution = (solution: Solution) => {
     this.solution = solution;
   }
 
-  run = (projectType: string, projectPath: string, name: string, solutionFolder: string, _language: string = "typescript"): Promise<void> => {
-    if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
-    if (!projectPath) return Promise.reject(new Error("Project path argument not provided to scaffold-node command."))
-    if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
+  assignProject = (project: SolutionProject) => {
+    this.project = project;
+  }
+
+  run = (solutionFolder: string, _language: string = "typescript"): Promise<void> => {
+    if (!this.project.type) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
+    if (!this.project.path) return Promise.reject(new Error("Project path argument not provided to scaffold-node command."))
+    if (!this.project.name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
+    let projectType = this.project.type, projectPath = this.project.path, name = this.project.name;
     if (!solutionFolder) return Promise.reject(new Error("Solution folder argument not provided to scaffold-node command."));
     let folderPath = _path.join(solutionFolder, projectPath);
     console.log(`Scaffolding node ${projectType}.`);
