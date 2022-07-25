@@ -13,8 +13,6 @@ export interface ITemplateService {
 
 export class TemplateService extends HttpService implements ITemplateService {
 
-  httpService: HttpService;
-
   constructor() {
     super('http://localhost:3000/api/projectTemplate');
   }
