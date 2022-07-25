@@ -2,6 +2,7 @@ export class Solution {
   name: string;
   projects: SolutionProject[];
   transform?: ProjectTransformation[];
+  auth?: TemplateAuthorization;
 }
 
 export class SolutionProject {
@@ -9,6 +10,7 @@ export class SolutionProject {
   environment: string;
   type: string;
   path: string;
+  custom?: boolean;
   language?: string;
   include?: string[];
   specs?: {[spec: string]: any};
@@ -20,4 +22,9 @@ export class ProjectTransformation {
   transformation: string;
   sourceProject?: string;
   specs?: {[spec: string]: any};
+}
+
+export class TemplateAuthorization {
+  email: string;
+  token: string;
 }
