@@ -73,26 +73,31 @@ export abstract class HttpService {
     });
   }
 
-  // protected downloadTemplate(uri: string, headers: any = {}, outputPath: string): Promise<Template> {
-  //   return new Promise((res, err) => {
-  //     let url = `${this.apiBaseUri}/${uri}`;
-  //     let data = {
-  //       method: "GET",
-  //       headers: {
-  //         'Accept': 'application/json',
-  //         'Content-Type': 'application/json',
-  //         ...headers
-  //       }
-  //     }
-  //     fetch(url, data).then((response: Response) => {
-  //       console.dir(response);
-  //       const fileStream = _fsx.createWriteStream('D:\\Downloads');
-  //       response.body.pipe(fileStream);
-  //       response.body.on("error", err);
-  //       fileStream.on("finish", res);
-  //     });
-  //   });
-  // }
+  protected downloadTemplate(uri: string, headers: any = {}, outputPath: string): Promise<void> {
+    return new Promise((res, err) => {
+      let url = `${this.apiBaseUri}/${uri}`;
+      let data = {
+        method: "GET",
+        headers: {
+          'Accept': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Content-Type': 'application/json',
+          ...headers
+        }
+      }
+      fetch(url, data).then((response: Response) => {
+        if (response.status != 200) {
+          err(new Error('Failed to download custom template. Please check your shaman.json file ' +
+            'and ensure your authorization information is correct and your token is not expired. ' +
+            'Also check that your project name and environment are correct.'));
+        }
+        const fileStream = _fsx.createWriteStream(outputPath);
+        response.body.pipe(fileStream);
+        response.body.on("error", err);
+        fileStream.on("finish", res);
+      });
+    });
+  }
 
   private handleApiResponse<T = any>(response: Response): Promise<T> {
     if (!response.ok) {
