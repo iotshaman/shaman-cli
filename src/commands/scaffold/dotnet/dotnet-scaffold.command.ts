@@ -36,8 +36,12 @@ export class DotnetScaffoldCommand implements ICommand {
     return this.environmentService.checkNamingConvention(name, this.solution.name)
       .then(_ => this.addDotnetSolutionFile(this.solution.name, solutionFolder))
       .then(_ => this.fileService.createFolder(solutionFolder, projectPath))
-      .then(_ => this.templateService.getTemplate("dotnet", projectType, language))
-      .then(template => this.templateService.unzipProjectTemplate(template, folderPath))
+      .then(_ => this.project.custom ?
+        this.templateService.getCustomTemplate("dotnet", projectType, this.solution.auth, language) :
+        this.templateService.getTemplate("dotnet", projectType, language))
+      .then(template => this.project.custom ? 
+        this.templateService.unzipCustomProjectTemplate(template, folderPath) :
+        this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))

@@ -35,7 +35,9 @@ export class NodeScaffoldCommand implements ICommand {
       .then(_ => this.project.custom ?
         this.templateService.getCustomTemplate("node", projectType, this.solution.auth) :
         this.templateService.getTemplate("node", projectType))
-      .then(template => this.templateService.unzipProjectTemplate(template, folderPath))
+      .then(template => this.project.custom ? 
+        this.templateService.unzipCustomProjectTemplate(template, folderPath) : 
+        this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))

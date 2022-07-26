@@ -9,6 +9,7 @@ export interface ITemplateService {
   getTemplate: (environment: string, projectType: string, language?: string) => Promise<Template>;
   getCustomTemplate: (environment: string, projectType: string, solution: TemplateAuthorization, language?: string) => Promise<Template>
   unzipProjectTemplate: (template: Template, folderPath: string) => Promise<void>;
+  unzipCustomProjectTemplate: (template: Template, folderPath: string) => Promise<void>;
 }
 
 export class TemplateService extends HttpService implements ITemplateService {
@@ -35,14 +36,17 @@ export class TemplateService extends HttpService implements ITemplateService {
     if (!auth) throw new Error('Authorization object not provided in shaman.json file.');
     if (!auth.email) throw new Error('Authorization email not provided in shaman.json file.');
     if (!auth.token) throw new Error('Authorization token not provided in shaman.json file.');
-    let tempFilePath = "D:\\Downloads"; // NOTE: change this back to temp directory
+    let tempFilePath = "";
     let headers = {
       'x-template-environment': environment,
       'x-template-name': projectType,
+      'x-template-language': language ? language : "",
       'x-auth-email': auth.email,
       'x-auth-token': auth.token
     }
-    return this.downloadFile('download', tempFilePath)
+    return this.buildCustomTemplateFolder(environment, projectType, auth.email)
+      .then(tempDir => tempFilePath = _path.join(tempDir, `${projectType.replace(/ /g, '-')}.zip`))
+      .then(_ => this.downloadTemplate('download', headers, tempFilePath))
       .then(_ => {
         let template = new Template();
         template.environment = environment;
@@ -56,6 +60,26 @@ export class TemplateService extends HttpService implements ITemplateService {
   unzipProjectTemplate = (template: Template, folderPath: string): Promise<void> => {
     let templatePath = _path.join(...this.templatesFolder, template.file);
     return this.fileService.unzipFile(templatePath, folderPath);
+  }
+
+  unzipCustomProjectTemplate = (template: Template, folderPath: string): Promise<void> => {
+    return this.fileService.unzipFile(template.file, folderPath);
+  }
+
+  private buildCustomTemplateFolder = (environment: string, projectType: string, userEmail: string): Promise<string> => {
+    // TODO: there must be a better way of doing this
+    return new Promise((res, err) => {
+      let tempDir = os.tmpdir();
+      let emailPrefix = userEmail.split('@')[0]
+      this.fileService.ensureFolderExists(tempDir, 'shaman')
+        .then(_ => tempDir = _path.join(tempDir, 'shaman'))
+        .then(_ => this.fileService.ensureFolderExists(tempDir, environment))
+        .then(_ => tempDir = _path.join(tempDir, environment))
+        .then(_ => this.fileService.ensureFolderExists(tempDir, emailPrefix))
+        .then(_ => tempDir = _path.join(tempDir, emailPrefix))
+        .then(_ => res(tempDir))
+        .catch(err);
+    });
   }
 
 }
