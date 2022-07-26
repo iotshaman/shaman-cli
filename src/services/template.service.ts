@@ -1,5 +1,5 @@
 import * as _path from 'path';
-import* as os from 'os';
+import * as os from 'os';
 import { TemplateAuthorization } from '../models/solution';
 import { Template } from "../models/template";
 import { FileService, IFileService } from './file.service';
@@ -17,14 +17,14 @@ export class TemplateService extends HttpService implements ITemplateService {
   constructor() {
     super('http://localhost:3000/api/projectTemplate');
   }
-  
+
   fileService: IFileService = new FileService();
   templatesFolder: string[] = [__dirname, '..', '..', 'templates'];
 
   getTemplate = (environment: string, projectType: string, language?: string): Promise<Template> => {
     let path = _path.join(...this.templatesFolder, 'templates.json');
-    return this.fileService.readJson<{templates: Template[]}>(path).then(data => {
-      let template = !language ? 
+    return this.fileService.readJson<{ templates: Template[] }>(path).then(data => {
+      let template = !language ?
         data.templates.find(t => t.environment == environment && t.type == projectType) :
         data.templates.find(t => t.environment == environment && t.type == projectType && t.language == language);
       if (!template) throw new Error(`Project type not found: ${environment}-${projectType}`);
@@ -33,9 +33,9 @@ export class TemplateService extends HttpService implements ITemplateService {
   }
 
   getCustomTemplate = (environment: string, projectType: string, auth: TemplateAuthorization, language?: string): Promise<Template> => {
-    if (!auth) throw new Error('Authorization object not provided in shaman.json file.');
-    if (!auth.email) throw new Error('Authorization email not provided in shaman.json file.');
-    if (!auth.token) throw new Error('Authorization token not provided in shaman.json file.');
+    if (!auth) return Promise.reject(new Error('Authorization object not provided in shaman.json file.'));
+    if (!auth.email) return Promise.reject(new Error('Authorization email not provided in shaman.json file.'));
+    if (!auth.token) return Promise.reject(new Error('Authorization token not provided in shaman.json file.'));
     let tempFilePath = "";
     let headers = {
       'x-template-environment': environment,
@@ -44,7 +44,7 @@ export class TemplateService extends HttpService implements ITemplateService {
       'x-auth-email': auth.email,
       'x-auth-token': auth.token
     }
-    return this.buildCustomTemplateFolder(environment, projectType, auth.email)
+    return this.buildCustomTemplateFolder(environment, auth.email)
       .then(tempDir => tempFilePath = _path.join(tempDir, `${projectType.replace(/ /g, '-')}.zip`))
       .then(_ => this.downloadTemplate('download', headers, tempFilePath))
       .then(_ => {
@@ -66,11 +66,10 @@ export class TemplateService extends HttpService implements ITemplateService {
     return this.fileService.unzipFile(template.file, folderPath);
   }
 
-  private buildCustomTemplateFolder = (environment: string, projectType: string, userEmail: string): Promise<string> => {
-    // TODO: there must be a better way of doing this
+  private buildCustomTemplateFolder = (environment: string, userEmail: string): Promise<string> => {
     return new Promise((res, err) => {
       let tempDir = os.tmpdir();
-      let emailPrefix = userEmail.split('@')[0]
+      let emailPrefix = userEmail.split('@')[0];
       this.fileService.ensureFolderExists(tempDir, 'shaman')
         .then(_ => tempDir = _path.join(tempDir, 'shaman'))
         .then(_ => this.fileService.ensureFolderExists(tempDir, environment))
