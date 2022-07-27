@@ -97,7 +97,8 @@ describe('Template Service', () => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.ensureFolderExists = sandbox.stub().returns(Promise.resolve());
     subject.fileService = fileServiceMock;
-    sandbox.stub(subject, <any>"downloadTemplate").returns(Promise.resolve());
+    // NOTE: mock fetch instead of private method
+    sandbox.stub(subject, <any>"downloadTemplate").returns(Promise.resolve()); 
     subject.getCustomTemplate("node", "library", templateAuthorization).then(_ => done());
   });
 
