@@ -1,6 +1,7 @@
 import * as _fsx from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
 
+/* istanbul ignore next */
 export abstract class HttpService {
 
   constructor(private apiBaseUri: string) {

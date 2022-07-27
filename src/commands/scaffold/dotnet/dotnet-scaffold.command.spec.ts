@@ -183,6 +183,60 @@ describe('Scaffold DotNet Environment Command', () => {
     });
   });
 
+  it('run should call templateService.getCustomTemplate if custom project is provided.', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let spawnMock: any = {
+      stdout: { on: sandbox.stub().yields("output") },
+      stderr: { on: sandbox.stub().yields("error") },
+      on: sandbox.stub().yields(0)
+    };
+    sandbox.stub(_cmd, 'spawn').returns(spawnMock);
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'dotnet', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
+    let subject = new DotnetScaffoldCommand();
+    let solution = new Solution(); solution.name = "test";
+    subject.assignSolution(solution);
+    subject.assignProject(new MockCustomDotnetProject())
+    subject.fileService = fileServiceMock;
+    subject.templateService = templateServiceMock;
+    subject.environmentService = createMock<IEnvironmentService>();
+    subject.run("./test").then(_ => {
+      expect(templateServiceMock.getCustomTemplate).to.have.been.called;
+      done();
+    });
+  });
+
+  it('run should call templateService.getCustomTemplate if custom project is provided.', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let spawnMock: any = {
+      stdout: { on: sandbox.stub().yields("output") },
+      stderr: { on: sandbox.stub().yields("error") },
+      on: sandbox.stub().yields(0)
+    };
+    sandbox.stub(_cmd, 'spawn').returns(spawnMock);
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'dotnet', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
+    let subject = new DotnetScaffoldCommand();
+    let solution = new Solution(); solution.name = "test";
+    subject.assignSolution(solution);
+    subject.assignProject(new MockCustomDotnetProject())
+    subject.fileService = fileServiceMock;
+    subject.templateService = templateServiceMock;
+    subject.environmentService = createMock<IEnvironmentService>();
+    subject.run("./test").then(_ => {
+      expect(templateServiceMock.unzipCustomProjectTemplate).to.have.been.called;
+      done();
+    });
+  });
+
 });
 
 class MockDotnetProject implements SolutionProject {
@@ -196,5 +250,21 @@ class MockDotnetProject implements SolutionProject {
     this.environment = 'dotnet';
     this.type = 'test';
     this.path = 'test'
+  }
+}
+
+class MockCustomDotnetProject implements SolutionProject {
+  name: string;
+  environment: string;
+  type: string;
+  path: string;
+  custom: boolean;
+
+  constructor() {
+    this.name = 'Test';
+    this.environment = 'dotnet';
+    this.type = 'test';
+    this.path = 'test'
+    this.custom = true;
   }
 }

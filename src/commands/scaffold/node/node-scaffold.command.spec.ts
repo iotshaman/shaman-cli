@@ -74,6 +74,56 @@ describe('Scaffold Node Environment Command', () => {
       });
   });
 
+  it('run should call templateService.getCustomTemplate if custom project is provided.', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let environmentServiceMock = createMock<IEnvironmentService>();
+    environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
+    let subject = new NodeScaffoldCommand();
+    subject.fileService = fileServiceMock;
+    subject.environmentService = environmentServiceMock;
+    subject.templateService = templateServiceMock;
+    subject.assignSolution(new Solution());
+    subject.assignProject(new MockNodeCustomProject());
+    subject.run("./test").then(_ => {      
+      expect(templateServiceMock.getCustomTemplate).to.have.been.called;
+      done();
+    });
+  });
+
+  it('run should call templateService.unzipCustomProjectTemplate if custom project is provided.', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let environmentServiceMock = createMock<IEnvironmentService>();
+    environmentServiceMock.updateProjectDefinition = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.addProjectScaffoldFile = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.installDependencies = sandbox.stub().returns(Promise.resolve());
+    environmentServiceMock.executeProjectScaffolding = sandbox.stub().returns(Promise.resolve());
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'node', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
+    let subject = new NodeScaffoldCommand();
+    subject.fileService = fileServiceMock;
+    subject.environmentService = environmentServiceMock;
+    subject.templateService = templateServiceMock;
+    subject.assignSolution(new Solution());
+    subject.assignProject(new MockNodeCustomProject());
+    subject.run("./test").then(_ => {      
+      expect(templateServiceMock.unzipCustomProjectTemplate).to.have.been.called;
+      done();
+    });
+  });
+
   it('run should throw call environmentService.updateProjectDefinition', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
@@ -187,5 +237,21 @@ class MockNodeProject implements SolutionProject {
     this.environment = 'node';
     this.type = 'test';
     this.path = 'test'
+  }
+}
+
+class MockNodeCustomProject implements SolutionProject {
+  name: string;
+  environment: string;
+  type: string;
+  path: string;
+  custom: boolean;
+
+  constructor() {
+    this.name = 'test';
+    this.environment = 'node';
+    this.type = 'test';
+    this.path = 'test'
+    this.custom = true;
   }
 }
