@@ -74,6 +74,25 @@ describe('Scaffold Solution Command', () => {
     subject.run("./shaman.json").then(_ => done());
   });
 
+  it('run should not call applyProject', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
+      {
+        name: "sample",
+        path: "sample",
+        environment: "noop"
+      }
+    ]}));
+    let transformationServiceMock = createMock<ITransformationService>();
+    transformationServiceMock.performTransformations = sandbox.stub().returns(Promise.resolve());
+    let subject = new ScaffoldSolutionCommand();
+    subject.fileService = fileServiceMock;
+    subject.transformationService = transformationServiceMock;
+    subject.scaffoldCommands = [new NoopScaffoldCommand()];
+    subject.scaffoldCommands[0].assignProject = undefined;
+    subject.run("./shaman.json").then(_ => done());
+  });
+
   it('run should not call scaffoldProject if the projects path alreay exists', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(true));
