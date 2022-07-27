@@ -15,7 +15,6 @@ export interface ITemplateService {
 export class TemplateService extends HttpService implements ITemplateService {
 
   constructor() {
-    // TODO: move to a config file?
     super('http://localhost:3000/api/projectTemplate');
   }
 
@@ -47,7 +46,7 @@ export class TemplateService extends HttpService implements ITemplateService {
     }
     return this.buildCustomTemplateFolder(environment, auth.email)
       .then(tempDir => tempFilePath = _path.join(tempDir, `${projectType.replace(/ /g, '-')}.zip`))
-      .then(_ => this.downloadTemplate('download', headers, tempFilePath))
+      .then(_ => this.downloadFile('download', tempFilePath, headers))
       .then(_ => {
         let template = new Template();
         template.environment = environment;
@@ -55,6 +54,11 @@ export class TemplateService extends HttpService implements ITemplateService {
         template.version = "1.0.0";
         template.file = tempFilePath;
         return template;
+      })
+      .catch(_ => {
+        return Promise.reject(new Error('Failed to download custom template. Please check your shaman.json file ' +
+        'and ensure your authorization information is correct and your token is not expired. ' +
+        'Also check that your project name and environment are correct.'));
       });
   }
 

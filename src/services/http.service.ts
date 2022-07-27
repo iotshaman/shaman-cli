@@ -62,36 +62,17 @@ export abstract class HttpService {
     return fetch(url, data).then(this.handleApiResponse);
   }
 
-  protected downloadFile(uri: string, outputPath: string): Promise<void> {
-    return new Promise((res, err) => {
-      let url = `${this.apiBaseUri}/${uri}`;
-      fetch(url).then((response: Response) => {
-        const fileStream = _fsx.createWriteStream(outputPath);
-        response.body.pipe(fileStream);
-        response.body.on("error", err);
-        fileStream.on("finish", res);
-      });
-    });
-  }
-
-  protected downloadTemplate(uri: string, headers: any = {}, outputPath: string): Promise<void> {
+  protected downloadFile(uri: string, outputPath: string, headers: any = {}): Promise<void> {
     return new Promise((res, err) => {
       let url = `${this.apiBaseUri}/${uri}`;
       let data = {
         method: "GET",
         headers: {
-          'Accept': 'application/json',
-          'Accept-Encoding': 'gzip, deflate, br',
-          'Content-Type': 'application/json',
           ...headers
         }
       }
       fetch(url, data).then((response: Response) => {
-        if (response.status != 200) {
-          err(new Error('Failed to download custom template. Please check your shaman.json file ' +
-            'and ensure your authorization information is correct and your token is not expired. ' +
-            'Also check that your project name and environment are correct.'));
-        }
+        if (response.status >= 400) err();
         const fileStream = _fsx.createWriteStream(outputPath);
         response.body.pipe(fileStream);
         response.body.on("error", err);

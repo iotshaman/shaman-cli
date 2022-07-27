@@ -132,6 +132,19 @@ describe('File Service', () => {
     subject.createFolder("./", "sample").then(_ => done());
   });
 
+  it('createFolderRecursive should return resolved promise if folder path exists', (done) => {
+    sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(true));    
+    let subject = new FileService();
+    subject.createFolderRecursive('./sample/path').then(_ => done());
+  });
+
+  it('createFolderRecursive should return resolved promise', (done) => {
+    sandbox.stub(_fsx, 'pathExists').returns(<any>Promise.resolve(false));
+    sandbox.stub(_fsx, 'mkdir').returns(<any>Promise.resolve());
+    let subject = new FileService();
+    subject.createFolderRecursive('./sample/path').then(_ => done());
+  });
+
   it('ensureFolderExists should return promise', (done) => {
     sandbox.stub(_fsx, 'ensureDir').returns(<any>Promise.resolve());
     let subject = new FileService();
