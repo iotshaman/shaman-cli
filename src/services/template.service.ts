@@ -69,15 +69,10 @@ export class TemplateService extends HttpService implements ITemplateService {
 
   private buildCustomTemplateFolder = (environment: string, userEmail: string): Promise<string> => {
     return new Promise((res, err) => {
-      let tempDir = os.tmpdir();
       let emailPrefix = userEmail.split('@')[0];
-      this.fileService.ensureFolderExists(tempDir, 'shaman')
-        .then(_ => tempDir = _path.join(tempDir, 'shaman'))
-        .then(_ => this.fileService.ensureFolderExists(tempDir, environment))
-        .then(_ => tempDir = _path.join(tempDir, environment))
-        .then(_ => this.fileService.ensureFolderExists(tempDir, emailPrefix))
-        .then(_ => tempDir = _path.join(tempDir, emailPrefix))
-        .then(_ => res(tempDir))
+      let tmpDir = _path.join(os.tmpdir(), 'shaman', emailPrefix, environment);
+      this.fileService.createFolderRecursive(tmpDir)
+        .then(_ => res(tmpDir))
         .catch(err);
     });
   }
