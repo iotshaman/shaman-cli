@@ -15,6 +15,7 @@ export interface ITemplateService {
 export class TemplateService extends HttpService implements ITemplateService {
 
   constructor() {
+    // TODO: move to a config file?
     super('http://localhost:3000/api/projectTemplate');
   }
 
