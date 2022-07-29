@@ -67,9 +67,7 @@ export abstract class HttpService {
       let url = `${this.apiBaseUri}/${uri}`;
       let data = {
         method: "GET",
-        headers: {
-          ...headers
-        }
+        headers: headers
       }
       fetch(url, data).then((response: Response) => {
         if (response.status >= 400) err();
