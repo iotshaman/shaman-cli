@@ -63,7 +63,7 @@ describe('Template Service', () => {
 
   it('getCustomTemplate should throw if auth not provided.', (done) => {
     let subject = new TemplateService();
-    subject.getCustomTemplate("node", "library", null)
+    subject.getCustomTemplate("node", "library", undefined)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Authorization object not provided in shaman.json file.");
@@ -90,6 +90,19 @@ describe('Template Service', () => {
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Authorization token not provided in shaman.json file.");
+        done();
+      });
+  });
+
+  it('getCustomTemplate should throw if invalid email provided in auth config.', (done) => {
+    let subject = new TemplateService();
+    let templateAuthorization = new TemplateAuthorization();
+    templateAuthorization.email = "test";
+    templateAuthorization.token = "1234";
+    subject.getCustomTemplate("node", "library", templateAuthorization)
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch((ex: Error) => {
+        expect(ex.message).to.equal("Invalid email address in authorization config.");
         done();
       });
   });

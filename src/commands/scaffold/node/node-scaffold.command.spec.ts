@@ -8,7 +8,7 @@ import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../../../services/file.service';
 import { NodeScaffoldCommand } from './node-scaffold.command';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
-import { Solution, SolutionProject } from '../../../models/solution';
+import { ProjectTransformation, Solution, SolutionProject, TemplateAuthorization } from '../../../models/solution';
 import { ITemplateService } from '../../../services/template.service';
 
 describe('Scaffold Node Environment Command', () => {
@@ -30,46 +30,52 @@ describe('Scaffold Node Environment Command', () => {
     expect(subject.name).to.equal("scaffold-node");
   });
 
-  it('run should throw if project type not provided', (done) => {
+  it('run should throw if solution not assigned', (done) => {
     let subject = new NodeScaffoldCommand();
-    subject.assignProject({ name: "test", environment: "dotnet", type: "", path: "test" });
-    subject.run("./test")
+    subject.run("./test", "")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Project type argument not provided to scaffold-node command.");
+        expect(ex.message).to.equal("Projects can only be scaffold as part of a solution.");
         done();
       });
   });
 
-  it('run should throw if project path not provided', (done) => {
+  it('run should throw if invalid project name provided', (done) => {
     let subject = new NodeScaffoldCommand();
-    subject.assignProject({ name: "test", environment: "dotnet", type: "test", path: "" });
-    subject.run("./test")
+    let mockSolution = new MockSolution();
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Project path argument not provided to scaffold-node command.");
+        expect(ex.message).to.equal("Invalid project name 'Test'.");
         done();
       });
   });
 
-  it('run should throw if name not provided', (done) => {
+  it('run should throw if invalid project type provided', (done) => {
     let subject = new NodeScaffoldCommand();
-    subject.assignProject({ name: "", environment: "dotnet", type: "test", path: "test" });
-    subject.run("./test")
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeProject()];
+    mockSolution.projects[0].type = '';
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Name argument not provided to scaffold-node command.");
+        expect(ex.message).to.equal("Invalid project type configuration (project=Test).");
         done();
       });
   });
 
-  it('run should throw if solution folder path not provided', (done) => {
+  it('run should throw if invalid project path provided', (done) => {
     let subject = new NodeScaffoldCommand();
-    subject.assignProject(new MockNodeProject());
-    subject.run(null)
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeProject()];
+    mockSolution.projects[0].path = '';
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Solution folder argument not provided to scaffold-node command.");
+        expect(ex.message).to.equal("Invalid project path configuration (project=Test).");
         done();
       });
   });
@@ -91,9 +97,10 @@ describe('Scaffold Node Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
-    subject.assignSolution(new Solution());
-    subject.assignProject(new MockNodeCustomProject());
-    subject.run("./test").then(_ => {      
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeCustomProject()];
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test").then(_ => {      
       expect(templateServiceMock.getCustomTemplate).to.have.been.called;
       done();
     });
@@ -116,9 +123,10 @@ describe('Scaffold Node Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
-    subject.assignSolution(new Solution());
-    subject.assignProject(new MockNodeCustomProject());
-    subject.run("./test").then(_ => {      
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeCustomProject()];
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test").then(_ => {      
       expect(templateServiceMock.unzipCustomProjectTemplate).to.have.been.called;
       done();
     });
@@ -141,9 +149,10 @@ describe('Scaffold Node Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
-    subject.assignSolution(new Solution());
-    subject.assignProject(new MockNodeProject());
-    subject.run("./test").then(_ => {      
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeProject()];
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test").then(_ => {      
       expect(environmentServiceMock.updateProjectDefinition).to.have.been.called;
       done();
     });
@@ -166,9 +175,10 @@ describe('Scaffold Node Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
-    subject.assignSolution(new Solution());
-    subject.assignProject(new MockNodeProject());
-    subject.run("./test").then(_ => {      
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeProject()];
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test").then(_ => {      
       expect(environmentServiceMock.addProjectScaffoldFile).to.have.been.called;
       done();
     });
@@ -191,9 +201,10 @@ describe('Scaffold Node Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
-    subject.assignSolution(new Solution());
-    subject.assignProject(new MockNodeProject());
-    subject.run("./test").then(_ => {      
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeProject()];
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test").then(_ => {      
       expect(environmentServiceMock.installDependencies).to.have.been.called;
       done();
     });
@@ -216,15 +227,23 @@ describe('Scaffold Node Environment Command', () => {
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
     subject.templateService = templateServiceMock;
-    subject.assignSolution(new Solution());
-    subject.assignProject(new MockNodeProject());
-    subject.run("./test").then(_ => {      
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockNodeProject()];
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test").then(_ => {      
       expect(environmentServiceMock.executeProjectScaffolding).to.have.been.called;
       done();
     });
   });
 
 });
+
+class MockSolution implements Solution {
+  name: string = 'sample-solution'
+  projects: SolutionProject[] = []
+  transform?: ProjectTransformation[] | undefined;
+  auth?: TemplateAuthorization | undefined;
+}
 
 class MockNodeProject implements SolutionProject {
   name: string;
@@ -233,7 +252,7 @@ class MockNodeProject implements SolutionProject {
   path: string;
 
   constructor() {
-    this.name = 'test';
+    this.name = 'Test';
     this.environment = 'node';
     this.type = 'test';
     this.path = 'test'
@@ -248,7 +267,7 @@ class MockNodeCustomProject implements SolutionProject {
   custom: boolean;
 
   constructor() {
-    this.name = 'test';
+    this.name = 'Test';
     this.environment = 'node';
     this.type = 'test';
     this.path = 'test'

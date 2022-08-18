@@ -1,5 +1,5 @@
 import * as _path from 'path';
-import { Solution, SolutionProject } from '../../../models/solution';
+import { Solution } from '../../../models/solution';
 import { ICommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
@@ -13,29 +13,25 @@ export class NodeScaffoldCommand implements ICommand {
   environmentService: IEnvironmentService = new NodeEnvironmentService();
   templateService: ITemplateService = new TemplateService();
   private solution: Solution;
-  private project: SolutionProject;
 
   assignSolution = (solution: Solution) => {
     this.solution = solution;
   }
 
-  assignProject = (project: SolutionProject) => {
-    this.project = project;
-  }
-
-  run = (solutionFolder: string, _language: string = "typescript"): Promise<void> => {
-    if (!this.project.type) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
-    if (!this.project.path) return Promise.reject(new Error("Project path argument not provided to scaffold-node command."))
-    if (!this.project.name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
-    let projectType = this.project.type, projectPath = this.project.path, name = this.project.name;
-    if (!solutionFolder) return Promise.reject(new Error("Solution folder argument not provided to scaffold-node command."));
+  run = (solutionFolder: string, projectName: string): Promise<void> => {
+    if (!this.solution) return Promise.reject(new Error("Projects can only be scaffold as part of a solution."));
+    let project = this.solution.projects.find(p => p.name == projectName);
+    if (!project) return Promise.reject(new Error(`Invalid project name '${projectName}'.`));
+    if (!project.type) return Promise.reject(new Error(`Invalid project type configuration (project=${projectName}).`));
+    if (!project.path) return Promise.reject(new Error(`Invalid project path configuration (project=${projectName}).`));
+    let projectType = project.type, projectPath = project.path, name = project.name;
     let folderPath = _path.join(solutionFolder, projectPath);
     console.log(`Scaffolding node ${projectType}.`);
     return this.environmentService.checkNamingConvention(name)
-      .then(_ => this.project.custom ?
+      .then(_ => project.custom ?
         this.templateService.getCustomTemplate("node", projectType, this.solution.auth) :
         this.templateService.getTemplate("node", projectType))
-      .then(template => this.project.custom ? 
+      .then(template => project.custom ? 
         this.templateService.unzipCustomProjectTemplate(template, folderPath) : 
         this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))

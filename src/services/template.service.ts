@@ -32,10 +32,11 @@ export class TemplateService extends HttpService implements ITemplateService {
     });
   }
 
-  getCustomTemplate = (environment: string, projectType: string, auth: TemplateAuthorization, language?: string): Promise<Template> => {
+  getCustomTemplate = (environment: string, projectType: string, auth?: TemplateAuthorization, language?: string): Promise<Template> => {
     if (!auth) return Promise.reject(new Error('Authorization object not provided in shaman.json file.'));
     if (!auth.email) return Promise.reject(new Error('Authorization email not provided in shaman.json file.'));
     if (!auth.token) return Promise.reject(new Error('Authorization token not provided in shaman.json file.'));
+    if (!auth.email.includes('@')) return Promise.reject(new Error("Invalid email address in authorization config."));
     let tempFilePath = "";
     let headers = {
       'x-template-environment': environment,
@@ -72,13 +73,9 @@ export class TemplateService extends HttpService implements ITemplateService {
   }
 
   private buildCustomTemplateFolder = (environment: string, userEmail: string): Promise<string> => {
-    return new Promise((res, err) => {
-      let emailPrefix = userEmail.split('@')[0];
-      let tmpDir = _path.join(os.tmpdir(), 'shaman', emailPrefix, environment);
-      this.fileService.createFolderRecursive(tmpDir)
-        .then(_ => res(tmpDir))
-        .catch(err);
-    });
+    let emailPrefix = userEmail.split('@')[0];
+    let tmpDir = _path.join(os.tmpdir(), 'shaman', emailPrefix, environment);
+    return this.fileService.createFolderRecursive(tmpDir).then(_ => (tmpDir))
   }
 
 }

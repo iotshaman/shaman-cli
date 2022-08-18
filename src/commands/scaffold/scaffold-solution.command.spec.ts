@@ -38,7 +38,7 @@ describe('Scaffold Solution Command', () => {
     let subject = new ScaffoldSolutionCommand();
     subject.fileService = fileServiceMock;
     subject.scaffoldCommands = [new NoopScaffoldCommand()];
-    subject.run(null)
+    subject.run("")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid environment 'invalid'.");
@@ -71,25 +71,6 @@ describe('Scaffold Solution Command', () => {
     subject.transformationService = transformationServiceMock;
     subject.scaffoldCommands = [new NoopScaffoldCommand()];
     subject.scaffoldCommands[0].assignSolution = undefined;
-    subject.run("./shaman.json").then(_ => done());
-  });
-
-  it('run should not call applyProject', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "noop"
-      }
-    ]}));
-    let transformationServiceMock = createMock<ITransformationService>();
-    transformationServiceMock.performTransformations = sandbox.stub().returns(Promise.resolve());
-    let subject = new ScaffoldSolutionCommand();
-    subject.fileService = fileServiceMock;
-    subject.transformationService = transformationServiceMock;
-    subject.scaffoldCommands = [new NoopScaffoldCommand()];
-    subject.scaffoldCommands[0].assignProject = undefined;
     subject.run("./shaman.json").then(_ => done());
   });
 
