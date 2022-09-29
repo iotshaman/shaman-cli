@@ -1,20 +1,24 @@
 import * as _path from 'path';
 import { Solution } from '../../../models/solution';
-import { ICommand } from '../../command';
+import { IChildCommand } from '../../command';
 import { FileService } from '../../../services/file.service';
 import { DotnetEnvironmentService } from '../../../services/environments/dotnet-environment.service';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 
-export class DotnetPublishCommand implements ICommand {
-  
+export class DotnetPublishCommand implements IChildCommand {
+
   get name(): string { return "publish-dotnet" };
   fileService = new FileService();
   environmentService: IEnvironmentService = new DotnetEnvironmentService();
 
-  run = (solutionFilePath: string): Promise<void> => {
-    solutionFilePath = _path.join(process.cwd(), solutionFilePath);
-    return this.fileService.getShamanFile(solutionFilePath)
-      .then(solution => this.publishSolution(solutionFilePath, solution))
+  constructor(
+    private solutionFilePath
+  ) { }
+
+  run = (): Promise<void> => {
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
+    return this.fileService.getShamanFile(this.solutionFilePath)
+      .then(solution => this.publishSolution(this.solutionFilePath, solution))
       .then(_ => console.log("Dotnet projects published successfully..."));
   }
 
@@ -29,7 +33,7 @@ export class DotnetPublishCommand implements ICommand {
       .then(_ => this.fileService.ensureFolderExists(binPath, "dotnet"))
       .then(_ => projectNames.reduce((a, b) => a.then(_ => {
         let project = projects.find(p => p.name == b);
-        let destinationPath = _path.join(binPath, "dotnet",project.path);
+        let destinationPath = _path.join(binPath, "dotnet", project.path);
         return this.environmentService.publishProject(project.name, _path.join(cwd, project.path), destinationPath);
       }), Promise.resolve()));
   }

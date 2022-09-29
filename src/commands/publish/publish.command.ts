@@ -1,5 +1,5 @@
 import * as _path from 'path';
-import { ICommand } from '../command';
+import { IChildCommand, ICommand } from '../command';
 import { Solution } from '../../models/solution';
 import { NodePublishCommand } from './node/node-publish.command';
 import { DotnetPublishCommand } from './dotnet/dotnet-publish.command';
@@ -7,31 +7,44 @@ import { IFileService, FileService } from '../../services/file.service';
 import { IPublishInstructionService } from './instructions/publish-instruction-service';
 import { IPublishInstruction } from './publish-instruction';
 import { CopyFilePublishInstructionService } from './instructions/copy-file.instruction';
+import { CommandLineArguments } from '../../command-line-arguments';
 
 export class PublishCommand implements ICommand {
 
   get name(): string { return "publish" };
-  publishCommands: ICommand[] = [
-    new NodePublishCommand(),
-    new DotnetPublishCommand()
-  ];
+  publishCommands: IChildCommand[] = [];
   publishInstructionsServices: IPublishInstructionService[] = [
     new CopyFilePublishInstructionService()
   ];
   fileService: IFileService = new FileService();
+  childCommandFactory: (solutionFilePath: string) => IChildCommand[];
 
-  run = (environment: string = "*", solutionFilePath: string = "./shaman.json"): Promise<void> => {
+  private environment;
+  private solutionFilePath;
+
+  constructor() {
+    this.childCommandFactory = (solutionFilePath: string): IChildCommand[] => {
+      return [
+        new NodePublishCommand(solutionFilePath),
+        new DotnetPublishCommand(solutionFilePath)
+      ]
+    }
+  }
+
+  run = (cla: CommandLineArguments): Promise<void> => {
+    this.assignArguments(cla);
+    this.publishCommands = this.childCommandFactory(this.solutionFilePath);
     console.log("Publishing solution...");
-    let cwd = solutionFilePath.replace("shaman.json", "");
-    let publishEnvironmentsTask = () => this.fileService.getShamanFile(solutionFilePath).then(solution => {
-      if (environment != "*") {
-        return this.publishEnvironment(environment, solutionFilePath)
-          .then(_ => ({solution, environments: [environment]}));
+    let cwd = this.solutionFilePath.replace("shaman.json", "");
+    let publishEnvironmentsTask = () => this.fileService.getShamanFile(this.solutionFilePath).then(solution => {
+      if (this.environment != "*") {
+        return this.publishEnvironment(this.environment)
+          .then(_ => ({solution, environments: [this.environment]}));
       }
       let projectEnvironments = solution.projects.map(p => p.environment);
       let environmetsSet = [...new Set(projectEnvironments)];
       return environmetsSet.reduce((a, b) => a.then(_ =>
-        this.publishEnvironment(b, solutionFilePath)
+        this.publishEnvironment(b)
       ), Promise.resolve())
       .then(_ => ({solution, environments: environmetsSet}));
     });
@@ -41,10 +54,10 @@ export class PublishCommand implements ICommand {
       .then(_ => console.log("Solution publish is complete."));
   }
 
-  private publishEnvironment(environment: string, solutionFilePath: string): Promise<void> {
+  private publishEnvironment(environment: string): Promise<void> {
     let cmd = this.publishCommands.find(c => c.name == `publish-${environment}`)
     if (!cmd) return Promise.reject(new Error(`Invalid environment '${environment}'.`));
-    return cmd.run(solutionFilePath);
+    return cmd.run();
   }
 
   private processInstructions = (cwd: string, solution: Solution, environments: string[]): Promise<void> => {
@@ -66,6 +79,9 @@ export class PublishCommand implements ICommand {
     }), Promise.resolve());
   }
 
+  private assignArguments = (cla: CommandLineArguments) => {
+    this.environment = cla.args['environment'] ? cla.args['environment'] : '*';
+    this.solutionFilePath = cla.args['filePath'] ? cla.args['filePath'] : './shaman.json';
+  }
+
 }
-
-

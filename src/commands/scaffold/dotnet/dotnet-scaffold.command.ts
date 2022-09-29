@@ -1,48 +1,54 @@
 import * as _path from 'path';
 import { spawn } from 'child_process';
-import { Solution } from '../../../models/solution';
-import { ICommand } from "../../command";
+import { Solution, SolutionProject } from '../../../models/solution';
 import { FileService, IFileService } from '../../../services/file.service';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 import { ITemplateService, TemplateService } from '../../../services/template.service';
 import { DotnetEnvironmentService } from '../../../services/environments/dotnet-environment.service';
+import { IChildCommand } from '../../command';
 
-export class DotnetScaffoldCommand implements ICommand {
+export class DotnetScaffoldCommand implements IChildCommand {
 
   get name(): string { return "scaffold-dotnet"; }
   fileService: IFileService = new FileService();
   environmentService: IEnvironmentService = new DotnetEnvironmentService();
   templateService: ITemplateService = new TemplateService();
-  private solution: Solution;
+  private project: SolutionProject;
 
-  assignSolution = (solution: Solution) => {
-    this.solution = solution;
+  constructor(
+    private solution: Solution,
+    private solutionFolder: string
+  ) { }
+
+  assignProject = (project: SolutionProject) => {
+    this.project = project;
   }
 
-  run = (solutionFolder: string, projectName: string): Promise<void> => {
+  run = (): Promise<void> => {
+    let projectName = this.project.name;
     if (!this.solution) return Promise.reject(new Error("Projects can only be scaffold as part of a solution."));
-    let project = this.solution.projects.find(p => p.name == projectName);
-    if (!project) return Promise.reject(new Error(`Invalid project name '${projectName}'.`));
-    if (!project.type) return Promise.reject(new Error(`Invalid project type configuration (project=${projectName}).`));
-    if (!project.path) return Promise.reject(new Error(`Invalid project path configuration (project=${projectName}).`));
-    let projectType = project.type, projectPath = project.path, name = project.name;
-    let folderPath = _path.join(solutionFolder, projectPath);
-    let language = project.language;
+    if (!this.project.type) return Promise.reject(new Error(`Invalid project type configuration (project=${projectName}).`));
+    if (!this.project.path) return Promise.reject(new Error(`Invalid project path configuration (project=${projectName}).`));
+    let projectType = this.project.type, projectPath = this.project.path, name = this.project.name;
+    let folderPath = _path.join(this.solutionFolder, projectPath);
+    let language = this.project.language;
     console.log(`Scaffolding dotnet ${projectType}.`);
     return this.environmentService.checkNamingConvention(name, this.solution.name)
-      .then(_ => this.addDotnetSolutionFile(this.solution.name, solutionFolder))
-      .then(_ => this.fileService.createFolder(solutionFolder, projectPath))
-      .then(_ => project.custom ?
-        this.templateService.getCustomTemplate("dotnet", projectType, this.solution.auth, language) :
-        this.templateService.getTemplate("dotnet", projectType, language))
-      .then(template => project.custom ? 
-        this.templateService.unzipCustomProjectTemplate(template, folderPath) :
-        this.templateService.unzipProjectTemplate(template, folderPath))
+      .then(_ => this.addDotnetSolutionFile(this.solution.name, this.solutionFolder))
+      .then(_ => this.fileService.createFolder(this.solutionFolder, projectPath))
+      .then(_ => {
+        if (this.project.custom) return this.templateService.getCustomTemplate("dotnet", projectType, this.solution.auth, language);
+        else return this.templateService.getTemplate("dotnet", projectType, language);
+      })
+      .then(template => {
+        if (this.project.custom) return this.templateService.unzipCustomProjectTemplate(template, folderPath);
+        else return this.templateService.unzipProjectTemplate(template, folderPath);
+      })
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))
       .then(_ => this.environmentService.executeProjectScaffolding(folderPath))
-      .then(_ => this.addDotnetProjectToSolutionFile(this.solution.name, solutionFolder, projectPath))
+      .then(_ => this.addDotnetProjectToSolutionFile(this.solution.name, this.solutionFolder, projectPath))
       .then(_ => {
         console.log("Scaffolding is complete.");
       })

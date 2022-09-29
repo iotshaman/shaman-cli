@@ -1,24 +1,29 @@
 import * as _path from 'path';
 import * as _cmd from 'child_process';
-import { ICommand } from "../../command";
+import { IChildCommand } from "../../command";
 import { FileService, IFileService } from '../../../services/file.service';
 import { Solution } from '../../../models/solution';
 import { DependencyTree } from '../../../models/dependency-tree';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 import { NodeEnvironmentService } from '../../../services/environments/node-environment.service';
 
-export class NodeInstallCommand implements ICommand {
+export class NodeInstallCommand implements IChildCommand {
 
   get name(): string { return "install-node"; }
   fileService: IFileService = new FileService();
   environmentService: IEnvironmentService = new NodeEnvironmentService();
 
-  run = (environment: string, solutionFilePath: string): Promise<void> => {
-    if (!solutionFilePath) solutionFilePath = _path.join(process.cwd(), 'shaman.json');
-    else solutionFilePath = _path.join(process.cwd(), solutionFilePath);
+  constructor(
+    private solutionFilePath: string,
+    private environment: string
+  ) { }
+
+  run = (): Promise<void> => {
+    if (!this.solutionFilePath) this.solutionFilePath = _path.join(process.cwd(), 'shaman.json');
+    else this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
     console.log(`Installing node solution.`);
-    return this.fileService.getShamanFile(solutionFilePath)
-      .then(solution => this.installSolution(environment, solutionFilePath, solution));
+    return this.fileService.getShamanFile(this.solutionFilePath)
+      .then(solution => this.installSolution(this.environment, this.solutionFilePath, solution));
   }
 
   private installSolution = (environment: string, solutionFilePath: string, solution: Solution): Promise<void> => {
