@@ -80,8 +80,8 @@ export class PublishCommand implements ICommand {
   }
 
   private assignArguments = (cla: CommandLineArguments) => {
-    this.environment = cla.args['environment'] ? cla.args['environment'] : '*';
-    this.solutionFilePath = cla.args['filePath'] ? cla.args['filePath'] : './shaman.json';
+    this.environment = cla.getValueOrDefault('environment');
+    this.solutionFilePath = cla.getValueOrDefault('filePath');
   }
 
 }

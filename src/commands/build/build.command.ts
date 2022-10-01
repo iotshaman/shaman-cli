@@ -10,15 +10,15 @@ export class BuildCommand implements ICommand {
   get name(): string { return "build"; }
   buildCommands: IChildCommand[] = [];
   fileService: IFileService = new FileService();
-  childCommandFactory: (solutionFilePath: string, environment: string) => IChildCommand[];
+  childCommandFactory: (solutionFilePath: string) => IChildCommand[];
 
   private environment;
   private solutionFilePath;
 
   constructor() {
-    this.childCommandFactory = (solutionFilePath: string, environment: string): IChildCommand[] => {
+    this.childCommandFactory = (solutionFilePath: string): IChildCommand[] => {
       return [
-        new NodeBuildCommand(solutionFilePath, environment),
+        new NodeBuildCommand(solutionFilePath),
         new DotnetBuildCommand(solutionFilePath)
       ]
     }
@@ -26,7 +26,7 @@ export class BuildCommand implements ICommand {
 
   run = (cla: CommandLineArguments): Promise<void> => {
     this.assignArguments(cla);
-    this.buildCommands = this.childCommandFactory(this.solutionFilePath, this.environment);
+    this.buildCommands = this.childCommandFactory(this.solutionFilePath);
     if (this.environment != "*") return this.buildEnvironment(this.environment);
     let buildEnvironmentsTask = this.fileService.getShamanFile(this.solutionFilePath).then(solution => {
       let projectEnvironments = solution.projects.map(p => p.environment);
@@ -45,8 +45,8 @@ export class BuildCommand implements ICommand {
   }
 
   private assignArguments = (cla: CommandLineArguments): void => {
-    this.environment = cla.args['environment'] ? cla.args['environment'] : '*';
-    this.solutionFilePath = cla.args['filePath'] ? cla.args['filePath'] : './shaman.json';
+    this.environment = cla.getValueOrDefault('environment');
+    this.solutionFilePath = cla.getValueOrDefault('filePath');
   }
 
 }

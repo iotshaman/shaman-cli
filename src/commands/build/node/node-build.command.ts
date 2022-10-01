@@ -14,8 +14,7 @@ export class NodeBuildCommand implements IChildCommand {
   environmentService: IEnvironmentService = new NodeEnvironmentService();
 
   constructor(
-    private solutionFilePath: string,
-    private environment: string
+    private solutionFilePath: string
   ) { }
 
   run = (): Promise<void> => {
@@ -23,12 +22,12 @@ export class NodeBuildCommand implements IChildCommand {
     else this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
     console.log(`Building node solution.`);
     return this.fileService.getShamanFile(this.solutionFilePath)
-      .then(solution => this.buildSolution(this.environment, this.solutionFilePath, solution));
+      .then(solution => this.buildSolution(this.solutionFilePath, solution));
   }
 
-  private buildSolution = (environment: string, solutionFilePath: string, solution: Solution): Promise<void> => {
+  private buildSolution = (solutionFilePath: string, solution: Solution): Promise<void> => {
     let cwd = solutionFilePath.replace('shaman.json', '');
-    let projects = solution.projects.filter(p => p.environment == environment);
+    let projects = solution.projects.filter(p => p.environment == "node");
     if (!projects.length) return Promise.resolve();
     let dependencyTree = new DependencyTree(projects);
     let buildOrder = dependencyTree.getOrderedProjectList();

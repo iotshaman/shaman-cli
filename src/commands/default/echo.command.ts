@@ -6,7 +6,7 @@ export class EchoCommand implements ICommand {
   get name(): string { return "echo"; }
 
   run = (cla: CommandLineArguments): Promise<void> => {
-    let echo = cla.args['string'] ? cla.args['string'] : 'No echo string provided.';
+    let echo: string = cla.getValueOrDefault('echo');
     console.log(`Echo: ${echo}`);
     return Promise.resolve();
   }
