@@ -8,7 +8,7 @@ import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../../../services/file.service';
 import { DotnetScaffoldCommand } from './dotnet-scaffold.command';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
-import { Solution } from '../../../models/solution';
+import { ProjectTransformation, Solution, SolutionProject, TemplateAuthorization } from '../../../models/solution';
 import { ITemplateService } from '../../../services/template.service';
 
 describe('Scaffold DotNet Environment Command', () => {
@@ -32,68 +32,50 @@ describe('Scaffold DotNet Environment Command', () => {
 
   it('run should throw if solution not assigned', (done) => {
     let subject = new DotnetScaffoldCommand();
-    subject.run(null, "./test", "test", "./test")
+    subject.run("./test", "")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Dotnet projects can only be scaffold as part of a solution.");
+        expect(ex.message).to.equal("Projects can only be scaffold as part of a solution.");
         done();
       });
   });
 
-  it('run should throw if project type not provided', (done) => {
+  it('run should throw if invalid project name provided', (done) => {
     let subject = new DotnetScaffoldCommand();
-    subject.assignSolution(new Solution());
-    subject.run(null, "./test", "test", "./test")
+    let mockSolution = new MockSolution();
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Project type argument not provided to scaffold-dotnet command.");
+        expect(ex.message).to.equal("Invalid project name 'Test'.");
         done();
       });
   });
 
-  it('run should throw if project path not provided', (done) => {
+  it('run should throw if invalid project type provided', (done) => {
     let subject = new DotnetScaffoldCommand();
-    subject.assignSolution(new Solution());
-    subject.run("library", null, "test", "./test")
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockDotnetProject()];
+    mockSolution.projects[0].type = '';
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Project path argument not provided to scaffold-dotnet command.");
+        expect(ex.message).to.equal("Invalid project type configuration (project=Test).");
         done();
       });
   });
 
-  it('run should throw if name not provided', (done) => {
+  it('run should throw if invalid project path provided', (done) => {
     let subject = new DotnetScaffoldCommand();
-    subject.assignSolution(new Solution());
-    subject.run("library", "./test", null, "./test")
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockDotnetProject()];
+    mockSolution.projects[0].path = '';
+    subject.assignSolution(mockSolution);
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Name argument not provided to scaffold-dotnet command.");
-        done();
-      });
-  });
-
-  it('run should throw if solution folder path not provided', (done) => {
-    let subject = new DotnetScaffoldCommand();
-    subject.assignSolution(new Solution());
-    subject.run("library", "./test", "test", null)
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Solution folder argument not provided to scaffold-dotnet command.");
-        done();
-      });
-  });
-
-  it('run should throw if no solution name provided', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-    let subject = new DotnetScaffoldCommand();
-    subject.assignSolution(new Solution());
-    subject.fileService = fileServiceMock;
-    subject.run("library", "./test", "test", "./test")
-      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-      .catch((ex: Error) => {
-        expect(ex.message).to.equal("Dotnet solutions require a name, please update your shaman.json file.");
+        expect(ex.message).to.equal("Invalid project path configuration (project=Test).");
         done();
       });
   });
@@ -101,6 +83,8 @@ describe('Scaffold DotNet Environment Command', () => {
   it('run should throw if child process throws when adding dotnet solution file', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let environmentServiceMock = createMock<IEnvironmentService>();
+    environmentServiceMock.checkNamingConvention = sandbox.stub().returns(Promise.resolve());
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
       stderr: { on: sandbox.stub().yields("error") },
@@ -108,10 +92,12 @@ describe('Scaffold DotNet Environment Command', () => {
     };
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let subject = new DotnetScaffoldCommand();
-    let solution = new Solution(); solution.name = "test";
-    subject.assignSolution(solution);
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockDotnetProject()];
+    subject.environmentService = environmentServiceMock;
+    subject.assignSolution(mockSolution);
     subject.fileService = fileServiceMock;
-    subject.run("library", "./test", "test", "./test")
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("An error occurred while adding dotnet solution file.");
@@ -129,13 +115,14 @@ describe('Scaffold DotNet Environment Command', () => {
     };
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let subject = new DotnetScaffoldCommand();
-    let solution = new Solution(); solution.name = "test";
-    subject.assignSolution(solution);
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockDotnetProject()];
+    subject.assignSolution(mockSolution);
     subject.fileService = fileServiceMock;
     subject.templateService = createMock<ITemplateService>();
     subject.environmentService = createMock<IEnvironmentService>();
-    subject.run("library", "./test", "test", "./test").then(_ => {
-      expect(_cmd.spawn).to.have.been.calledOnce; 
+    subject.run("./test", "Test").then(_ => {
+      expect(_cmd.spawn).to.have.been.calledOnce;
       done()
     });
   });
@@ -152,12 +139,13 @@ describe('Scaffold DotNet Environment Command', () => {
     spawnMock.on.onCall(1).yields(1);
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let subject = new DotnetScaffoldCommand();
-    let solution = new Solution(); solution.name = "test";
-    subject.assignSolution(solution);
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockDotnetProject()];
+    subject.assignSolution(mockSolution);
     subject.fileService = fileServiceMock;
     subject.templateService = createMock<ITemplateService>();
     subject.environmentService = createMock<IEnvironmentService>();
-    subject.run("library", "./test", "test", "./test")
+    subject.run("./test", "Test")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("An error occurred while adding dotnet project to solution.");
@@ -175,15 +163,107 @@ describe('Scaffold DotNet Environment Command', () => {
     };
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let subject = new DotnetScaffoldCommand();
-    let solution = new Solution(); solution.name = "test";
-    subject.assignSolution(solution);
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockDotnetProject()];
+    subject.assignSolution(mockSolution);
     subject.fileService = fileServiceMock;
     subject.templateService = createMock<ITemplateService>();
     subject.environmentService = createMock<IEnvironmentService>();
-    subject.run("library", "./test", "test", "./test").then(_ => {
+    subject.run("./test", "Test").then(_ => {
       expect(_cmd.spawn).to.have.been.calledTwice;
       done();
     });
   });
 
+  it('run should call templateService.getCustomTemplate if custom project is provided.', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let spawnMock: any = {
+      stdout: { on: sandbox.stub().yields("output") },
+      stderr: { on: sandbox.stub().yields("error") },
+      on: sandbox.stub().yields(0)
+    };
+    sandbox.stub(_cmd, 'spawn').returns(spawnMock);
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'dotnet', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
+    let subject = new DotnetScaffoldCommand();
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockCustomDotnetProject()];
+    subject.assignSolution(mockSolution);
+    subject.fileService = fileServiceMock;
+    subject.templateService = templateServiceMock;
+    subject.environmentService = createMock<IEnvironmentService>();
+    subject.run("./test", "Test").then(_ => {
+      expect(templateServiceMock.getCustomTemplate).to.have.been.called;
+      done();
+    });
+  });
+
+  it('run should call templateService.getCustomTemplate if custom project is provided.', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+    let spawnMock: any = {
+      stdout: { on: sandbox.stub().yields("output") },
+      stderr: { on: sandbox.stub().yields("error") },
+      on: sandbox.stub().yields(0)
+    };
+    sandbox.stub(_cmd, 'spawn').returns(spawnMock);
+    let templateServiceMock = createMock<ITemplateService>();
+    templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
+      environment: 'dotnet', type: 'library', file: 'path.zip'
+    }]}));
+    templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
+    let subject = new DotnetScaffoldCommand();
+    let mockSolution = new MockSolution();
+    mockSolution.projects = [new MockCustomDotnetProject()];
+    subject.assignSolution(mockSolution);
+    subject.fileService = fileServiceMock;
+    subject.templateService = templateServiceMock;
+    subject.environmentService = createMock<IEnvironmentService>();
+    subject.run("./test", "Test").then(_ => {
+      expect(templateServiceMock.unzipCustomProjectTemplate).to.have.been.called;
+      done();
+    });
+  });
+
 });
+
+class MockSolution implements Solution {
+  name: string = 'sample-solution'
+  projects: SolutionProject[] = []
+  transform?: ProjectTransformation[] | undefined;
+  auth?: TemplateAuthorization | undefined;
+}
+
+class MockDotnetProject implements SolutionProject {
+  name: string;
+  environment: string;
+  type: string;
+  path: string;
+
+  constructor() {
+    this.name = 'Test';
+    this.environment = 'dotnet';
+    this.type = 'test';
+    this.path = 'test'
+  }
+}
+
+class MockCustomDotnetProject implements SolutionProject {
+  name: string;
+  environment: string;
+  type: string;
+  path: string;
+  custom: boolean;
+
+  constructor() {
+    this.name = 'Test';
+    this.environment = 'dotnet';
+    this.type = 'test';
+    this.path = 'test'
+    this.custom = true;
+  }
+}

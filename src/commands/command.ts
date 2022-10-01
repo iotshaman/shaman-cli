@@ -1,4 +1,4 @@
-import { Solution } from "..";
+import { Solution, SolutionProject } from "..";
 
 export interface ICommand {
   name: string;

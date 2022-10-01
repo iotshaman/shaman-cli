@@ -18,15 +18,22 @@ export class NodeScaffoldCommand implements ICommand {
     this.solution = solution;
   }
 
-  run = (projectType: string, projectPath: string, name: string, solutionFolder: string, _language: string = "typescript"): Promise<void> => {
-    if (!projectType) return Promise.reject(new Error("Project type argument not provided to scaffold-node command."));
-    if (!projectPath) return Promise.reject(new Error("Project path argument not provided to scaffold-node command."))
-    if (!name) return Promise.reject(new Error("Name argument not provided to scaffold-node command."));
-    if (!solutionFolder) return Promise.reject(new Error("Solution folder argument not provided to scaffold-node command."));
+  run = (solutionFolder: string, projectName: string): Promise<void> => {
+    if (!this.solution) return Promise.reject(new Error("Projects can only be scaffold as part of a solution."));
+    let project = this.solution.projects.find(p => p.name == projectName);
+    if (!project) return Promise.reject(new Error(`Invalid project name '${projectName}'.`));
+    if (!project.type) return Promise.reject(new Error(`Invalid project type configuration (project=${projectName}).`));
+    if (!project.path) return Promise.reject(new Error(`Invalid project path configuration (project=${projectName}).`));
+    let projectType = project.type, projectPath = project.path, name = project.name;
     let folderPath = _path.join(solutionFolder, projectPath);
     console.log(`Scaffolding node ${projectType}.`);
-    return this.templateService.getTemplate("node", projectType)
-      .then(template => this.templateService.unzipProjectTemplate(template, folderPath))
+    return this.environmentService.checkNamingConvention(name)
+      .then(_ => project.custom ?
+        this.templateService.getCustomTemplate("node", projectType, this.solution.auth) :
+        this.templateService.getTemplate("node", projectType))
+      .then(template => project.custom ? 
+        this.templateService.unzipCustomProjectTemplate(template, folderPath) : 
+        this.templateService.unzipProjectTemplate(template, folderPath))
       .then(_ => this.environmentService.updateProjectDefinition(folderPath, name, this.solution))
       .then(_ => this.environmentService.addProjectScaffoldFile(folderPath, name, this.solution))
       .then(_ => this.environmentService.installDependencies(folderPath, name))

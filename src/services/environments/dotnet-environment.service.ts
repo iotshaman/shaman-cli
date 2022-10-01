@@ -58,6 +58,26 @@ export class DotnetEnvironmentService extends EnvironmentServiceBase {
     });
   }
 
+  checkNamingConvention = (projectName: string, solutionName: string): Promise<void> => {
+    if (!solutionName) return Promise.reject(new Error("Dotnet solutions require a name, please update your shaman.json file."));
+    let namingConvention = new RegExp('^[A-Z][a-zA-Z]*$');
+    if (!namingConvention.test(solutionName)) {
+      let recommendedName = solutionName.charAt(0).toUpperCase() + solutionName.slice(1);
+      return Promise.reject(
+        new Error(`Solution name "${solutionName}" does not meet proper dotnet naming conventions. ` + 
+        `It's recommended that the solution name be changed to "${recommendedName}".`
+        ));
+    }
+    if (!namingConvention.test(projectName)) {
+      let recommendedName = projectName.charAt(0).toUpperCase() + projectName.slice(1);
+      return Promise.reject(
+        new Error(`Project name "${projectName}" does not meet proper dotnet naming conventions. ` + 
+        `It's recommended that the project name be changed to "${recommendedName}".`
+        ));
+    }
+    return Promise.resolve();
+  };
+  
   publishProject = (name: string, path: string, destinationPath: string): Promise<void> => {
     return new Promise((res, err) => {
       console.log(`Publishing project '${name}...'`)

@@ -16,6 +16,7 @@ export interface IFileService {
   getSourceFile: (file: string, tabSize?: number) => Promise<SourceFile>;
   renameFile: (file: string, newFile: string) => Promise<void>;
   createFolder: (parentFolderPath: string, folderName: string) => Promise<void>;
+  createFolderRecursive: (folderPath: string) => Promise<void>;
   ensureFolderExists: (parentFolderPath: string, folderName: string) => Promise<void>;
   copyFolder: (source: string, destination: string) => Promise<void>;
   copyFile: (source: string, destination: string) => Promise<void>;
@@ -95,6 +96,13 @@ export class FileService implements IFileService {
     return this.pathExists(folderPath).then(exists => {
       if (!!exists) throw new Error(`Folder '${folderName}' already exists in parent directory.`);
       return _fsx.mkdir(folderPath)
+    })
+  }
+  
+  createFolderRecursive = (folderPath: string): Promise<void> => {
+    return this.pathExists(folderPath).then(exists => {
+      if (!!exists) return;
+      return _fsx.mkdir(folderPath, { recursive: true });
     })
   }
 
