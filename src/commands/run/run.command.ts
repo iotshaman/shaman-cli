@@ -42,11 +42,11 @@ export class RunCommand implements ICommand {
   }
 
   private assignArguments = (cla: CommandLineArguments) => {
-    if (!cla.args['project']) throw new Error('Project argument not provided to run command.');
-    this.project = cla.args['project'];
-    if (!cla.args['filePath']) this.solutionFilePath = _path.join(process.cwd(), 'shaman.json');
-    else this.solutionFilePath = _path.join(process.cwd(), cla.args['filePath']);
-    this.script = cla.args['script'];
+    this.project = cla.getValueOrDefault('project');
+    if (!this.project) throw new Error('Project argument not provided to run command.');
+    this.solutionFilePath = cla.getValueOrDefault('filePath');
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath)
+    this.script = cla.getValueOrDefault('script');
   }
 
 }

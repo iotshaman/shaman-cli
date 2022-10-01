@@ -17,7 +17,6 @@ export class DotnetBuildCommand implements IChildCommand {
   ) { }
 
   run = (): Promise<void> => {
-    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
     return this.fileService.getShamanFile(this.solutionFilePath)
       .then(solution => this.buildSolution(this.solutionFilePath, solution));
   }

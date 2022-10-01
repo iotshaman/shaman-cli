@@ -59,9 +59,10 @@ export class ServeCommand implements ICommand {
   }
 
   private assignArguments = (cla: CommandLineArguments) => {
-    if (!cla.args['project']) throw new Error('Project argument not provided to serve command.')
-    this.project = cla.args['project'];
-    this.solutionFilePath = cla.args["filePath"] ? cla.args["filePath"] : "./shaman.json";
+    this.project = cla.getValueOrDefault('project');
+    if (!this.project) throw new Error('Project argument not provided to serve command.')
+    this.solutionFilePath = cla.getValueOrDefault('filePath');
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
   }
 
 }

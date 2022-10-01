@@ -17,7 +17,6 @@ export class NodePublishCommand implements IChildCommand {
   ) { }
 
   run = (): Promise<void> => {
-    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
     return this.fileService.getShamanFile(this.solutionFilePath).then(solution => {
       let projects = solution.projects.filter(p => p.environment == "node");
       if (!projects.length) return Promise.resolve();

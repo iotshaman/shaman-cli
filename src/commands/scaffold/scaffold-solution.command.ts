@@ -71,7 +71,8 @@ export class ScaffoldSolutionCommand implements ICommand {
   }
 
   private assignArguments = (cla: CommandLineArguments) => {
-    this.solutionFilePath = cla.args['filePath'] ? cla.args['filePath'] : './shaman.json';
+    this.solutionFilePath = cla.getValueOrDefault('filePath');
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
   }
 
 }

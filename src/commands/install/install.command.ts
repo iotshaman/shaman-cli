@@ -1,3 +1,4 @@
+import * as _path from 'path';
 import { CommandLineArguments } from "../../command-line-arguments";
 import { ICommand, IChildCommand } from "../../commands/command";
 import { FileService, IFileService } from "../../services/file.service";
@@ -15,9 +16,9 @@ export class InstallCommand implements ICommand {
   private solutionFilePath;
 
   constructor() {
-    this.childCommandFactory = (solutionFilePath: string, environment: string): IChildCommand[] => {
+    this.childCommandFactory = (solutionFilePath: string): IChildCommand[] => {
       return [
-        new NodeInstallCommand(solutionFilePath, environment),
+        new NodeInstallCommand(solutionFilePath),
         new DotnetInstallCommand(solutionFilePath)
       ]
     }
@@ -44,8 +45,9 @@ export class InstallCommand implements ICommand {
   }
 
   private assignArguments = (cla: CommandLineArguments) => {
-    this.environment = cla.args["environment"] ? cla.args["environment"] : "*";
-    this.solutionFilePath = cla.args["filePath"] ? cla.args["filePath"] : "./shaman.json";
+    this.environment = cla.getValueOrDefault('environment');
+    this.solutionFilePath = cla.getValueOrDefault('filePath');
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
   }
 
 }

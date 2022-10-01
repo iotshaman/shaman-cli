@@ -17,7 +17,6 @@ export class DotnetInstallCommand implements IChildCommand {
   ) { }
 
   run = (): Promise<void> => {
-    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
     console.log(`Installing dotnet solution.`);
     return this.fileService.getShamanFile(this.solutionFilePath)
       .then(solution => this.installSolution(this.solutionFilePath, solution));

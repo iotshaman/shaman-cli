@@ -15,4 +15,16 @@ export class CommandLineArguments {
             this.args[key] = value; 
         });
     }
+
+    public getValueOrDefault = <T>(key: string, defaultValue?: T): string | T => {
+        if (!!this.args[key]) return this.args[key];
+        if (!!defaultValue) return defaultValue;
+        return this.keyDefaults[key];
+    }
+
+    private keyDefaults = {
+        environment: '*',
+        filePath: './shaman.json',
+        script: 'start'
+    }
 }

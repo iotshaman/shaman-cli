@@ -16,9 +16,9 @@ export class BuildCommand implements ICommand {
   private solutionFilePath;
 
   constructor() {
-    this.childCommandFactory = (solutionFilePath: string, environment: string): IChildCommand[] => {
+    this.childCommandFactory = (solutionFilePath: string): IChildCommand[] => {
       return [
-        new NodeBuildCommand(solutionFilePath, environment),
+        new NodeBuildCommand(solutionFilePath),
         new DotnetBuildCommand(solutionFilePath)
       ]
     }
@@ -45,8 +45,9 @@ export class BuildCommand implements ICommand {
   }
 
   private assignArguments = (cla: CommandLineArguments): void => {
-    this.environment = cla.args['environment'] ? cla.args['environment'] : '*';
-    this.solutionFilePath = cla.args['filePath'] ? cla.args['filePath'] : './shaman.json';
+    this.environment = cla.getValueOrDefault('environment');
+    this.solutionFilePath = cla.getValueOrDefault('filePath');
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
   }
 
 }
