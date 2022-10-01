@@ -18,8 +18,7 @@ export class NodeInstallCommand implements IChildCommand {
   ) { }
 
   run = (): Promise<void> => {
-    if (!this.solutionFilePath) this.solutionFilePath = _path.join(process.cwd(), 'shaman.json');
-    else this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
     console.log(`Installing node solution.`);
     return this.fileService.getShamanFile(this.solutionFilePath)
       .then(solution => this.installSolution(this.solutionFilePath, solution));
