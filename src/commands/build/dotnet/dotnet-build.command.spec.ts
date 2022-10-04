@@ -20,16 +20,16 @@ describe('Dotnet Build Command', () => {
   });
 
   it('name should equal "build-dotnet"', () => {
-    let subject = new DotnetBuildCommand();
+    let subject = new DotnetBuildCommand(solutionFilePath);
     expect(subject.name).to.equal("build-dotnet");
   });
 
   it('run should return resolved promise if no projects defined', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: []}));
-    let subject = new DotnetBuildCommand();
+    let subject = new DotnetBuildCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
-    subject.run(null, "shaman.json").then(_ => done());
+    subject.run().then(_ => done());
   });
 
   it('run should return resolved promise', (done) => {
@@ -44,10 +44,12 @@ describe('Dotnet Build Command', () => {
     ]}));
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.buildProject = sandbox.stub().returns(Promise.resolve());
-    let subject = new DotnetBuildCommand();
+    let subject = new DotnetBuildCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
-    subject.run(null, "./shaman.json").then(_ => done());
+    subject.run().then(_ => done());
   });
 
 });
+
+let solutionFilePath: string = './shaman.json';

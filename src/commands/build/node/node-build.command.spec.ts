@@ -20,16 +20,16 @@ describe('Node Build Command', () => {
   });
 
   it('name should equal "build-node"', () => {
-    let subject = new NodeBuildCommand();
+    let subject = new NodeBuildCommand(solutionFilePath);
     expect(subject.name).to.equal("build-node");
   });
 
   it('run should return resolved promise if no projects defined', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: []}));
-    let subject = new NodeBuildCommand();
+    let subject = new NodeBuildCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
-    subject.run("node", null).then(_ => done());
+    subject.run().then(_ => done());
   });
 
   it('run should return resolved promise', (done) => {
@@ -43,10 +43,12 @@ describe('Node Build Command', () => {
     ]}));
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.buildProject = sandbox.stub().returns(Promise.resolve());
-    let subject = new NodeBuildCommand();
+    let subject = new NodeBuildCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
-    subject.run("node", "./solution/shaman.json").then(_ => done());
+    subject.run().then(_ => done());
   });
 
 });
+
+let solutionFilePath: string = './shaman.json';

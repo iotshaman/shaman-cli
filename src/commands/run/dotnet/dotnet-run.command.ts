@@ -20,7 +20,7 @@ export class DotnetRunCommand implements IChildCommand {
   };
 
   run = (): Promise<void> => {
-    if (!this.solution) return Promise.reject(new Error("Solution file has not been assigned to run command."));
+    if (!this.project) return Promise.reject(new Error("Project file has not been assigned to run command."));
     console.log(`Running dotnet run script for project ${this.project}.`);
     return this.spawnChildProcess(this.solutionFilePath, this.solution, this.project.name)
       .then(childProcess => {

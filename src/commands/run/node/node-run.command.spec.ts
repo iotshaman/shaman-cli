@@ -3,11 +3,12 @@ import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
 import { NodeRunCommand } from './node-run.command';
+import { Solution, SolutionProject } from '../../../models/solution';
 
 describe('Run Node Environment Command', () => {
 
   var sandbox: sinon.SinonSandbox;
-  
+
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     sandbox.stub(console, 'log');
@@ -18,31 +19,30 @@ describe('Run Node Environment Command', () => {
   });
 
   it('name should equal "run-node"', () => {
-    let subject = new NodeRunCommand();
+    let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
     expect(subject.name).to.equal("run-node");
   });
 
-  it('run should throw if solution file not found', (done) => {
-    let subject = new NodeRunCommand();
-    subject.run("sample", null, "shaman.json")
+  it('run should throw if project file not found', (done) => {
+    let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
+    subject.run()
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Solution file has not been assigned to run command.");
+        expect(ex.message).to.equal("Project file has not been assigned to run command.");
         done();
       });
   });
 
   it('run should throw if invalid project provided', (done) => {
-    let subject = new NodeRunCommand();
-    subject.assignSolution({name: 'sample', projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "node",
-        type: "server"
-      }
-    ]});
-    subject.run("invalid", "start", "shaman.json")
+    let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
+    let sampleProject: SolutionProject = {
+      name: "invalid",
+      path: "sample",
+      environment: "node",
+      type: "server"
+    }
+    subject.assignProject(sampleProject);
+    subject.run()
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid project 'invalid'.");
@@ -51,22 +51,32 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should return resolved promise', (done) => {
-    let subject = new NodeRunCommand();    
-    subject.assignSolution({name: 'sample', projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "node",
-        type: "server"
-      }
-    ]});
+    let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
+    let sampleProject: SolutionProject = {
+      name: "sample",
+      path: "sample",
+      environment: "node",
+      type: "server"
+    }
+    subject.assignProject(sampleProject);
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
       stderr: { on: sandbox.stub().yields("error") },
       on: sandbox.stub().yields(0)
     };
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
-    subject.run("sample", "start", "shaman.json").then(_ => done());
+    subject.run().then(_ => done());
   });
 
-})
+});
+
+let sampleSolution: Solution = {
+  name: 'sample', projects: [
+    {
+      name: "sample",
+      path: "sample",
+      environment: "node",
+      type: "server"
+    }
+  ]
+}

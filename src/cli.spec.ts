@@ -10,13 +10,13 @@ describe('CLI', () => {
   });
 
   it('Invoke should throw if invalid command provided', (done) => {
-    Invoke(["fail"])
+    Invoke(["test", "test", "fail"])
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch(_ => done());
   });
 
-  it('Invoke should throw if invalid command provided', (done) => {
-    Invoke(["noop"]).then(_ => done());
+  it('Invoke should resolve if valid command provided', (done) => {
+    Invoke(["test", "test", "noop"]).then(_ => done());
   });
 
 })

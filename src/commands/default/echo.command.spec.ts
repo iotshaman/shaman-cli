@@ -2,6 +2,7 @@ import 'mocha';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { EchoCommand } from './echo.command';
+import { CommandLineArguments } from '../../command-line-arguments';
 
 describe('Echo Command', () => {
 
@@ -23,7 +24,8 @@ describe('Echo Command', () => {
 
   it('run should return resolved promise', (done) => {
     let subject = new EchoCommand();
-    subject.run().then(_ => done());
+    let cla = new CommandLineArguments(['test', 'test', '--version']);
+    subject.run(cla).then(_ => done());
   });
 
 })

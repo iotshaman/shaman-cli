@@ -1,6 +1,7 @@
 import 'mocha';
 import { expect } from 'chai';
 import { NoopCommand } from './noop.command';
+import { CommandLineArguments } from '../../command-line-arguments';
 
 describe('Noop Command', () => {
 
@@ -11,7 +12,8 @@ describe('Noop Command', () => {
 
   it('run should return resolved promise', (done) => {
     let subject = new NoopCommand();
-    subject.run().then(_ => done());
+    let cla = new CommandLineArguments(['test', 'test', 'noop']);
+    subject.run(cla).then(_ => done());
   });
 
 })

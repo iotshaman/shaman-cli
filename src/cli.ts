@@ -25,6 +25,7 @@ const commands: ICommand[] = [
 ];
 
 export function Invoke(argv: string[]) {
+  if (argv.length < 3) return Promise.reject(new Error("No arguments provided."));
   let cla: CommandLineArguments = new CommandLineArguments(argv);
   let cmd = commands.find(c => c.name == cla.command);
   if (!cmd) return Promise.reject(new Error(`Invalid command '${cla.command}'.`));

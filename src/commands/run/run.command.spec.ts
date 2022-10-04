@@ -2,10 +2,11 @@ import 'mocha';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
-import { ICommand } from '../command';
+import { IChildCommand, ICommand } from '../command';
 import { RunCommand } from './run.command';
 import { IFileService } from '../../services/file.service';
-import { Solution } from '../../models/solution';
+import { Solution, SolutionProject } from '../../models/solution';
+import { CommandLineArguments } from '../../command-line-arguments';
 
 describe('Run Command', () => {
 
@@ -25,25 +26,28 @@ describe('Run Command', () => {
     expect(subject.name).to.equal("run");
   });
 
-  it('run should throw error if no project provided', (done) => {
+  it('run should throw if no project assigned', (done) => {
     let subject = new RunCommand();
-    subject.runCommands = [];
-    subject.run(null, null, null)
+    let cla = new CommandLineArguments(['test', 'test', 'run']);
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch(_ => done());
   });
 
   it('run should throw if invalid project provided', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample"
-      }
-    ]}));
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+      projects: [
+        {
+          name: "sample",
+          path: "sample"
+        }
+      ]
+    }));
+    let cla = new CommandLineArguments(['test', 'test', 'run', '--project=invalid']);
     let subject = new RunCommand();
     subject.fileService = fileServiceMock;
-    subject.run("invalid", "start", null)
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid project 'invalid'.");
@@ -53,16 +57,19 @@ describe('Run Command', () => {
 
   it('run should throw if invalid environment provided', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "invalid"
-      }
-    ]}));
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+      projects: [
+        {
+          name: "sample",
+          path: "sample",
+          environment: "invalid"
+        }
+      ]
+    }));
+    let cla = new CommandLineArguments(['test', 'test', 'run', '--project=sample'])
     let subject = new RunCommand();
     subject.fileService = fileServiceMock;
-    subject.run("sample", "start", "shaman.json")
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid environment 'invalid'.");
@@ -72,41 +79,74 @@ describe('Run Command', () => {
 
   it('run should return resolved promise', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "noop"
-      }
-    ]}));
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+      projects: [
+        {
+          name: "sample",
+          path: "sample",
+          environment: "noop"
+        }
+      ]
+    }));
+    let cla = new CommandLineArguments(['test', 'test', 'run', '--project=sample']);
     let subject = new RunCommand();
+    subject.childCommandFactory = sandbox.stub().returns(
+      [new NoopRunCommand()]
+    );
     subject.fileService = fileServiceMock;
-    subject.runCommands = [new NoopRunCommand()];
-    subject.runCommands[0].assignSolution = undefined;
-    subject.run("sample", "start", "shaman.json").then(_ => done());
+    subject.run(cla).then(_ => done());
   });
 
-  it('run should call assignSolution', (done) => {
+  it('run should call assignProject', (done) => {
     let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "noop"
-      }
-    ]}));
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+      projects: [
+        {
+          name: "sample",
+          path: "sample",
+          environment: "noop"
+        }
+      ]
+    }));
+    let cla = new CommandLineArguments(['test', 'test', 'run', '--project=sample']);
     let subject = new RunCommand();
+    let noopRunCommandMock = new NoopRunCommand();
+    subject.childCommandFactory = sandbox.stub().returns(
+      [noopRunCommandMock]
+    );
     subject.fileService = fileServiceMock;
-    subject.runCommands = [new NoopRunCommand()];
-    sandbox.stub(subject.runCommands[0], 'assignSolution').callsFake(solution => {
-      expect(solution).not.to.be.null;
+    sandbox.stub(noopRunCommandMock, 'assignProject').callsFake(project => {
+      expect(project).not.to.be.null;
     })
-    subject.run("sample", "start", "shaman.json").then(_ => done());
+    subject.run(cla).then(_ => done());
+  });
+
+  it('run should not call assignProject', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+      projects: [
+        {
+          name: "sample",
+          path: "sample",
+          environment: "noop"
+        }
+      ]
+    }));
+    let cla = new CommandLineArguments(['test', 'test', 'run', '--project=sample']);
+    let subject = new RunCommand();
+    let noopRunCommandMock = new NoopRunCommand();
+    sandbox.stub(noopRunCommandMock, 'assignProject').value(undefined);
+    subject.childCommandFactory = sandbox.stub().returns(
+      [noopRunCommandMock]
+    );
+    subject.fileService = fileServiceMock;
+    // NOTE: ask kyle how to check that assignProject is not called
+    subject.run(cla).then(_ => done());
   });
 
 })
 
-class NoopRunCommand implements ICommand {
+class NoopRunCommand implements IChildCommand {
 
   get name(): string { return "run-noop"; }
 
@@ -114,6 +154,6 @@ class NoopRunCommand implements ICommand {
     return Promise.resolve();
   }
 
-  assignSolution = (solution: Solution) => {}
+  assignProject = (project: SolutionProject) => { };
 
 }

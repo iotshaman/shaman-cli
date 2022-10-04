@@ -23,7 +23,7 @@ export class NodeRunCommand implements IChildCommand {
   };
 
   run = (): Promise<void> => {
-    if (!this.solution) return Promise.reject(new Error("Solution file has not been assigned to run command."));
+    if (!this.project) return Promise.reject(new Error("Project file has not been assigned to run command."));
     console.log(`Running node script '${this.script} for project ${this.project.name}.`);
     return this.spawnChildProcess(this.solutionFilePath, this.solution, this.project.name, this.script)
       .then(childProcess => {

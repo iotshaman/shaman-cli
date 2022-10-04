@@ -1,20 +1,22 @@
 import 'mocha';
 import { expect } from 'chai';
 import { ScaffoldSolutionCommand } from './scaffold-solution.command';
+import { CommandLineArguments } from '../../command-line-arguments';
 
-describe('Scaffold Command', () => {
+describe('Scaffold Solution Command', () => {
 
-  it('name should equal "scaffold"', () => {
-    let subject = new ScaffoldCommand();
-    expect(subject.name).to.equal("scaffold");
+  it('name should equal "scaffold-solution"', () => {
+    let subject = new ScaffoldSolutionCommand();
+    expect(subject.name).to.equal("scaffold-solution");
   });
 
   it('run should throw', (done) => {
-    let subject = new ScaffoldCommand();
-    subject.run(null, null, null, null)
+    let subject = new ScaffoldSolutionCommand();
+    let cla = new CommandLineArguments(['test', 'test', 'scaffold-solution']);
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("The scaffold command has been deprecated. Please use the scaffold-solution command instead.");
+        expect(ex.message).to.equal("The scaffold-solution command has been deprecated. Please use the scaffold command instead.");
         done();
       });
   });

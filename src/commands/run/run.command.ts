@@ -28,6 +28,7 @@ export class RunCommand implements ICommand {
 
   run = (cla: CommandLineArguments): Promise<void> => {
     this.assignArguments(cla);
+    if (!this.project) return Promise.reject(new Error('Project argument not provided to run command.'));
     return this.fileService.getShamanFile(this.solutionFilePath)
       .then(solution => {
         this.runCommands = this.childCommandFactory(this.script, solution, this.solutionFilePath);
@@ -43,7 +44,6 @@ export class RunCommand implements ICommand {
 
   private assignArguments = (cla: CommandLineArguments) => {
     this.project = cla.getValueOrDefault('project');
-    if (!this.project) throw new Error('Project argument not provided to run command.');
     this.solutionFilePath = _path.join(process.cwd(), cla.getValueOrDefault('filePath'));
     this.script = cla.getValueOrDefault('script');
   }

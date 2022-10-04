@@ -27,6 +27,7 @@ export class ServeCommand implements ICommand {
 
   run = (cla: CommandLineArguments): Promise<void> => {
     this.assignArguments(cla);
+    if (!this.project) return Promise.reject(new Error('Project argument not provided to serve command.'));
     return this.fileService.getShamanFile(this.solutionFilePath)
       .then(solution => {
         this.runCommands = this.childCommandFactory(solution, this.solutionFilePath);
@@ -60,7 +61,6 @@ export class ServeCommand implements ICommand {
 
   private assignArguments = (cla: CommandLineArguments) => {
     this.project = cla.getValueOrDefault('project');
-    if (!this.project) throw new Error('Project argument not provided to serve command.')
     this.solutionFilePath = cla.getValueOrDefault("filePath");
   }
 
