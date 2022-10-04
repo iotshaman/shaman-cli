@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
 import { IChildCommand } from '../command';
-import { ScaffoldCommand } from './scaffold.command';
+import { ScaffoldCommand, ScaffoldSolutionCommand } from './scaffold.command';
 import { IFileService } from '../../services/file.service';
 import { SolutionProject } from '../../models/solution';
 import { ITransformationService } from '../../services/transformation.service';
@@ -132,6 +132,26 @@ describe('Scaffold Command', () => {
   });
 
 })
+
+describe('Scaffold Solution Command', () => {
+
+  it('name should equal "scaffold-solution"', () => {
+    let subject = new ScaffoldSolutionCommand();
+    expect(subject.name).to.equal("scaffold-solution");
+  });
+
+  it('run should throw', (done) => {
+    let subject = new ScaffoldSolutionCommand();
+    let cla = new CommandLineArguments(['test', 'test', 'scaffold-solution']);
+    subject.run(cla)
+      .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
+      .catch((ex: Error) => {
+        expect(ex.message).to.equal("The scaffold-solution command has been deprecated. Please use the scaffold command instead.");
+        done();
+      });
+  });
+
+});
 
 class NoopScaffoldCommand implements IChildCommand {
 
