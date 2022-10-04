@@ -40,27 +40,35 @@ At the time of writing this REAMDE file, Shaman CLI only supports 2 "environment
 Some commands require the existence of a "solution" file, which indicates what projects (servers, libraries, database libraries, etc.) are available as part of the solution. This file should be called "shaman.json", and has the following interface:
 
 ```ts
-interface Solution {
+export class Solution {
   name: string;
   projects: SolutionProject[];
   transform?: ProjectTransformation[];
+  auth?: TemplateAuthorization;
 }
 
-interface SolutionProject {
+export class SolutionProject {
   name: string;
   environment: string;
   type: string;
   path: string;
+  custom?: boolean;
   language?: string;
   include?: string[];
   specs?: {[spec: string]: any};
   runtimeDependencies?: string[];
 }
 
-interface ProjectTransformation {
+export class ProjectTransformation {
   targetProject: string;
   transformation: string;
   sourceProject?: string;
+  specs?: {[spec: string]: any};
+}
+
+export class TemplateAuthorization {
+  email: string;
+  token: string;
 }
 ```
 
@@ -131,44 +139,33 @@ Once you have installed Shaman CLI, you can access it by invoking "shaman" in a 
 shaman [command] [...arguments]
 ```
 
-**[command]:** Available values: *scaffold-solution, scaffold, install, build, run, serve, --version*  
+**[command]:** Available values: *scaffold-solution, scaffold, install, build, run, serve, publish, --version*  
 **[...arguments]:** A list of arguments that vary, depending on the command provided.  
+
+### Scaffold  Command
+
+The scaffold command requires the existence of a solution file, and will iterate over the available projects and scaffold them all. The syntax for the scaffold command is as follows:
+
+```sh
+shaman scaffold [--filePath=FILEPATH]
+```
+
+**[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 ### Scaffold Solution Command
 
-The scaffold-solution command requires the existence of a solution file, and will iterate over the available projects and scaffold them all. Under the hood, the cli will use the project variables to invoke the ["scaffold" command](#scaffold-command). The syntax for the scaffold-solution command is as follows:
-
-```sh
-shaman scaffold-solution [solutionFilePath]
-```
-
-**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
-
-### Scaffold Command
-
-**DEPRECATED**: Use `scaffold-solution` instead.
-
-The scaffold command generates application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
-
-```sh
-shaman scaffold [environment] [type] [name] [output folder]
-```
-
-**[environment]:** Indicates the coding environment, which will help determine what type of code files will be generated. Available values are: *node*  
-**[type]:** The application component type. Available values are: *library, server, database*  
-**[name]:** The name of the component (can be anything).  
-**[output folder]:** The folder in which application scaffolding will be generated.  
+**DEPRECATED**: Use `scaffold` instead.
 
 ### Install Command
 
-The install command requires the existence of a solution file, and will iterate over the available projects and install them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent installs for each. The syntax for the install command is as follows; please note that these arguments must be provided in-order.
+The install command requires the existence of a solution file, and will iterate over the available projects and install them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent installs for each. The syntax for the install command is as follows:
 
 ```sh
-shaman install [environment] [solutionFilePath]
+shaman install [--environment=ENVIRONMENT] [--filePath=FILEPATH]
 ```
 
-**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be installed. Available values are: *node*, *\**  
-**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be installed. Available values are: *node*, *dotnet*, *\**  
+**[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 ### Build Command
 
@@ -179,7 +176,7 @@ shaman build [environment] [solutionFilePath]
 ```
 
 **[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be built. Available values are: *node*, *\**  
-**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+**[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*
 
@@ -188,12 +185,12 @@ shaman build [environment] [solutionFilePath]
 The run command requires the existence of a solution file, and will execute a "start" script for a specific project; if no script is specified, it will use the project environment's default "start" script. The syntax for the run command is as follows; please note that these arguments must be provided in-order.
 
 ```sh
-shaman run [project] [script] [solutionFilePath]
+shaman run [--project=PROJECT] [--script=SCRIPT] [filePath=FILEPATH]
 ```
 
 **[project]:** The name of the project for which you would like to execute the provided (or default) script. The provided project value must match a project name in your solution file.  
 **[script]:** (Optional) The project script to be executed; if no value is provided, the default value will be the default 'start' script for the project's environment ('start' for Node JS, 'run' for .NET, etc.). 
-**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+**[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the run command to work, the specified project needs to have a script that corresponds to the provided (or default) script value. For Node JS, this means adding a "script" property to your package.json file.*
 
@@ -204,7 +201,7 @@ The serve command requires the existence of a solution file, and will execute th
 The syntax for the serve command is as follows:
 
 ```sh
-shaman serve [project]
+shaman serve [--project=PROJECT]
 ```
 
 **[project]:** The name of the project for which you would like to serve. The provided project value must match a project name in your solution file. Note: any project names listed as "runtime dependencies" will be started first, and runtime dependencies can be nested.
@@ -216,11 +213,11 @@ shaman serve [project]
 The publish command requires the existence of a solution file, and will execute a production build for 1-to-many projects. Every environment creates a different type of production build (for example, a C# server will create an executable file, and a Node JS server will generate several .js files). The syntax for the publish command is as follows; please note that these arguments must be provided in-order.
 
 ```sh
-shaman publish [environment] [solutionFilePath]
+shaman publish [--environment=ENVIRONMENT] [--filePath=FILEPATH]
 ```
 
-**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be built. Available values are: *node*, *\**  
-**[solutionFilePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
+**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be built. Available values are: *node*, *dotnet*, *\**  
+**[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 The publish command has built-in helpers for common production build needs (for example, copying configuration files). In order to leverage these helpers (called "instructions") you will need to add a spec named "publish" to the desired solution project configuration, and provide an array of instructions. The interface for publish instructions is as follows:
 
