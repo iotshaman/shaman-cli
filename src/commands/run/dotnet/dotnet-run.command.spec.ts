@@ -3,12 +3,12 @@ import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
 import { DotnetRunCommand } from './dotnet-run.command';
-import { Solution, SolutionProject } from '../../../models/solution';
+import { ProjectTransformation, Solution, SolutionProject, TemplateAuthorization } from '../../../models/solution';
 
 describe('Run Dotnet Environment Command', () => {
 
   var sandbox: sinon.SinonSandbox;
-  
+
   beforeEach(() => {
     sandbox = sinon.createSandbox();
     sandbox.stub(console, 'log');
@@ -19,11 +19,13 @@ describe('Run Dotnet Environment Command', () => {
   });
 
   it('name should equal "run-dotnet"', () => {
+    let sampleSolution = new SampleSolution();
     let subject = new DotnetRunCommand(sampleSolution, './shaman.json');
     expect(subject.name).to.equal("run-dotnet");
   });
 
   it('run should throw if project file not found', (done) => {
+    let sampleSolution = new SampleSolution();
     let subject = new DotnetRunCommand(sampleSolution, 'shaman.json');
     subject.run()
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
@@ -34,13 +36,14 @@ describe('Run Dotnet Environment Command', () => {
   });
 
   it('run should throw if invalid project provided', (done) => {
+    let sampleSolution = new SampleSolution();
     let subject = new DotnetRunCommand(sampleSolution, './shaman.json');
     let sampleProject: SolutionProject = {
       name: "invalid",
       path: "sample",
-      environment: "node",
+      environment: "dotnet",
       type: "server"
-    }
+    };
     subject.assignProject(sampleProject);
     subject.run()
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
@@ -51,13 +54,14 @@ describe('Run Dotnet Environment Command', () => {
   });
 
   it('run should return resolved promise', (done) => {
-    let subject = new DotnetRunCommand(sampleSolution, './shaman.json');    
+    let sampleSolution = new SampleSolution();
+    let subject = new DotnetRunCommand(sampleSolution, './shaman.json');
     let sampleProject: SolutionProject = {
       name: "sample",
       path: "sample",
-      environment: "node",
+      environment: "dotnet",
       type: "server"
-    }
+    };
     subject.assignProject(sampleProject);
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
@@ -70,13 +74,20 @@ describe('Run Dotnet Environment Command', () => {
 
 });
 
-let sampleSolution: Solution = {
-  name: 'sample', projects: [
-    {
-      name: "sample",
-      path: "sample",
-      environment: "node",
-      type: "server"
-    }
-  ]
+class SampleSolution implements Solution {
+  name: string;
+  projects: SolutionProject[];
+
+  constructor() {
+    this.name = 'sample';
+    this.projects = [
+      {
+        name: "sample",
+        path: "sample",
+        environment: "dotnet",
+        type: "server"
+      }
+    ]
+  }
+
 }

@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
 import { NodeRunCommand } from './node-run.command';
-import { Solution, SolutionProject } from '../../../models/solution';
+import { ProjectTransformation, Solution, SolutionProject, TemplateAuthorization } from '../../../models/solution';
 
 describe('Run Node Environment Command', () => {
 
@@ -19,11 +19,13 @@ describe('Run Node Environment Command', () => {
   });
 
   it('name should equal "run-node"', () => {
+    let sampleSolution = new SampleSolution();
     let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
     expect(subject.name).to.equal("run-node");
   });
 
   it('run should throw if project file not found', (done) => {
+    let sampleSolution = new SampleSolution();
     let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
     subject.run()
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
@@ -34,6 +36,7 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should throw if invalid project provided', (done) => {
+    let sampleSolution = new SampleSolution();
     let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
     let sampleProject: SolutionProject = {
       name: "invalid",
@@ -51,6 +54,7 @@ describe('Run Node Environment Command', () => {
   });
 
   it('run should return resolved promise', (done) => {
+    let sampleSolution = new SampleSolution();
     let subject = new NodeRunCommand('start', sampleSolution, './shaman.json');
     let sampleProject: SolutionProject = {
       name: "sample",
@@ -70,13 +74,20 @@ describe('Run Node Environment Command', () => {
 
 });
 
-let sampleSolution: Solution = {
-  name: 'sample', projects: [
-    {
-      name: "sample",
-      path: "sample",
-      environment: "node",
-      type: "server"
-    }
-  ]
+class SampleSolution implements Solution {
+  name: string;
+  projects: SolutionProject[];
+
+  constructor() {
+    this.name = 'sample';
+    this.projects = [
+      {
+        name: "sample",
+        path: "sample",
+        environment: "node",
+        type: "server"
+      }
+    ]
+  }
+
 }
