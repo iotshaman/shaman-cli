@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
 import { DotnetRunCommand } from './dotnet-run.command';
-import { ProjectTransformation, Solution, SolutionProject, TemplateAuthorization } from '../../../models/solution';
+import { Solution, SolutionProject } from '../../../models/solution';
 
 describe('Run Dotnet Environment Command', () => {
 

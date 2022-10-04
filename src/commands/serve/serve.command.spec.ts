@@ -2,10 +2,10 @@ import 'mocha';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
-import { IChildCommand, ICommand } from '../command';
+import { IChildCommand } from '../command';
 import { ServeCommand } from './serve.command';
 import { IFileService } from '../../services/file.service';
-import { Solution, SolutionProject } from '../../models/solution';
+import { SolutionProject } from '../../models/solution';
 import { CommandLineArguments } from '../../command-line-arguments';
 
 describe('Serve Command', () => {

@@ -3,7 +3,7 @@ import * as sinon from 'sinon';
 import * as _cmd from 'child_process';
 import { expect } from 'chai';
 import { NodeRunCommand } from './node-run.command';
-import { ProjectTransformation, Solution, SolutionProject, TemplateAuthorization } from '../../../models/solution';
+import { Solution, SolutionProject } from '../../../models/solution';
 
 describe('Run Node Environment Command', () => {
 

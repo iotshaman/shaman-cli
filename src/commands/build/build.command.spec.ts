@@ -3,7 +3,7 @@ import * as chai from 'chai';
 import * as sinon from 'sinon';
 import * as sinonChai from 'sinon-chai';
 import { expect } from 'chai';
-import { IChildCommand, ICommand } from '../command';
+import { IChildCommand } from '../command';
 import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../../services/file.service';
 import { BuildCommand } from './build.command';
