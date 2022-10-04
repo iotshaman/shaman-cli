@@ -90,43 +90,7 @@ describe('Serve Command', () => {
     subject.fileService = fileServiceMock;
     subject.run(cla).then(_ => done());
   });
-
-  // it('run should return resolved promise', (done) => {
-  //   let fileServiceMock = createMock<IFileService>();
-  //   fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-  //     {
-  //       name: "sample",
-  //       path: "sample",
-  //       environment: "noop"
-  //     }
-  //   ]}));
-  //   let subject = new ServeCommand();
-  //   subject.fileService = fileServiceMock;
-  //   subject.runCommands = [
-  //     {name: 'run-noop', instance: () => new NoopServeCommand(undefined)}
-  //   ]
-  //   subject.run("sample", "shaman.json").then(_ => done());
-  // });
-
-  // it('run should call assignSolution', (done) => {
-  //   let fileServiceMock = createMock<IFileService>();
-  //   fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-  //     {
-  //       name: "sample",
-  //       path: "sample",
-  //       environment: "noop"
-  //     }
-  //   ]}));
-  //   let subject = new ServeCommand();
-  //   subject.fileService = fileServiceMock;
-  //   subject.runCommands = [
-  //     {name: 'run-noop', instance: () => new NoopServeCommand(solution => {
-  //       expect(solution).not.to.be.null;
-  //     })}
-  //   ]
-  //   subject.run("sample", "shaman.json").then(_ => done());
-  // });
-
+  
 })
 
 class NoopServeCommand implements IChildCommand {

@@ -140,7 +140,6 @@ describe('Run Command', () => {
       [noopRunCommandMock]
     );
     subject.fileService = fileServiceMock;
-    // NOTE: ask kyle how to check that assignProject is not called
     subject.run(cla).then(_ => done());
   });
 

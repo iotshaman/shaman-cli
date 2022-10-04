@@ -125,7 +125,6 @@ describe('Scaffold Command', () => {
     );
     subject.fileService = fileServiceMock;
     subject.transformationService = transformationServiceMock;
-    // NOTE: ask kyle how to check that assignProject is not called
     subject.run(cla).then(_ => done());
   });
 
