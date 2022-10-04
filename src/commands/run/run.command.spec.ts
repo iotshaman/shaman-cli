@@ -135,12 +135,15 @@ describe('Run Command', () => {
     let cla = new CommandLineArguments(['test', 'test', 'run', '--project=sample']);
     let subject = new RunCommand();
     let noopRunCommandMock = new NoopRunCommand();
-    sandbox.stub(noopRunCommandMock, 'assignProject').value(undefined);
+    let assignProjectStub = sandbox.stub(noopRunCommandMock, 'assignProject').value(undefined);
     subject.childCommandFactory = sandbox.stub().returns(
       [noopRunCommandMock]
     );
     subject.fileService = fileServiceMock;
-    subject.run(cla).then(_ => done());
+    subject.run(cla).then(_ => {
+      expect(assignProjectStub).to.not.be.called;
+      done();
+    });
   });
 
 })

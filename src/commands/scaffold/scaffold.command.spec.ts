@@ -2,10 +2,10 @@ import 'mocha';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
-import { IChildCommand, ICommand } from '../command';
+import { IChildCommand } from '../command';
 import { ScaffoldCommand } from './scaffold.command';
 import { IFileService } from '../../services/file.service';
-import { Solution, SolutionProject } from '../../models/solution';
+import { SolutionProject } from '../../models/solution';
 import { ITransformationService } from '../../services/transformation.service';
 import { CommandLineArguments } from '../../command-line-arguments';
 
@@ -119,13 +119,16 @@ describe('Scaffold Command', () => {
     transformationServiceMock.performTransformations = sandbox.stub().returns(Promise.resolve());
     let subject = new ScaffoldCommand();
     let noopScaffoldCommand = new NoopScaffoldCommand();
-    sandbox.stub(noopScaffoldCommand, 'assignProject').value(undefined);
+    let assignProjectStub = sandbox.stub(noopScaffoldCommand, 'assignProject').value(undefined);
     subject.childCommandFactory = sandbox.stub().returns(
       [noopScaffoldCommand]
     );
     subject.fileService = fileServiceMock;
     subject.transformationService = transformationServiceMock;
-    subject.run(cla).then(_ => done());
+    subject.run(cla).then(_ => {
+      expect(assignProjectStub).to.not.be.called;
+      done();
+    });
   });
 
 })
