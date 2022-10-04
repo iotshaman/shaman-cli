@@ -41,19 +41,7 @@ describe('Scaffold Node Environment Command', () => {
         done();
       });
   });
-
-  // it('run should throw if invalid project name provided', (done) => {
-  //   let mockSolution = new MockSolution();
-  //   let subject = new NodeScaffoldCommand();
-  //   subject.assignSolution(mockSolution);
-  //   subject.run("./test", "Test")
-  //     .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
-  //     .catch((ex: Error) => {
-  //       expect(ex.message).to.equal("Invalid project name 'Test'.");
-  //       done();
-  //     });
-  // });
-
+  
   it('run should throw if invalid project type provided', (done) => {
     let mockSolution = new MockSolution();
     mockSolution.projects = [new MockNodeProject()];
