@@ -154,7 +154,18 @@ shaman scaffold [--filePath=FILEPATH]
 
 ### Scaffold Solution Command
 
-**DEPRECATED**: Use `scaffold` instead.
+<span style="color:red">**DEPRECATED**</span>: Use `scaffold` instead.  
+
+The scaffold command generates application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
+
+```sh
+shaman scaffold [environment] [type] [name] [output folder]
+```
+
+**[environment]:** Indicates the coding environment, which will help determine what type of code files will be generated. Available values are: *node*  
+**[type]:** The application component type. Available values are: *library, server, database*  
+**[name]:** The name of the component (can be anything).  
+**[output folder]:** The folder in which application scaffolding will be generated.  
 
 ### Install Command
 
@@ -172,10 +183,10 @@ shaman install [--environment=ENVIRONMENT] [--filePath=FILEPATH]
 The build command requires the existence of a solution file, and will iterate over the available projects and build them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent builds for each. The syntax for the build command is as follows; please note that these arguments must be provided in-order.
 
 ```sh
-shaman build [environment] [solutionFilePath]
+shaman build [--environment=ENVIRONMENT] [--filePath=FILEPATH]
 ```
 
-**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be built. Available values are: *node*, *\**  
+**[environment]:** (Optional) Indicates the coding environment, which will help determine which projects should be built. Available values are: *node*, *dotnet*, *\**  
 **[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the build command to work, each project needs to have a script (in package.json) called "build". If you used Shaman CLI to scaffold your code, this is already available.*
@@ -189,7 +200,7 @@ shaman run [--project=PROJECT] [--script=SCRIPT] [filePath=FILEPATH]
 ```
 
 **[project]:** The name of the project for which you would like to execute the provided (or default) script. The provided project value must match a project name in your solution file.  
-**[script]:** (Optional) The project script to be executed; if no value is provided, the default value will be the default 'start' script for the project's environment ('start' for Node JS, 'run' for .NET, etc.). 
+**[script]:** (Optional) The project script to be executed; if no value is provided, the default value will be the default 'start' script for the project's environment ('start' for Node JS, 'run' for .NET, etc.).  
 **[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
 
 *Note: In order for the run command to work, the specified project needs to have a script that corresponds to the provided (or default) script value. For Node JS, this means adding a "script" property to your package.json file.*
