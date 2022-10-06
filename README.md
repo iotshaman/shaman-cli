@@ -139,7 +139,7 @@ Once you have installed Shaman CLI, you can access it by invoking "shaman" in a 
 shaman [command] [...arguments]
 ```
 
-**[command]:** Available values: *scaffold-solution, scaffold, install, build, run, serve, publish, --version*  
+**[command]:** Available values: *scaffold, install, build, run, serve, publish, --version*  
 **[...arguments]:** A list of arguments that vary, depending on the command provided.  
 
 ### Scaffold  Command
@@ -151,21 +151,6 @@ shaman scaffold [--filePath=FILEPATH]
 ```
 
 **[filePath]:** (Optional) relative path to the shaman.json file (including file name). If no value is provided, the default value is the current working directory.
-
-### Scaffold Solution Command
-
-<span style="color:red">**DEPRECATED**</span>: Use `scaffold` instead.  
-
-The scaffold command generates application scaffolding automatically, based on the arguments provided, and installs all dependencies. The syntax for the scaffold command is as follows; please note that these arguments must be provided in-order:
-
-```sh
-shaman scaffold [environment] [type] [name] [output folder]
-```
-
-**[environment]:** Indicates the coding environment, which will help determine what type of code files will be generated. Available values are: *node*  
-**[type]:** The application component type. Available values are: *library, server, database*  
-**[name]:** The name of the component (can be anything).  
-**[output folder]:** The folder in which application scaffolding will be generated.  
 
 ### Install Command
 
