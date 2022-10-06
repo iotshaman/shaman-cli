@@ -13,7 +13,7 @@ A *polyglot solution* is a fancy way of saying you are using more than one codin
 So what does this mean, practically? Well, here are some of the immediate benefits of using Shaman CLI:
 
 1. **Devs only need to know 1 CLI tool.** Need to build a solution that has both Typescript and c# projects? No problem, one command will do both: `shaman build`. Need to install dependencies for a solution that has multiple languages? No problem, just run `shaman install`. You get the idea...
-2. **Save hours of time when starting new projects.** Shaman CLI comes included with light-weight (but sophisticated) starter templates that can be created and customized simply by defining them in a [solution file](#solution-file) then running the [scaffold command](#scaffold-solution-command). These templates are already broken down along "project type" lines (library, sever, client, etc) which also encourages good separation-of-concerns.
+2. **Save hours of time when starting new projects.** Shaman CLI comes included with light-weight (but sophisticated) starter templates that can be created and customized simply by defining them in a [solution file](#solution-file) then running the [scaffold command](#scaffold-command). These templates are already broken down along "project type" lines (library, sever, client, etc) which also encourages good separation-of-concerns.
 3. **Allow developers to use the right language for the task at hand.** Since Shaman CLI abstracts the underlying toolsets related to referencing, installing, building, and publishing software projects, developers can pick the right language / environment to provide an optimal solution, without worrying about learning the different toolsets associated with each language / environment.
 4. **Add higher-level abstraction to languages without monorepo capabilities.** While some environments like .NET already have the concept of a "solution" (implementation of monorepo pattern), some environments like Node JS do not. While this doesn't prevent developers from breaking down their solutions along project lines, it does add lots of manual work when referencing, installing, building, and publishing these disparate projects. For example, if you have a Node JS project that references another Node JS project, you must remember to install and build the *child* project before installing and building the *dependent* project. However, with Shaman CLI this is no longer a concern; by defining the different projects in your solution file, Shaman CLI can infer the correct dependency graph, and install, build and publish projects in the correct order, regardless of language / environment.
 5. **Reduce onboarding time by standardizing solution declaration and scaffolding.** Onboarding new team members can be very time consuming, especially if the new developer is not familiar with the different toolsets related to your development environment. However, if every project is scaffolded, installed, built and published using one tool (Shaman CLI) then adding new team members to a company, or project, gets a lot easier: just teach them 1 tool. If they are already familiar with Shaman CLI, even better, they are ready to hit the ground running on day one. 
@@ -165,7 +165,7 @@ shaman install [--environment=ENVIRONMENT] [--filePath=FILEPATH]
 
 ### Build Command
 
-The build command requires the existence of a solution file, and will iterate over the available projects and build them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent builds for each. The syntax for the build command is as follows; please note that these arguments must be provided in-order.
+The build command requires the existence of a solution file, and will iterate over the available projects and build them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent builds for each. The syntax for the build command is as follows:
 
 ```sh
 shaman build [--environment=ENVIRONMENT] [--filePath=FILEPATH]
@@ -178,7 +178,7 @@ shaman build [--environment=ENVIRONMENT] [--filePath=FILEPATH]
 
 ### Run Command
 
-The run command requires the existence of a solution file, and will execute a "start" script for a specific project; if no script is specified, it will use the project environment's default "start" script. The syntax for the run command is as follows; please note that these arguments must be provided in-order.
+The run command requires the existence of a solution file, and will execute a "start" script for a specific project; if no script is specified, it will use the project environment's default "start" script. The syntax for the run command is as follows:
 
 ```sh
 shaman run [--project=PROJECT] [--script=SCRIPT] [filePath=FILEPATH]
@@ -206,7 +206,7 @@ shaman serve [--project=PROJECT]
 
 ### Publish Command
 
-The publish command requires the existence of a solution file, and will execute a production build for 1-to-many projects. Every environment creates a different type of production build (for example, a C# server will create an executable file, and a Node JS server will generate several .js files). The syntax for the publish command is as follows; please note that these arguments must be provided in-order.
+The publish command requires the existence of a solution file, and will execute a production build for 1-to-many projects. Every environment creates a different type of production build (for example, a C# server will create an executable file, and a Node JS server will generate several .js files). The syntax for the publish command is as follows:
 
 ```sh
 shaman publish [--environment=ENVIRONMENT] [--filePath=FILEPATH]
