@@ -17,8 +17,8 @@ export class CommandLineArguments {
     }
 
     public getValueOrDefault = <T>(key: string, defaultValue?: T): string | T => {
-        if (!!defaultValue) return defaultValue;
         if (!!this.args[key]) return this.args[key];
+        if (!!defaultValue) return defaultValue;
         return this.keyDefaults[key];
     }
 
