@@ -23,9 +23,10 @@ export class CommandLineArguments {
     }
 
     private keyDefaults = {
+        echo: 'No echo string provided.',
         environment: '*',
         filePath: './shaman.json',
-        script: 'start',
-        echo: 'No echo string provided.'
+        recipe: 'default-recipe',
+        script: 'start'
     }
 }

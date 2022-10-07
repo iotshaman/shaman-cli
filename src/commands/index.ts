@@ -16,3 +16,4 @@ export * from './scaffold/dotnet/dotnet-scaffold.command';
 export * from './scaffold/node/node-scaffold.command';
 export * from './version/version.command';
 export * from './publish/publish.command';
+export * from './generate/generate.command';

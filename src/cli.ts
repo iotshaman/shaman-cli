@@ -9,6 +9,7 @@ import { ServeCommand } from "./commands/serve/serve.command";
 import { VersionCommand } from "./commands/version/version.command";
 import { PublishCommand } from "./commands/publish/publish.command";
 import { CommandLineArguments } from "./command-line-arguments";
+import { GenerateCommand } from ".";
 
 const commands: ICommand[] = [
   new NoopCommand(),
@@ -20,7 +21,8 @@ const commands: ICommand[] = [
   new RunCommand(),
   new ServeCommand(),
   new VersionCommand(),
-  new PublishCommand()
+  new PublishCommand(),
+  new GenerateCommand()
 ];
 
 export function Invoke(argv: string[]) {
