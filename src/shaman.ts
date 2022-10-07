@@ -3,7 +3,7 @@ import { Invoke } from "./cli";
 
 /* istanbul ignore next */
 (function() { 
-  Invoke(process.argv.slice(2)).catch(ex => {
+  Invoke(process.argv).catch(ex => {
     console.error(ex);
   });
 })();

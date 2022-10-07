@@ -1,5 +1,6 @@
 import * as __path from "path";
 import { ICommand } from "..";
+import { CommandLineArguments } from "../../command-line-arguments";
 import { IFileService, FileService } from "../../services/file.service";
 
 export class VersionCommand implements ICommand {
@@ -7,7 +8,7 @@ export class VersionCommand implements ICommand {
 
     fileService: IFileService = new FileService();
 
-    run = (): Promise<void> => {
+    run = (_cla: CommandLineArguments): Promise<void> => {
         let path = __path.join(__dirname, '../../..', 'package.json');
         return this.getPackageFile(path)
         .then(rslt => {            

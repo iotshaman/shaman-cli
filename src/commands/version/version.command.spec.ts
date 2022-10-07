@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import { VersionCommand } from './version.command';
 import { createMock } from 'ts-auto-mock';
 import { IFileService } from '../../services/file.service';
+import { CommandLineArguments } from '../../command-line-arguments';
 
 describe('Version Command', () => {
 
@@ -29,7 +30,8 @@ describe('Version Command', () => {
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({ "version": "sample" }));
     let subject = new VersionCommand();
     subject.fileService = fileServiceMock;
-    subject.run().then(_ => done());
+    let cla = new CommandLineArguments(['test', 'test', '--version']);
+    subject.run(cla).then(_ => done());
   });
 
   it('run should throw if package file not found', (done) => {
@@ -37,7 +39,8 @@ describe('Version Command', () => {
     fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
     let subject = new VersionCommand();
     subject.fileService = fileServiceMock;
-    subject.run()
+    let cla = new CommandLineArguments(['test', 'test', '--version']);
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Package file is not in the default location.");

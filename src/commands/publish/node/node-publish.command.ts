@@ -1,24 +1,28 @@
 import * as _path from 'path';
 import { Solution, SolutionProject } from '../../../models/solution';
-import { ICommand } from '../../command';
+import { IChildCommand } from '../../command';
 import { FileService } from '../../../services/file.service';
 import { DependencyTree } from '../../../models/dependency-tree';
 import { NodeEnvironmentService } from '../../../services/environments/node-environment.service';
 import { IEnvironmentService } from '../../../services/environments/environment.service';
 
-export class NodePublishCommand implements ICommand {
+export class NodePublishCommand implements IChildCommand {
 
   get name(): string { return "publish-node" };
   fileService = new FileService();
   environmentService: IEnvironmentService = new NodeEnvironmentService();
 
-  run = (solutionFilePath: string): Promise<void> => {
-    solutionFilePath = _path.join(process.cwd(), solutionFilePath);
-    return this.fileService.getShamanFile(solutionFilePath).then(solution => {
+  constructor(
+    private solutionFilePath
+  ) { }
+
+  run = (): Promise<void> => {
+    this.solutionFilePath = _path.join(process.cwd(), this.solutionFilePath);
+    return this.fileService.getShamanFile(this.solutionFilePath).then(solution => {
       let projects = solution.projects.filter(p => p.environment == "node");
       if (!projects.length) return Promise.resolve();
       console.log("Publishing node projects...");
-      return this.publishSolution(solutionFilePath, projects, solution.name ?? "publish-node")
+      return this.publishSolution(this.solutionFilePath, projects, solution.name ?? "publish-node")
         .then(_ => console.log("Node projects published successfully..."));
     })
   }
@@ -44,7 +48,7 @@ export class NodePublishCommand implements ICommand {
       }), Promise.resolve()));
   }
 
-  private createSolutionPackageJsonFile = (publishFolder: string, name: string, 
+  private createSolutionPackageJsonFile = (publishFolder: string, name: string,
     projects: SolutionProject[]): Promise<void> => {
     let outputFilePath = _path.join(publishFolder, 'package.json');
     let publishPkg = {
@@ -66,7 +70,7 @@ export class NodePublishCommand implements ICommand {
         a[b.name] = `shaman serve ${b.name}`;
         return a;
       }, {});
-      publishPkg.scripts = {...publishPkg.scripts, ...scripts};
+      publishPkg.scripts = { ...publishPkg.scripts, ...scripts };
     }
     return this.fileService.writeJson(outputFilePath, publishPkg);
   }
@@ -95,7 +99,7 @@ export class NodePublishCommand implements ICommand {
         name: pkg.name,
         version: pkg.version,
         main: !!pkg.main ? pkg.main.replace('dist/', 'bin/') : undefined,
-        scripts: !!pkg.scripts?.start ? {start: pkg.scripts.start.replace('dist/', 'bin/')} : undefined,
+        scripts: !!pkg.scripts?.start ? { start: pkg.scripts.start.replace('dist/', 'bin/') } : undefined,
         description: pkg.description,
         author: pkg.author,
         license: pkg.licence,

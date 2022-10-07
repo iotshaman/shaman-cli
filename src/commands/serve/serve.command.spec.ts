@@ -2,10 +2,11 @@ import 'mocha';
 import * as sinon from 'sinon';
 import { expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
-import { ICommand } from '../command';
+import { IChildCommand } from '../command';
 import { ServeCommand } from './serve.command';
 import { IFileService } from '../../services/file.service';
-import { Solution } from '../../models/solution';
+import { SolutionProject } from '../../models/solution';
+import { CommandLineArguments } from '../../command-line-arguments';
 
 describe('Serve Command', () => {
 
@@ -27,7 +28,8 @@ describe('Serve Command', () => {
 
   it('run should throw error if no project provided', (done) => {
     let subject = new ServeCommand();
-    subject.run(null, null)
+    let cla = new CommandLineArguments(['test', 'test', 'serve']);
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch(_ => done());
   });
@@ -40,9 +42,10 @@ describe('Serve Command', () => {
         path: "sample"
       }
     ]}));
+    let cla = new CommandLineArguments(['test', 'test', 'serve', '--project=invalid']);
     let subject = new ServeCommand();
     subject.fileService = fileServiceMock;
-    subject.run("invalid", "shaman.json")
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid project 'invalid'.");
@@ -58,10 +61,11 @@ describe('Serve Command', () => {
         path: "sample",
         environment: "invalid"
       }
-    ]}));
+    ]}));    
+    let cla = new CommandLineArguments(['test', 'test', 'serve', '--project=sample']);
     let subject = new ServeCommand();
     subject.fileService = fileServiceMock;
-    subject.run("sample", "shaman.json")
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
         expect(ex.message).to.equal("Invalid environment 'invalid'.");
@@ -78,66 +82,25 @@ describe('Serve Command', () => {
         environment: "noop"
       }
     ]}));
+    let cla = new CommandLineArguments(['test', 'test', 'serve', '--project=sample']);
     let subject = new ServeCommand();
+    subject.childCommandFactory = sandbox.stub().returns(
+      [new NoopServeCommand()]
+    );
     subject.fileService = fileServiceMock;
-    subject.runCommands = [
-      {name: 'run-noop', instance: () => new NoopServeCommand(undefined)}
-    ]
-    subject.run("sample", "shaman.json").then(_ => done());
+    subject.run(cla).then(_ => done());
   });
-
-  it('run should return resolved promise', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "noop"
-      }
-    ]}));
-    let subject = new ServeCommand();
-    subject.fileService = fileServiceMock;
-    subject.runCommands = [
-      {name: 'run-noop', instance: () => new NoopServeCommand(undefined)}
-    ]
-    subject.run("sample", "shaman.json").then(_ => done());
-  });
-
-  it('run should call assignSolution', (done) => {
-    let fileServiceMock = createMock<IFileService>();
-    fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
-      {
-        name: "sample",
-        path: "sample",
-        environment: "noop"
-      }
-    ]}));
-    let subject = new ServeCommand();
-    subject.fileService = fileServiceMock;
-    subject.runCommands = [
-      {name: 'run-noop', instance: () => new NoopServeCommand(solution => {
-        expect(solution).not.to.be.null;
-      })}
-    ]
-    subject.run("sample", "shaman.json").then(_ => done());
-  });
-
+  
 })
 
-class NoopServeCommand implements ICommand {
+class NoopServeCommand implements IChildCommand {
 
   get name(): string { return "run-noop"; }
-
-  constructor(assignSolution: (solution: Solution) => void) {
-    this.assignSolution = assignSolution;
-  }
 
   run = (): Promise<void> => {
     return Promise.resolve();
   }
 
-  assignSolution = (solution: Solution) => {}
-
-  waitForChildProcesses = undefined;
+  assignProject = (project: SolutionProject) => { }
 
 }

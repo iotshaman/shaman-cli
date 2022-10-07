@@ -23,16 +23,16 @@ describe('Dotnet Build Command', () => {
   });
 
   it('name should equal "publish-dotnet"', () => {
-    let subject = new DotnetPublishCommand();
+    let subject = new DotnetPublishCommand(solutionFilePath);
     expect(subject.name).to.equal("publish-dotnet");
   });
 
   it('run should return resolved promise if no projects defined', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({ projects: [] }));
-    let subject = new DotnetPublishCommand();
+    let subject = new DotnetPublishCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
-    subject.run("shaman.json").then(_ => done());
+    subject.run().then(_ => done());
   });
 
   it('run should return resolved promise', (done) => {
@@ -48,10 +48,10 @@ describe('Dotnet Build Command', () => {
       ]
     }));
     let environmentServiceMock = createMock<IEnvironmentService>();
-    let subject = new DotnetPublishCommand();
+    let subject = new DotnetPublishCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
-    subject.run("shaman.json").then(_ => done());
+    subject.run().then(_ => done());
   });
 
   it('run should ensure project output folder exists', (done) => {
@@ -68,10 +68,10 @@ describe('Dotnet Build Command', () => {
     }));
     let environmentServiceMock = createMock<IEnvironmentService>();
     fileServiceMock.ensureFolderExists = sandbox.stub().returns(Promise.resolve());
-    let subject = new DotnetPublishCommand();
+    let subject = new DotnetPublishCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
-    subject.run("shaman.json").then(_ => {
+    subject.run().then(_ => {
       expect(fileServiceMock.ensureFolderExists).to.have.been.called;
       done();
     });
@@ -91,10 +91,10 @@ describe('Dotnet Build Command', () => {
     }));
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.buildProject = sandbox.stub().returns(Promise.resolve());
-    let subject = new DotnetPublishCommand();
+    let subject = new DotnetPublishCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
-    subject.run("shaman.json").then(_ => {
+    subject.run().then(_ => {
       expect(environmentServiceMock.buildProject).to.have.been.called;
       done();
     });
@@ -114,13 +114,15 @@ describe('Dotnet Build Command', () => {
     }));
     let environmentServiceMock = createMock<IEnvironmentService>();
     environmentServiceMock.publishProject = sandbox.stub().returns(Promise.resolve());
-    let subject = new DotnetPublishCommand();
+    let subject = new DotnetPublishCommand(solutionFilePath);
     subject.fileService = fileServiceMock;
     subject.environmentService = environmentServiceMock;
-    subject.run("shaman.json").then(_ => {
+    subject.run().then(_ => {
       expect(environmentServiceMock.publishProject).to.have.been.called;
       done();
     });
   });
 
 });
+
+let solutionFilePath: string = './shaman.json';

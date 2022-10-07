@@ -7,6 +7,7 @@ import { createMock } from 'ts-auto-mock';
 import { ICommand } from '../command';
 import { InstallCommand } from './install.command';
 import { IFileService } from '../../services/file.service';
+import { CommandLineArguments } from '../../command-line-arguments';
 
 describe('Install Command', () => {
 
@@ -29,8 +30,8 @@ describe('Install Command', () => {
 
   it('run should throw error if invalid environment provided', (done) => {
     let subject = new InstallCommand();
-    subject.installCommands = [];
-    subject.run("invalid", null)
+    let cla = new CommandLineArguments(['test', 'test', 'install', '--environment=invalid']);
+    subject.run(cla)
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch(ex => {
         expect(ex.message).to.equal("Invalid environment 'invalid'.");
@@ -40,12 +41,16 @@ describe('Install Command', () => {
 
   it('run should return resolved promise for single environment install', (done) => {
     let subject = new InstallCommand();
-    subject.installCommands = [new MockNodeInstallCommand()];
-    subject.run("node", null).then(_ => done());
+    subject.childCommandFactory = sandbox.stub().returns(
+      [new MockDotnetInstallCommand(), new MockNodeInstallCommand()]
+    );
+    let cla = new CommandLineArguments(['test', 'test', 'install', '--environment=node']);
+    subject.run(cla).then(_ => done());
   });
 
-  it('run should call both node and dotnet install commands if no arguments provided', (done) => {
+  it('run should call both node and dotnet install commands if no environment argument provided', (done) => {
     let fileServiceMock = createMock<IFileService>();
+    let cla = new CommandLineArguments(['test', 'test', 'install']);
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample-node",
@@ -63,9 +68,11 @@ describe('Install Command', () => {
     let dotnetInstallCommandMock = new MockDotnetInstallCommand();
     sandbox.stub(dotnetInstallCommandMock, 'run');
     let subject = new InstallCommand();
+    subject.childCommandFactory = sandbox.stub().returns(
+      [dotnetInstallCommandMock, nodeInstallCommandMock]
+    );
     subject.fileService = fileServiceMock;
-    subject.installCommands = [nodeInstallCommandMock, dotnetInstallCommandMock];
-    subject.run().then(_ => {
+    subject.run(cla).then(_ => {
       expect(nodeInstallCommandMock.run).to.have.been.called;
       expect(dotnetInstallCommandMock.run).to.have.been.called;
       done();
@@ -74,6 +81,7 @@ describe('Install Command', () => {
 
   it('run should return resolved promise for multiple environment build', (done) => {
     let fileServiceMock = createMock<IFileService>();
+    let cla = new CommandLineArguments(['test', 'test', 'install']);
     fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({projects: [
       {
         name: "sample-node",
@@ -87,9 +95,11 @@ describe('Install Command', () => {
       }
     ]}));
     let subject = new InstallCommand();
+    subject.childCommandFactory = sandbox.stub().returns(
+      [new MockDotnetInstallCommand(), new MockNodeInstallCommand()]
+    );
     subject.fileService = fileServiceMock;
-    subject.installCommands = [new MockNodeInstallCommand(), new MockDotnetInstallCommand()];
-    subject.run("*", "./shaman.json").then(_ => done());
+    subject.run(cla).then(_ => done());
   });
 
 });
