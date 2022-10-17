@@ -1,16 +1,11 @@
 import { CommandLineArguments } from "../../command-line-arguments";
 import { Recipe } from '../../models/recipe';
-import { Solution } from "../../models/solution";
+import { Solution, SolutionProject } from "../../models/solution";
 import { FileService, IFileService } from "../../services/file.service";
 import { IRecipeService, RecipeService } from "../../services/recipe.service";
 import { ICommand } from "../command";
 import { InteractiveCommands, Prompt } from "../interactive-commands";
-// import { ISubject } from "../interactive-commands";
 import { ScaffoldCommand } from '../scaffold/scaffold.command';
-
-// export interface IObserver {
-//     update(subject: ISubject): void;
-// }
 
 export class GenerateCommand implements ICommand {
     get name(): string { return "generate"; }
@@ -22,8 +17,6 @@ export class GenerateCommand implements ICommand {
     private filePath: string;
     private project: string;
     private recipeName: string;
-
-    // private testRenames: {} = {};
 
     run = (cla: CommandLineArguments): Promise<void> => {
         this.assignArguments(cla);
@@ -40,7 +33,32 @@ export class GenerateCommand implements ICommand {
 
     private addProjectsToShamanFile = (): Promise<void> => {
         console.log('addProjectsToShamanFile()');
-        return Promise.reject(new Error('addProjectsToShamanFile() not implemented'));
+        let shamanFile: Solution;
+        return this.fileService.getShamanFile(this.filePath)
+            .then(shaman => shamanFile = shaman)
+            .then(_ => {
+                let prompts = [
+                    new Prompt(`Name for '${this.project}': `, `${this.project}Name`, this.nameValidator),
+                    new Prompt(`Environment for '${this.project}': `, `${this.project}Environment`, this.nameValidator),
+                    new Prompt(`File path for '${this.project}': `, `${this.project}Path`, this.pathValidator)
+                ];
+                let interactiveCommand = new InteractiveCommands(prompts); 
+                return interactiveCommand.interogate();
+            })
+            .then(rslt => {
+                let pName = rslt[`${this.project}Name`];
+                let pEnvironment = rslt[`${this.project}Environment`];
+                let pPath = rslt[`${this.project}Path`];
+                let newProject: SolutionProject = {
+                    name: pName,
+                    environment: pEnvironment,
+                    type: this.project,
+                    path: pPath
+                }
+                shamanFile.projects.push(newProject)
+            })
+            .then(_ => this.fileService.writeJson(this.filePath, shamanFile))
+            .then(_ => this.scaffoldSolution());
     }
 
     private generateFromRecipe = (): Promise<void> => {
@@ -54,10 +72,6 @@ export class GenerateCommand implements ICommand {
             .then(_ => console.log("Solution generation is complete."));
     }
 
-    // update = (subject: InteractiveCommands) => {
-    //     this.testRenames = subject.state;
-    // }
-
     private generateShamanFile = (recipe: Recipe): Promise<void> => {
         console.log('Generating shaman.json file...');
         let solution: Solution = {
@@ -70,18 +84,14 @@ export class GenerateCommand implements ICommand {
     }
 
     private renameProjects = (recipe: Recipe): Promise<Recipe> => {
-        let prompts = this.createPrompts(recipe);
+        let prompts = recipe.projects.map(p => {
+            return new Prompt(`Rename '${p.name}': `, p.name, this.nameValidator)
+        });
         let interactiveCommand = new InteractiveCommands(prompts);
         return interactiveCommand.interogate()
             .then(renameValues => this.updateRecipeProjectNames(recipe, renameValues));
     }
 
-    private createPrompts = (recipe: Recipe): Prompt[] => {
-        let prompts: Prompt[] = recipe.projects.map(p => {
-            return new Prompt(`Rename '$': `, p.name, this.validator);
-        });
-        return prompts;
-    }
 
     private updateRecipeProjectNames = (recipe: Recipe, renameValues: { [key: string]: string }): Promise<Recipe> => {
         return new Promise((res) => {
@@ -94,8 +104,13 @@ export class GenerateCommand implements ICommand {
         })
     }
 
-    private validator = (answer: string): boolean => {
+    private nameValidator = (answer: string): boolean => {
         let regex = RegExp('^[\\w-]+$');
+        return regex.test(answer);
+    }
+
+    private pathValidator = (answer: string): boolean => {
+        let regex = RegExp('^[\\w-./\\\\]+$');
         return regex.test(answer);
     }
 
