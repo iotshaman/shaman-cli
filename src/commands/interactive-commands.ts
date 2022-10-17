@@ -1,64 +1,64 @@
 import * as readline from 'readline';
-import { IObserver } from './generate/generate.command';
+// import { IObserver } from './generate/generate.command';
 
-export interface ISubject {
-	attach(observer: IObserver): void;
-	detach(observer: IObserver): void;	
-	notify(): void;
-}
+// export interface ISubject {
+// 	attach(observer: IObserver): void;
+// 	detach(observer: IObserver): void;
+// 	notify(): void;
+// }
 
-export class InteractiveCommands implements ISubject {
+export class InteractiveCommands {
 
-	state: string;
 	stdin: readline.Interface;
-	private observers: IObserver[] = []
+	state: { [key: string]: string } = {};
+	// private observers: IObserver[] = [];
 
 	constructor(private prompts: Prompt[]) {
 		this.stdin = readline.createInterface(process.stdin, process.stdout);
 	}
 
-	attach = (observer: IObserver) => {
-		let isExists = this.observers.includes(observer);
-		if (isExists) {
-			return console.error("InteractiveCommands: observer already attached.")
-		}
-		console.log("InteractiveCommands: attaching observer");
-		this.observers.push(observer);
-	}
+	// attach = (observer: IObserver) => {
+	// 	let isExists = this.observers.includes(observer);
+	// 	if (isExists) {
+	// 		return Promise.reject(console.error("InteractiveCommands: observer already attached."));
+	// 	}
+	// 	this.observers.push(observer);
+	// 	return Promise.resolve();
+	// }
 
-    public detach(observer: IObserver): void {
-        const observerIndex = this.observers.indexOf(observer);
-        if (observerIndex === -1) {
-            return console.log('InteractiveCommands: Nonexistent observer.');
-        }
+	// detach = (observer: IObserver) => {
+	// 	const observerIndex = this.observers.indexOf(observer);
+	// 	if (observerIndex === -1) {
+	// 		return Promise.reject(console.log('InteractiveCommands: Nonexistent observer.'));
+	// 	}
+	// 	this.observers.splice(observerIndex, 1);
+	// 	return Promise.resolve();
+	// }
 
-        this.observers.splice(observerIndex, 1);
-        console.log('InteractiveCommands: Detached an observer.');
-    }
+	// notify = () => {
+	// 	console.log('\n\nSubject: Notifying observers...\n\n');
+	// 	for (const observer of this.observers) {
+	// 		observer.update(this);
+	// 	}
+	// }
 
-	public notify(): void {
-        console.log('Subject: Notifying observers...');
-        for (const observer of this.observers) {
-            observer.update(this);
-        }
-    }
-
-	interogate = (): Promise<void> => {
+	interogate = (): Promise<{ [key: string]: string }> => {
+		this.state = {};
 		let taskChain = this.prompts.reduce((a, b) => {
 			return a.then(_ => this.question(b))
 		}, Promise.resolve());
-		return taskChain;
+		return taskChain
+			.then(_ => {return this.state});
 	}
 
-	question = (prompt: Prompt): Promise<void> => {
+	private question = (prompt: Prompt): Promise<void> => {
 		return new Promise(res => {
 			this.stdin.question(prompt.prompt, answer => {
 				if (!prompt.validator(answer)) {
 					console.warn('Invalid response.');
-					return this.question(prompt);
+					return res(this.question(prompt));
 				}
-				this.state = answer;
-				this.notify();
+				this.state[prompt.key] = answer
 				return res();
 			});
 		})
@@ -67,8 +67,8 @@ export class InteractiveCommands implements ISubject {
 }
 
 export class Prompt {
-	constructor(public prompt: string, public validator: (answer: string) => boolean) {
-
+	constructor(public prompt: string, public key: string, public validator: (answer: string) => boolean) {
+		this.prompt = this.prompt.replace("$", key);
 	}
 
 }
