@@ -23,15 +23,21 @@ export class CommandLineArguments {
         return this.keyDefaults[key];
     }
 
+    public getFlag = (key: string): boolean => {
+        return this.flags[key];
+    }
+
     private keyDefaults = {
         echo: 'No echo string provided.',
         environment: '*',
         filePath: './shaman.json',
         recipe: 'default-recipe',
+        template: null,
         script: 'start'
     }
 
-    public flags = {
-        '--add': false
+    private flags = {
+        '-add': false,
+        '-fromTemplates': false
     }
 }
