@@ -91,10 +91,8 @@ export class GenerateCommand implements ICommand {
             .then(templateName => this.askProjectDetails(templateName))
             .then(newProject => projects.push(newProject))
             .then(_ => this.askIfAddingAnotherProject())
-            .then(addingAnotherProject => {
-                if (addingAnotherProject) return this.constructMultipleProjects(projects);
-                else return projects;
-            });
+            .then(addingAnother => { if (addingAnother) return this.constructMultipleProjects(projects); })
+            .then(_ => projects);
     }
 
     private renameRecipeProjects = (recipe: Recipe): Promise<Recipe> => {
@@ -119,9 +117,9 @@ export class GenerateCommand implements ICommand {
     private askProjectDetails = (templateName: string): Promise<SolutionProject> => {
         let nameKey = `${templateName}Name`, environmentKey = `${templateName}Environment`, pathKey = `${templateName}Path`;
         let prompts = [
-            new Prompt(`Project name for '${templateName}': `, nameKey, this.validators.templateName),
-            new Prompt(`Environment of '${templateName}': `, environmentKey, this.validators.environment),
-            new Prompt(`File path for '${templateName}': `, pathKey, this.validators.path)
+            new Prompt(`What environment does '${templateName}' belong to? `, environmentKey, this.validators.environment),
+            new Prompt(`What would you like to name this project? `, nameKey, this.validators.templateName),
+            new Prompt(`What file path would you like to use for this project? `, pathKey, this.validators.path)
         ];
         return this.interaction.interogate(prompts).then(rslt => {
             let newProject: SolutionProject = {
@@ -135,7 +133,7 @@ export class GenerateCommand implements ICommand {
     }
 
     private askForTemplateName = (): Promise<string> => {
-        let prompt = [new Prompt('Name of template to use: ', 'template', this.validators.templateName)];
+        let prompt = [new Prompt('What template would you like to use? ', 'template', this.validators.templateName)];
         return this.interaction.interogate(prompt).then(rslt => rslt['template'])
     }
 
@@ -145,7 +143,7 @@ export class GenerateCommand implements ICommand {
     }
 
     private askIfAddingAnotherProject = (): Promise<boolean> => {
-        let prompt = [new Prompt('Add another project (y/n): ', 'addAnother', this.validators.yesOrNo)];
+        let prompt = [new Prompt('Add another project? (y/n) ', 'addAnother', this.validators.yesOrNo)];
         return this.interaction.interogate(prompt).then(rslt => rslt['addAnother'] == 'y');
     }
 
