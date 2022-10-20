@@ -99,7 +99,7 @@ export class GenerateCommand implements ICommand {
         let prompts = recipe.projects.map(p => {
             return new Prompt(`Rename '${p.name}': `, p.name, this.validators.projectName)
         });
-        return this.interaction.interogate(prompts)
+        return this.interaction.interrogate(prompts)
             .then(renameValues => this.updateRecipeProjectNames(recipe, renameValues));
     }
 
@@ -121,7 +121,7 @@ export class GenerateCommand implements ICommand {
             new Prompt(`What would you like to name this project? `, nameKey, this.validators.templateName),
             new Prompt(`What file path would you like to use for this project? `, pathKey, this.validators.path)
         ];
-        return this.interaction.interogate(prompts).then(rslt => {
+        return this.interaction.interrogate(prompts).then(rslt => {
             let newProject: SolutionProject = {
                 name: rslt[nameKey],
                 environment: rslt[environmentKey],
@@ -134,22 +134,22 @@ export class GenerateCommand implements ICommand {
 
     private askForTemplateName = (): Promise<string> => {
         let prompt = [new Prompt('What template would you like to use? ', 'template', this.validators.templateName)];
-        return this.interaction.interogate(prompt).then(rslt => rslt['template'])
+        return this.interaction.interrogate(prompt).then(rslt => rslt['template'])
     }
 
     private askForSolutionName = (): Promise<string> => {
         let prompt = [new Prompt('What would you like to name your solution? ', 'solutionName', this.validators.solutionName)];
-        return this.interaction.interogate(prompt).then(rslt => rslt['solutionName']);
+        return this.interaction.interrogate(prompt).then(rslt => rslt['solutionName']);
     }
 
     private askIfAddingAnotherProject = (): Promise<boolean> => {
         let prompt = [new Prompt('Add another project? (y/n) ', 'addAnother', this.validators.yesOrNo)];
-        return this.interaction.interogate(prompt).then(rslt => rslt['addAnother'] == 'y');
+        return this.interaction.interrogate(prompt).then(rslt => rslt['addAnother'] == 'y');
     }
 
     private askForRecipe = (): Promise<string> => {
         let prompt = [new Prompt('What recipe would you like to use? (press enter for default recipe) ', 'recipe', this.validators.recipe)];
-        return this.interaction.interogate(prompt).then(rslt => rslt['recipe']);
+        return this.interaction.interrogate(prompt).then(rslt => rslt['recipe']);
     }
 
     private generateShamanFile = (projects: SolutionProject[], transformations?: ProjectTransformation[]): Promise<void> => {

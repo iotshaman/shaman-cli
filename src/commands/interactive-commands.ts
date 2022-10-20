@@ -4,7 +4,7 @@ export class InteractiveCommands {
 
 	stdin: readline.Interface;
 
-	interogate = async (prompts: Prompt[]): Promise<{ [key: string]: string }> => {
+	interrogate = async (prompts: Prompt[]): Promise<{ [key: string]: string }> => {
 		var state: {[key: string]: string} = {};
 		this.stdin = readline.createInterface(process.stdin, process.stdout);
 		for (var i = 0; i < prompts.length; i++) {
