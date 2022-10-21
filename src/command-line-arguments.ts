@@ -23,6 +23,10 @@ export class CommandLineArguments {
         return this.keyDefaults[key];
     }
 
+    getDefault = (key: string): string => {
+        return this.keyDefaults[key];
+    }
+
     public getFlag = (key: string): boolean => {
         return this.flags[key];
     }
@@ -38,6 +42,5 @@ export class CommandLineArguments {
 
     private flags = {
         '-add': false,
-        '-fromTemplates': false
     }
 }
