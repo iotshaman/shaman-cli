@@ -44,41 +44,14 @@ describe('Generate Command', () => {
             });
     });
 
-    it('run should return resolved promise if add flag is provided', (done) => {
-        let subject = new GenerateCommand();
-        let cla = new CommandLineArguments(['', '', 'generate', '-add']);
-        let fileServiceMock = createMock<IFileService>();
-        fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
-        fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
-            name: 'test-shaman-file',
-            projects: [{
-                name: 'test-client',
-                environment: 'node',
-                type: 'client',
-                path: 'client'
-            }]
-        }));
-        subject.fileService = fileServiceMock;
-        let promptsMock = createMock<IGenerateCommandPrompts>();
-        promptsMock.askForTemplateName = sandbox.stub().returns(Promise.resolve('test-template'));
-        promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
-            name: 'test-server',
-            environment: 'node',
-            type: 'server',
-            path: 'server'
-        }));
-        promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));
-        subject.prompts = promptsMock;
-        let scaffoldCommandMock = createMock<MockScaffoldCommand>();
-        subject.scaffoldCommand = scaffoldCommandMock;
-        subject.run(cla).then(_ => done());
-    });
-
     it('run should add one project if add flag and template argument are provided', (done) => {
         let subject = new GenerateCommand();
         let cla = new CommandLineArguments(['', '', 'generate', '-add', '--template=test-template']);
         let fileServiceMock = createMock<IFileService>();
-        fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
+        fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
+            expect(json.projects.length).to.equal(2);
+            return Promise.resolve();
+        });
         fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
             name: 'test-shaman-file',
             projects: [{
@@ -106,7 +79,10 @@ describe('Generate Command', () => {
         let subject = new GenerateCommand();
         let cla = new CommandLineArguments(['', '', 'generate', '-add']);
         let fileServiceMock = createMock<IFileService>();
-        fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
+        fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
+            expect(json.projects.length).to.equal(3);
+            return Promise.resolve();
+        });
         fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
             name: 'test-shaman-file',
             projects: [{
@@ -224,7 +200,10 @@ describe('Generate Command', () => {
         let cla = new CommandLineArguments(['', '', 'generate']);
         let fileServiceMock = createMock<IFileService>();
         fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
-        fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
+        fileServiceMock.writeJson = sandbox.stub().callsFake((_path, json) => {
+            expect(json.transform.length).to.equal(1);
+            return Promise.resolve();
+        });
         subject.fileService = fileServiceMock;
         let promptsMock = createMock<IGenerateCommandPrompts>();
         promptsMock.askForSolutionName = sandbox.stub().returns(Promise.resolve('test-solution'));
@@ -236,7 +215,7 @@ describe('Generate Command', () => {
                 environment: "node",
                 type: "server",
                 path: "server"
-            },{
+            }, {
                 name: "renamed-sample-database",
                 environment: "node",
                 type: "database",
@@ -259,7 +238,7 @@ describe('Generate Command', () => {
                 type: "server",
                 path: "server"
             }, {
-                name: "renamed-sample-database",
+                name: "sample-database",
                 environment: "node",
                 type: "database",
                 path: "database"
@@ -451,6 +430,36 @@ describe('Generate Command', () => {
             }]
         }));
         subject.recipeService = recipeServiceMock;
+        let scaffoldCommandMock = createMock<MockScaffoldCommand>();
+        subject.scaffoldCommand = scaffoldCommandMock;
+        subject.run(cla).then(_ => done());
+    });
+
+    it('run should return resolved promise if add flag is provided', (done) => {
+        let subject = new GenerateCommand();
+        let cla = new CommandLineArguments(['', '', 'generate', '-add']);
+        let fileServiceMock = createMock<IFileService>();
+        fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
+        fileServiceMock.getShamanFile = sandbox.stub().returns(Promise.resolve({
+            name: 'test-shaman-file',
+            projects: [{
+                name: 'test-client',
+                environment: 'node',
+                type: 'client',
+                path: 'client'
+            }]
+        }));
+        subject.fileService = fileServiceMock;
+        let promptsMock = createMock<IGenerateCommandPrompts>();
+        promptsMock.askForTemplateName = sandbox.stub().returns(Promise.resolve('test-template'));
+        promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
+            name: 'test-server',
+            environment: 'node',
+            type: 'server',
+            path: 'server'
+        }));
+        promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));
+        subject.prompts = promptsMock;
         let scaffoldCommandMock = createMock<MockScaffoldCommand>();
         subject.scaffoldCommand = scaffoldCommandMock;
         subject.run(cla).then(_ => done());
