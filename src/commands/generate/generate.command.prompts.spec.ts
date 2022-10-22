@@ -23,7 +23,7 @@ describe('Generate Command Prompts', () => {
         sandbox.restore();
     });
 
-    it('askForProjectDetails should return a new project matching user input', (done) => {
+    it('askForProjectDetails should return a new project', (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
         interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({
@@ -43,8 +43,8 @@ describe('Generate Command Prompts', () => {
             done();
         });
     });
-    
-    it('askToRenameRecipeProjects', (done) => {
+
+    it('askToRenameRecipeProjects should return a new recipe renamed projects', (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
         interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({
@@ -58,7 +58,7 @@ describe('Generate Command Prompts', () => {
                 environment: 'node',
                 type: 'server',
                 path: 'server'
-            },{
+            }, {
                 name: 'test-database',
                 environment: 'node',
                 type: 'database',
@@ -71,7 +71,7 @@ describe('Generate Command Prompts', () => {
                 environment: 'node',
                 type: 'server',
                 path: 'server'
-            },{
+            }, {
                 name: 'test-database-rename',
                 environment: 'node',
                 type: 'database',
@@ -84,10 +84,10 @@ describe('Generate Command Prompts', () => {
         });
     });
 
-    it('askForTemplateName', (done) => {
+    it('askForTemplateName should return value for template key', (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
-        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({template: 'test-name'}));
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ template: 'test-name' }));
         subject.interaction = interactionMock;
         subject.askForTemplateName().then(rslt => {
             expect(rslt).to.equal('test-name');
@@ -95,10 +95,10 @@ describe('Generate Command Prompts', () => {
         });
     });
 
-    it('askForSolutionName', (done) => {
+    it('askForSolutionName should return value for solution key', (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
-        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({solution: 'test-solution'}));
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ solution: 'test-solution' }));
         subject.interaction = interactionMock;
         subject.askForSolutionName().then(rslt => {
             expect(rslt).to.equal('test-solution');
@@ -106,10 +106,10 @@ describe('Generate Command Prompts', () => {
         });
     });
 
-    it('askIfAddingAnotherProject true', (done) => {
+    it("askIfAddingAnotherProject should return true if interrogate returns value 'y' for addAnother key", (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
-        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({addAnother: 'y'}));
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ addAnother: 'y' }));
         subject.interaction = interactionMock;
         subject.askIfAddingAnotherProject().then(rslt => {
             expect(rslt).to.equal(true);
@@ -117,10 +117,10 @@ describe('Generate Command Prompts', () => {
         });
     });
 
-    it('askIfAddingAnotherProject false', (done) => {
+    it("askIfAddingAnotherProject should return false if interrogate returns value 'n' for addAnother key", (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
-        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({addAnother: 'n'}));
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ addAnother: 'n' }));
         subject.interaction = interactionMock;
         subject.askIfAddingAnotherProject().then(rslt => {
             expect(rslt).to.equal(false);
@@ -128,10 +128,10 @@ describe('Generate Command Prompts', () => {
         });
     });
 
-    it('askForRecipe', (done) => {
+    it('askForRecipe should return value for recipe key', (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
-        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({recipe: 'test-recipe'}));
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ recipe: 'test-recipe' }));
         subject.interaction = interactionMock;
         subject.askForRecipe().then(rslt => {
             expect(rslt).to.equal('test-recipe');
@@ -139,10 +139,10 @@ describe('Generate Command Prompts', () => {
         });
     });
 
-    it('askForGenerationMethod recipe', (done) => {
+    it("askForGenerationMethod should return 'recipe' if interrogate returns value 'r' for method key", (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
-        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({method: 'r'}));
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ method: 'r' }));
         subject.interaction = interactionMock;
         subject.askForGenerationMethod().then(rslt => {
             expect(rslt).to.equal('recipe');
@@ -150,10 +150,10 @@ describe('Generate Command Prompts', () => {
         });
     });
 
-    it('askForGenerationMethod template', (done) => {
+    it("askForGenerationMethod should return 'template' if interrogate returns value 't' for method key", (done) => {
         let subject = new GenerateCommandPrompts();
         let interactionMock = createMock<InteractiveCommands>();
-        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({method: 't'}));
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ method: 't' }));
         subject.interaction = interactionMock;
         subject.askForGenerationMethod().then(rslt => {
             expect(rslt).to.equal('template');
