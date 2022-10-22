@@ -36,7 +36,7 @@ export class GenerateCommand implements ICommand {
         return this.fileService.getShamanFile(this.params.filePath)
             .then(file => { shamanFile = file })
             .then(_ => {
-                if (!!this.params.template) return this.prompts.askProjectDetails(this.params.template).then(p => [p]);
+                if (!!this.params.template) return this.prompts.askForProjectDetails(this.params.template).then(p => [p]);
                 return this.constructMultipleProjects();
             })
             .then(projects => { shamanFile.projects.push(...projects) })
@@ -81,8 +81,8 @@ export class GenerateCommand implements ICommand {
     private generateFromTemplates = (): Promise<void> => {
         return Promise.resolve()
             .then(_ => {
-                if (!!this.params.template) 
-                    return this.prompts.askProjectDetails(this.params.template).then(p => [p])
+                if (!!this.params.template)
+                    return this.prompts.askForProjectDetails(this.params.template).then(p => [p])
                 return this.constructMultipleProjects()
             })
             .then(projects => this.generateShamanFile(projects))
@@ -91,7 +91,7 @@ export class GenerateCommand implements ICommand {
     private constructMultipleProjects = (projects?: SolutionProject[]): Promise<SolutionProject[]> => {
         if (!projects) projects = [];
         return this.prompts.askForTemplateName()
-            .then(templateName => this.prompts.askProjectDetails(templateName))
+            .then(templateName => this.prompts.askForProjectDetails(templateName))
             .then(newProject => projects.push(newProject))
             .then(_ => this.prompts.askIfAddingAnotherProject())
             .then(addingAnother => { if (addingAnother) return this.constructMultipleProjects(projects); })

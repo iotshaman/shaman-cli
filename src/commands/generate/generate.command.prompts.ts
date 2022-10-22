@@ -4,7 +4,7 @@ import { SolutionProject } from "../../models/solution";
 import { InteractiveCommands, Prompt } from "../interactive-commands";
 
 export interface IGenerateCommandPrompts {
-    askProjectDetails: (templateName: string) => Promise<SolutionProject>;
+    askForProjectDetails: (templateName: string) => Promise<SolutionProject>;
     askToRenameRecipeProjects: (recipe: Recipe) => Promise<Recipe>;
     askForTemplateName: () => Promise<string>;
     askForSolutionName: () => Promise<string>;
@@ -30,25 +30,24 @@ export class GenerateCommandPrompts implements IGenerateCommandPrompts {
         }
     }
 
-    public askProjectDetails = (templateName: string): Promise<SolutionProject> => {
-        let nameKey = `${templateName}Name`, environmentKey = `${templateName}Environment`, pathKey = `${templateName}Path`;
+    askForProjectDetails = (templateName: string): Promise<SolutionProject> => {
         let prompts = [
-            new Prompt(`What environment does '${templateName}' belong to? `, environmentKey, this.validators.environment),
-            new Prompt(`What would you like to name this project? `, nameKey, this.validators.templateName),
-            new Prompt(`What file path would you like to use for this project? `, pathKey, this.validators.path)
+            new Prompt(`What environment does '${templateName}' belong to? `, 'environment', this.validators.environment),
+            new Prompt(`What would you like to name this project? `, 'name', this.validators.templateName),
+            new Prompt(`What file path would you like to use for this project? `, 'path', this.validators.path)
         ];
         return this.interaction.interrogate(prompts).then(rslt => {
             let newProject: SolutionProject = {
-                name: rslt[nameKey],
-                environment: rslt[environmentKey],
+                name: rslt['name'],
+                environment: rslt['environment'],
                 type: templateName,
-                path: rslt[pathKey]
+                path: rslt['path']
             }
             return newProject;
         });
     }
 
-    public askToRenameRecipeProjects = (recipe: Recipe): Promise<Recipe> => {
+    askToRenameRecipeProjects = (recipe: Recipe): Promise<Recipe> => {
         let prompts = recipe.projects.map(p => {
             return new Prompt(`Rename '${p.name}': `, p.name, this.validators.projectName)
         });
@@ -65,30 +64,30 @@ export class GenerateCommandPrompts implements IGenerateCommandPrompts {
             });
     }
 
-    public askForTemplateName = (): Promise<string> => {
+    askForTemplateName = (): Promise<string> => {
         let prompt = [new Prompt('What template would you like to use? ', 'template', this.validators.templateName)];
         return this.interaction.interrogate(prompt).then(rslt => rslt['template'])
     }
 
-    public askForSolutionName = (): Promise<string> => {
-        let prompt = [new Prompt('What would you like to name your solution? ', 'solutionName', this.validators.solutionName)];
-        return this.interaction.interrogate(prompt).then(rslt => rslt['solutionName']);
+    askForSolutionName = (): Promise<string> => {
+        let prompt = [new Prompt('What would you like to name your solution? ', 'solution', this.validators.solutionName)];
+        return this.interaction.interrogate(prompt).then(rslt => rslt['solution']);
     }
 
-    public askIfAddingAnotherProject = (): Promise<boolean> => {
+    askIfAddingAnotherProject = (): Promise<boolean> => {
         let prompt = [new Prompt('Add another project? (y/n) ', 'addAnother', this.validators.yesOrNo)];
         return this.interaction.interrogate(prompt).then(rslt => rslt['addAnother'] == 'y');
     }
 
-    public askForRecipe = (): Promise<string> => {
+    askForRecipe = (): Promise<string> => {
         let prompt = [new Prompt('What recipe would you like to use? (press enter for default recipe) ', 'recipe', this.validators.recipe)];
         return this.interaction.interrogate(prompt).then(rslt => rslt['recipe']);
     }
 
     askForGenerationMethod = (): Promise<string> => {
-        let prompt = [new Prompt('Would you like to generate from a recipe or templates? (r/t) ', 'choice', this.validators.templateOrRecipe)];
+        let prompt = [new Prompt('Would you like to generate from a recipe or templates? (r/t) ', 'method', this.validators.templateOrRecipe)];
         return this.interaction.interrogate(prompt).then(rslt => {
-            if (rslt['choice'] == 'r') return 'recipe';
+            if (rslt['method'] == 'r') return 'recipe';
             return 'template'
         });
     };
