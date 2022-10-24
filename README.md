@@ -154,7 +154,7 @@ shaman scaffold [--filePath=FILEPATH]
 
 ### Generate Command
 
-The generate command creates a solution file and then runs the the [scaffold command](#scaffold-command). The generate command is interactive and will prompt the user to provide information that will determine how the solution file is created. The solution file will largely be modeled after the user provided recipe or templates. A pre-made [default recipe](https://github.com/iotshaman/shaman-cli/tree/main/recipes) is available. The generate command can also be used to add projects to an existing solution file. The syntax for the generate command is as follows:
+The generate command creates a solution file and then runs the the [scaffold command](#scaffold-command). The generate command is interactive and will prompt the user to provide information that will determine how the solution file is created. The solution file will largely be modeled after the user provided recipe or templates. A pre-made [default recipe](./recipes/README.md#shaman-cli-recipes) is available. The generate command can also be used to add projects to an existing solution file. The syntax for the generate command is as follows:
 
 ```sh
 shaman generate [-add] [--name=NAME] [--recipe=RECIPE] [--template=TEMPLATE] [--filePath=FILEPATH]

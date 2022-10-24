@@ -1,6 +1,6 @@
 # Shaman CLI Recipes
 
-When using the [generate command](#generate-command), a recipe can be used as a model for the created solution file. The default recipe is as follows:
+When using the [generate command](../README.md#generate-command), a recipe can be used as a model for the created solution file. The default recipe is as follows:
 
 ```json
     "recipe": {
