@@ -161,4 +161,66 @@ describe('Generate Command Prompts', () => {
         });
     });
 
+    it("askToInstallRequiredTemplates should return true if interrogate returns value 'y' for addRequired key", (done) => {
+        let subject = new GenerateCommandPrompts();
+        let interactionMock = createMock<InteractiveCommands>();
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ addRequired: 'y' }));
+        subject.interaction = interactionMock;
+        subject.askToInstallRequiredTemplates('test-client', ['test-server']).then(rslt => {
+            expect(rslt).to.equal(true);
+            done();
+        });
+    });
+
+    it("askToInstallRequiredTemplates should return false if interrogate returns value 'n' for addRequired key", (done) => {
+        let subject = new GenerateCommandPrompts();
+        let interactionMock = createMock<InteractiveCommands>();
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({ addRequired: 'n' }));
+        subject.interaction = interactionMock;
+        subject.askToInstallRequiredTemplates('test-client', ['test-server']).then(rslt => {
+            expect(rslt).to.equal(false);
+            done();
+        });
+    });
+
+    it('askForRequiredTemplateDetails should return a project array', (done) => {
+        let subject = new GenerateCommandPrompts();
+        let templates = [{
+            environment: "node",
+            type: "test-client",
+            version: "1.0.0",
+            file: "node/filePath.zip",
+            requires: ["test-server"],
+        }, {
+            environment: "node",
+            type: "test-server",
+            version: "1.0.0",
+            file: "node/filePath.zip",
+            requires: ["test-client"]
+        }];
+        let interactionMock = createMock<InteractiveCommands>();
+        interactionMock.interrogate = sandbox.stub().returns(Promise.resolve({
+            'test-clientName': 'my-test-client',
+            'test-clientPath': 'client',
+            'test-serverName': 'my-test-server',
+            'test-serverPath': 'server'
+        }));
+        subject.interaction = interactionMock;
+        let expected: SolutionProject[] = [{
+            name: 'my-test-client',
+            environment: 'node',
+            type: 'test-client',
+            path: 'client'
+        }, {
+            name: 'my-test-server',
+            environment: 'node',
+            type: 'test-server',
+            path: 'server'
+        }]
+        subject.askForRequiredTemplateDetails(templates).then(actual => {
+            assert.deepEqual(expected, actual);
+            done();
+        });
+    });
+
 });

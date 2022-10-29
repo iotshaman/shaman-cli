@@ -10,6 +10,8 @@ import { createMock } from 'ts-auto-mock';
 import { IRecipeService } from '../../services/recipe.service';
 import { IGenerateCommandPrompts } from './generate.command.prompts';
 import { ICommand } from '../command';
+import { ITemplateService } from '../../services/template.service';
+import { TemplateAuthorization } from '../../models/solution';
 
 describe('Generate Command', () => {
 
@@ -324,7 +326,7 @@ describe('Generate Command', () => {
         });
     });
 
-    it("run should generate from templates if if user enters 't' in prompts.askForGenerationMethod", (done) => {
+    it("run should generate from templates if user enters 't' in prompts.askForGenerationMethod", (done) => {
         let subject = new GenerateCommand();
         let cla = new CommandLineArguments(['', '', 'generate']);
         let fileServiceMock = createMock<IFileService>();
@@ -346,6 +348,112 @@ describe('Generate Command', () => {
         let scaffoldCommandMock = createMock<MockScaffoldCommand>();
         subject.scaffoldCommand = scaffoldCommandMock;
         subject.run(cla).then(_ => done());
+    });
+
+    it("run should call prompts.askToInstallRequiredTemplates if installing a template with required templates", (done) => {
+        let subject = new GenerateCommand();
+        let cla = new CommandLineArguments(['', '', 'generate']);
+        let fileServiceMock = createMock<IFileService>();
+        fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+        fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
+        subject.fileService = fileServiceMock;
+        let promptsMock = createMock<IGenerateCommandPrompts>();
+        promptsMock.askForSolutionName = sandbox.stub().returns(Promise.resolve('test-solution'));
+        promptsMock.askForGenerationMethod = sandbox.stub().returns(Promise.resolve('template'));
+        promptsMock.askForTemplateName = sandbox.stub()
+            .onFirstCall().returns(Promise.resolve('test-server'))
+            .onSecondCall().returns(Promise.resolve('test-database'));
+        promptsMock.askForProjectDetails = sandbox.stub()
+            .onFirstCall().returns(Promise.resolve({
+                name: 'my-test-server',
+                environment: 'node',
+                type: 'test-server',
+                path: 'server'
+            }))
+            .onSecondCall().returns(Promise.resolve({
+                name: 'my-test-database',
+                environment: 'node',
+                type: 'test-database',
+                path: 'database'
+            }));
+        promptsMock.askIfAddingAnotherProject = sandbox.stub()
+            .onFirstCall().returns(Promise.resolve(true))
+            .onSecondCall().returns(Promise.resolve(false));
+        promptsMock.askToInstallRequiredTemplates = sandbox.stub().returns(Promise.resolve(true));
+        promptsMock.askForRequiredTemplateDetails = sandbox.stub().returns(Promise.resolve([{
+            name: 'my-test-client',
+            environment: 'node',
+            type: 'test-client',
+            path: 'client'
+        }]));
+        subject.prompts = promptsMock;
+        let templateServiceMock = createMock<ITemplateService>();
+        templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({
+            environment: "node",
+            type: "test-server",
+            version: "1.0.0",
+            file: "node/filePath.zip",
+            requires: [
+                "test-client", "test-database"
+            ]
+        }));
+        templateServiceMock.getRequiredTemplates = sandbox.stub().returns(Promise.resolve({
+            environment: "node",
+            type: "test-client",
+            version: "1.0.0",
+            file: "node/filePath.zip",
+            requires: [
+                "test-server", "test-database"
+            ]
+        }));
+        subject.templateService = templateServiceMock;
+        let scaffoldCommandMock = createMock<MockScaffoldCommand>();
+        subject.scaffoldCommand = scaffoldCommandMock;
+        subject.run(cla).then(_ => {
+            expect(promptsMock.askToInstallRequiredTemplates).to.be.called;
+            done();
+        });
+    });
+
+    it('run should not call templateService.getRequiredTemplates if user chooses not to install required templates', (done) => {
+        let subject = new GenerateCommand();
+        let cla = new CommandLineArguments(['', '', 'generate']);
+        let fileServiceMock = createMock<IFileService>();
+        fileServiceMock.pathExists = sandbox.stub().returns(Promise.resolve(false));
+        fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
+        subject.fileService = fileServiceMock;
+        let promptsMock = createMock<IGenerateCommandPrompts>();
+        promptsMock.askForSolutionName = sandbox.stub().returns(Promise.resolve('test-solution'));
+        promptsMock.askForGenerationMethod = sandbox.stub().returns(Promise.resolve('template'));
+        promptsMock.askForTemplateName = sandbox.stub().returns(Promise.resolve('test-server'));
+        promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
+                name: 'my-test-server',
+                environment: 'node',
+                type: 'test-server',
+                path: 'server'
+            }));
+        promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));
+        promptsMock.askToInstallRequiredTemplates = sandbox.stub().returns(Promise.resolve(false));
+        promptsMock.askForRequiredTemplateDetails = sandbox.stub().returns(Promise.resolve());
+        subject.prompts = promptsMock;
+        let templateServiceMock = createMock<ITemplateService>();
+        templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({
+            environment: "node",
+            type: "test-server",
+            version: "1.0.0",
+            file: "node/filePath.zip",
+            requires: [
+                "test-client", "test-database"
+            ]
+        }));
+        templateServiceMock.getRequiredTemplates = sandbox.stub().returns(Promise.resolve());
+        subject.templateService = templateServiceMock;
+        let scaffoldCommandMock = createMock<MockScaffoldCommand>();
+        subject.scaffoldCommand = scaffoldCommandMock;
+        subject.run(cla).then(_ => {
+            expect(templateServiceMock.getRequiredTemplates).to.not.be.called;
+            done();
+        });
     });
 
     it("run should not call prompts.askForGenerationMethod if --template is provided", (done) => {

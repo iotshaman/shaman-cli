@@ -1,6 +1,6 @@
 import 'mocha';
 import * as sinon from 'sinon';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import { createMock } from 'ts-auto-mock';
 import { IFileService } from './file.service';
 import { TemplateService } from './template.service';
@@ -170,6 +170,79 @@ describe('Template Service', () => {
     subject.fileService = fileServiceMock;
     subject.templatesFolder = [__dirname];
     subject.unzipCustomProjectTemplate(template, "library").then(_ => done());
+  });
+
+  it('getRequiredTemplates should return an array containing the missing project templates', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({
+      templates: [{
+        environment: "node",
+        type: "test-client",
+        version: "1.0.4",
+        file: "node/client-typescript-v1.0.4.zip",
+        requires: ["test-server", "test-database"]
+      }, {
+        environment: "node",
+        type: "test-server",
+        version: "1.0.0",
+        file: "node/blog-server-v1.0.0.zip",
+        requires: ["test-client", "test-database"]
+      }, {
+        environment: "node",
+        type: "test-database",
+        version: "1.0.0",
+        file: "node/blog-server-v1.0.0.zip",
+        requires: ["test-client", "test-server"]
+      }]
+    }));
+    let subject = new TemplateService();
+    subject.fileService = fileServiceMock;
+    let expected: Template[] = [{
+      environment: "node",
+      type: "test-server",
+      version: "1.0.0",
+      file: "node/blog-server-v1.0.0.zip",
+      requires: ["test-client", "test-database"]
+    }, {
+      environment: "node",
+      type: "test-database",
+      version: "1.0.0",
+      file: "node/blog-server-v1.0.0.zip",
+      requires: ["test-client", "test-server"]
+    }];
+    subject.getRequiredTemplates('test-client', ['test-server', 'test-database'])
+      .then(actual => {
+        assert.deepEqual(actual, expected);
+        done();
+      });
+  });
+
+  it('getRequiredTemplates should return resolved promise', (done) => {
+    let fileServiceMock = createMock<IFileService>();
+    fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({
+      templates: [{
+        environment: "node",
+        type: "test-client",
+        version: "1.0.4",
+        file: "node/client-typescript-v1.0.4.zip",
+        requires: ["test-server", "test-database"]
+      }, {
+        environment: "node",
+        type: "test-server",
+        version: "1.0.0",
+        file: "node/blog-server-v1.0.0.zip",
+        requires: ["test-client", "test-database"]
+      }, {
+        environment: "node",
+        type: "test-database",
+        version: "1.0.0",
+        file: "node/blog-server-v1.0.0.zip",
+        requires: ["test-client", "test-server"]
+      }]
+    }));
+    let subject = new TemplateService();
+    subject.fileService = fileServiceMock;
+    subject.getRequiredTemplates('test-client', ['test-server', 'test-database']).then(_ => done());
   });
 
 });
