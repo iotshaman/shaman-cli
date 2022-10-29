@@ -1,6 +1,7 @@
 import { buildValidator } from "../../factories/validators/validator.factory";
 import { Recipe } from "../../models/recipe";
 import { SolutionProject } from "../../models/solution";
+import { Template } from "../../models/template";
 import { InteractiveCommands, Prompt } from "../interactive-commands";
 
 export interface IGenerateCommandPrompts {
@@ -11,6 +12,8 @@ export interface IGenerateCommandPrompts {
     askIfAddingAnotherProject: () => Promise<boolean>;
     askForRecipe: () => Promise<string>;
     askForGenerationMethod: () => Promise<string>;
+    askToInstallRequiredTemplates: (dependent: string, templates: string[]) => Promise<boolean>;
+    askForRequiredTemplateDetails: (templates: Template[]) => Promise<SolutionProject[]>;
 }
 
 export class GenerateCommandPrompts implements IGenerateCommandPrompts {
@@ -91,5 +94,34 @@ export class GenerateCommandPrompts implements IGenerateCommandPrompts {
             return 'template'
         });
     };
+
+    askToInstallRequiredTemplates = (dependant: string, required: string[]): Promise<boolean> => {
+        const requiredString = required.join(', ');
+        const promptStr = `${dependant} requires the following templates: ${requiredString}. ` +
+            'Would you like to add the required templates to your solution? (y/n) ';
+        let prompt = [new Prompt(promptStr, 'addRequired', this.validators.yesOrNo)];
+        return this.interaction.interrogate(prompt).then(rslt => rslt['addRequired'] == 'y');
+    }
+
+    askForRequiredTemplateDetails = (templates: Template[]): Promise<SolutionProject[]> => {
+        let prompts: Prompt[] = [];
+        templates.forEach(t => {
+            prompts.push(
+                new Prompt(`What would you like to name this project: ${t.type}? `, `${t.type}Name`, this.validators.templateName),
+                new Prompt(`What file path would you like to use for this project? `, `${t.type}Path`, this.validators.path)
+            )
+        });
+        return this.interaction.interrogate(prompts).then(rslt => {
+            let newProjects: SolutionProject[] = templates.map(t => {
+                return {
+                    name: rslt[`${t.type}Name`],
+                    environment: t.environment,
+                    type: t.type,
+                    path: rslt[`${t.type}Path`]
+                }
+            })
+            return newProjects;
+        });
+    }
 
 }

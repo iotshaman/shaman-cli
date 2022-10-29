@@ -2,6 +2,7 @@ import { CommandLineArguments } from "../../command-line-arguments";
 import { ProjectTransformation, Solution, SolutionProject } from "../../models/solution";
 import { FileService, IFileService } from "../../services/file.service";
 import { IRecipeService, RecipeService } from "../../services/recipe.service";
+import { ITemplateService, TemplateService } from "../../services/template.service";
 import { ICommand } from "../command";
 import { ScaffoldCommand } from '../scaffold/scaffold.command';
 import { GenerateCommandPrompts, IGenerateCommandPrompts } from "./generate.command.prompts";
@@ -9,6 +10,7 @@ import { GenerateCommandPrompts, IGenerateCommandPrompts } from "./generate.comm
 export class GenerateCommand implements ICommand {
     get name(): string { return "generate"; }
     fileService: IFileService = new FileService();
+    templateService: ITemplateService = new TemplateService();
     recipeService: IRecipeService = new RecipeService();
     scaffoldCommand: ICommand = new ScaffoldCommand();
     prompts: IGenerateCommandPrompts = new GenerateCommandPrompts();
@@ -85,6 +87,7 @@ export class GenerateCommand implements ICommand {
                     return this.prompts.askForProjectDetails(this.params.template).then(p => [p])
                 return this.constructMultipleProjects()
             })
+            .then(projects => this.checkTemplateRequirements(projects))
             .then(projects => this.generateShamanFile(projects))
     }
 
@@ -96,6 +99,25 @@ export class GenerateCommand implements ICommand {
             .then(_ => this.prompts.askIfAddingAnotherProject())
             .then(addingAnother => { if (addingAnother) return this.constructMultipleProjects(projects); })
             .then(_ => projects);
+    }
+
+    private checkTemplateRequirements = (projects: SolutionProject[]): Promise<SolutionProject[]> => {
+        const taskChain = projects.reduce((a, b) => a.then(_ => {
+            return this.templateService.getTemplate(b.environment, b.type).then(template => {
+                if (!template.requires) return;
+                let missingRequirements = template.requires.filter(r => {
+                    if (!projects.find(p => p.type == r)) return r;
+                });
+                if (missingRequirements.length == 0) return;
+                return this.prompts.askToInstallRequiredTemplates(b.type, missingRequirements).then(agreedToInstall => {
+                    if (!agreedToInstall) return;
+                    return this.templateService.getRequiredTemplates(b.type, missingRequirements)
+                        .then(rslt => this.prompts.askForRequiredTemplateDetails(rslt))
+                        .then(newProjects => projects.push(...newProjects))
+                });
+            });
+        }), Promise.resolve());
+        return taskChain.then(_ => projects);
     }
 
     private generateShamanFile = (projects: SolutionProject[], transformations?: ProjectTransformation[]): Promise<void> => {

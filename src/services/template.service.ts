@@ -8,6 +8,7 @@ import { HttpService } from './http.service';
 export interface ITemplateService {
   getTemplate: (environment: string, projectType: string, language?: string) => Promise<Template>;
   getCustomTemplate: (environment: string, projectType: string, solution: TemplateAuthorization, language?: string) => Promise<Template>
+  getRequiredTemplates: (dependent: string, missingRequirements: string[]) => Promise<Template[]>;
   unzipProjectTemplate: (template: Template, folderPath: string) => Promise<void>;
   unzipCustomProjectTemplate: (template: Template, folderPath: string) => Promise<void>;
 }
@@ -61,6 +62,17 @@ export class TemplateService extends HttpService implements ITemplateService {
         'and ensure your authorization information is correct and your token is not expired. ' +
         'Also check that your project name and environment are correct.'));
       });
+  }
+
+  getRequiredTemplates = (dependent: string, missingRequirements: string[]): Promise<Template[]> => {
+    let path = _path.join(...this.templatesFolder, 'templates.json');
+    return this.fileService.readJson<{ templates: Template[] }>(path).then(data => {
+      let templates = data.templates.filter(t => {
+        if (missingRequirements.includes(t.type) && t.requires.includes(dependent))
+          return t;
+      });
+      return templates;
+    });
   }
 
   unzipProjectTemplate = (template: Template, folderPath: string): Promise<void> => {
