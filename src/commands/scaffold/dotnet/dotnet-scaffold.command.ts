@@ -35,7 +35,7 @@ export class DotnetScaffoldCommand implements IChildCommand {
     console.log(`Scaffolding dotnet ${projectType}.`);
     return this.environmentService.checkNamingConvention(name, this.solution.name)
       .then(_ => this.addDotnetSolutionFile(this.solution.name, this.solutionFolder))
-      .then(_ => this.fileService.createFolder(this.solutionFolder, projectPath))
+      .then(_ => this.fileService.createFolderRecursive(this.solutionFolder + projectPath))
       .then(_ => {
         if (this.project.custom) return this.templateService.getCustomTemplate("dotnet", projectType, this.solution.auth, language);
         else return this.templateService.getTemplate("dotnet", projectType, language);
