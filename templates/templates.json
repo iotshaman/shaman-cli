@@ -28,20 +28,15 @@
       "environment": "node",
       "type": "blog-client",
       "version": "1.0.4",
-      "file": "node/client-typescript-v1.0.4.zip",
-      "requires": [
-        "blog-server"
-      ],
-      "comment": "// TODO: Replace with updated angular blog client"
+      "file": "node/blog-client-v1.0.0.zip",
+      "requires": ["blog-server"]
     },
     {
       "environment": "node",
       "type": "blog-server",
       "version": "1.0.0",
       "file": "node/blog-server-v1.0.0.zip",
-      "requires": [
-        "blog-client"
-      ]
+      "requires": ["blog-client"]
     },
     {
       "environment": "dotnet",
