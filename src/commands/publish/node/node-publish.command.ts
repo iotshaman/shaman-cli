@@ -82,7 +82,7 @@ export class NodePublishCommand implements IChildCommand {
       projects: projects.map(project => ({
         name: project.name,
         environment: project.environment,
-        type: project.type,
+        template: project.template,
         path: project.path,
         language: project.language,
         include: project.include

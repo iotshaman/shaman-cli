@@ -20,7 +20,7 @@ describe('Template Service', () => {
     sandbox.restore();
   });
 
-  it('getTemplate should throw if project type not found', (done) => {
+  it('getTemplate should throw if project template not found', (done) => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({ templates: [] }));
     let subject = new TemplateService();
@@ -29,7 +29,7 @@ describe('Template Service', () => {
     subject.getTemplate("node", "library")
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Project type not found: node-library");
+        expect(ex.message).to.equal("Project template not found: node-library");
         done();
       });
   });
@@ -39,7 +39,7 @@ describe('Template Service', () => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({
       templates: [{
-        environment: 'node', type: 'library', file: 'path.zip'
+        environment: 'node', name: 'library', file: 'path.zip'
       }]
     }));
     let subject = new TemplateService();
@@ -52,7 +52,7 @@ describe('Template Service', () => {
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({
       templates: [{
-        environment: 'dotnet', type: 'library', file: 'path.zip', language: "csharp"
+        environment: 'dotnet', name: 'library', file: 'path.zip', language: "csharp"
       }]
     }));
     let subject = new TemplateService();
@@ -177,19 +177,19 @@ describe('Template Service', () => {
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({
       templates: [{
         environment: "node",
-        type: "test-client",
+        name: "test-client",
         version: "1.0.4",
         file: "node/client-typescript-v1.0.4.zip",
         requires: ["test-server", "test-database"]
       }, {
         environment: "node",
-        type: "test-server",
+        name: "test-server",
         version: "1.0.0",
         file: "node/blog-server-v1.0.0.zip",
         requires: ["test-client", "test-database"]
       }, {
         environment: "node",
-        type: "test-database",
+        name: "test-database",
         version: "1.0.0",
         file: "node/blog-server-v1.0.0.zip",
         requires: ["test-client", "test-server"]
@@ -199,13 +199,13 @@ describe('Template Service', () => {
     subject.fileService = fileServiceMock;
     let expected: Template[] = [{
       environment: "node",
-      type: "test-server",
+      name: "test-server",
       version: "1.0.0",
       file: "node/blog-server-v1.0.0.zip",
       requires: ["test-client", "test-database"]
     }, {
       environment: "node",
-      type: "test-database",
+      name: "test-database",
       version: "1.0.0",
       file: "node/blog-server-v1.0.0.zip",
       requires: ["test-client", "test-server"]
@@ -222,19 +222,19 @@ describe('Template Service', () => {
     fileServiceMock.readJson = sandbox.stub().returns(Promise.resolve({
       templates: [{
         environment: "node",
-        type: "test-client",
+        name: "test-client",
         version: "1.0.4",
         file: "node/client-typescript-v1.0.4.zip",
         requires: ["test-server", "test-database"]
       }, {
         environment: "node",
-        type: "test-server",
+        name: "test-server",
         version: "1.0.0",
         file: "node/blog-server-v1.0.0.zip",
         requires: ["test-client", "test-database"]
       }, {
         environment: "node",
-        type: "test-database",
+        name: "test-database",
         version: "1.0.0",
         file: "node/blog-server-v1.0.0.zip",
         requires: ["test-client", "test-server"]

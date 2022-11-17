@@ -2,66 +2,66 @@
   "templates": [
     {
       "environment": "node",
-      "type": "library",
+      "name": "library",
       "version": "1.0.4",
       "file": "node/library-typescript-v1.0.4.zip"
     },
     {
       "environment": "node",
-      "type": "server",
+      "name": "server",
       "version": "1.0.4",
       "file": "node/server-typescript-v1.0.4.zip"
     },
     {
       "environment": "node",
-      "type": "database",
+      "name": "database",
       "version": "1.0.4",
       "file": "node/database-typescript-v1.0.4.zip"
     },
     {
       "environment": "node",
-      "type": "client",
+      "name": "client",
       "version": "1.0.4",
       "file": "node/client-typescript-v1.0.4.zip"
     },
     {
       "environment": "node",
-      "type": "blog-client",
+      "name": "blog-client",
       "version": "1.0.4",
       "file": "node/blog-client-v1.0.0.zip",
       "requires": ["blog-server"]
     },
     {
       "environment": "node",
-      "type": "blog-server",
+      "name": "blog-server",
       "version": "1.0.0",
       "file": "node/blog-server-v1.0.0.zip",
       "requires": ["blog-client"]
     },
     {
       "environment": "dotnet",
-      "type": "library",
+      "name": "library",
       "version": "1.0.4",
       "file": "dotnet/library-csharp-v1.0.4.zip",
       "language": "csharp"
     },
     {
       "environment": "dotnet",
-      "type": "server",
+      "name": "server",
       "version": "1.0.4",
       "file": "dotnet/server-csharp-v1.0.4.zip",
       "language": "csharp"
     },
     {
       "environment": "dotnet",
-      "type": "database",
+      "name": "database",
       "version": "1.0.4",
       "file": "dotnet/database-csharp-v1.0.4.zip",
       "language": "csharp"
     },
     {
       "environment": "dotnet",
-      "type": "cli",
+      "name": "cli",
       "version": "1.0.4",
       "file": "dotnet/command-line-utility-csharp-v1.0.4.zip",
       "language": "csharp"

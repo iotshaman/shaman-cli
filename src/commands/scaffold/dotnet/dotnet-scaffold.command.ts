@@ -27,18 +27,18 @@ export class DotnetScaffoldCommand implements IChildCommand {
   run = (): Promise<void> => {
     if (!this.project) return Promise.reject(new Error("Project file has not been assigned to scaffold command."));
     let projectName = this.project.name;
-    if (!this.project.type) return Promise.reject(new Error(`Invalid project type configuration (project=${projectName}).`));
+    if (!this.project.template) return Promise.reject(new Error(`Invalid project template configuration (project=${projectName}).`));
     if (!this.project.path) return Promise.reject(new Error(`Invalid project path configuration (project=${projectName}).`));
-    let projectType = this.project.type, projectPath = this.project.path, name = this.project.name;
+    let projectTemplate = this.project.template, projectPath = this.project.path, name = this.project.name;
     let folderPath = _path.join(this.solutionFolder, projectPath);
     let language = this.project.language;
-    console.log(`Scaffolding dotnet ${projectType}.`);
+    console.log(`Scaffolding dotnet ${projectTemplate}.`);
     return this.environmentService.checkNamingConvention(name, this.solution.name)
       .then(_ => this.addDotnetSolutionFile(this.solution.name, this.solutionFolder))
       .then(_ => this.fileService.createFolderRecursive(this.solutionFolder + projectPath))
       .then(_ => {
-        if (this.project.custom) return this.templateService.getCustomTemplate("dotnet", projectType, this.solution.auth, language);
-        else return this.templateService.getTemplate("dotnet", projectType, language);
+        if (this.project.custom) return this.templateService.getCustomTemplate("dotnet", projectTemplate, this.solution.auth, language);
+        else return this.templateService.getTemplate("dotnet", projectTemplate, language);
       })
       .then(template => {
         if (this.project.custom) return this.templateService.unzipCustomProjectTemplate(template, folderPath);

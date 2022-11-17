@@ -43,7 +43,7 @@ export class GenerateCommandPrompts implements IGenerateCommandPrompts {
             let newProject: SolutionProject = {
                 name: rslt['name'],
                 environment: rslt['environment'],
-                type: templateName,
+                template: templateName,
                 path: rslt['path']
             }
             return newProject;
@@ -107,17 +107,17 @@ export class GenerateCommandPrompts implements IGenerateCommandPrompts {
         let prompts: Prompt[] = [];
         templates.forEach(t => {
             prompts.push(
-                new Prompt(`What would you like to name this project: ${t.type}? `, `${t.type}Name`, this.validators.templateName),
-                new Prompt(`What file path would you like to use for this project? `, `${t.type}Path`, this.validators.path)
+                new Prompt(`What would you like to name this project: ${t.name}? `, `${t.name}Name`, this.validators.templateName),
+                new Prompt(`What file path would you like to use for this project? `, `${t.name}Path`, this.validators.path)
             )
         });
         return this.interaction.interrogate(prompts).then(rslt => {
             let newProjects: SolutionProject[] = templates.map(t => {
                 return {
-                    name: rslt[`${t.type}Name`],
+                    name: rslt[`${t.name}Name`],
                     environment: t.environment,
-                    type: t.type,
-                    path: rslt[`${t.type}Path`]
+                    template: t.name,
+                    path: rslt[`${t.name}Path`]
                 }
             })
             return newProjects;

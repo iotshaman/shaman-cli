@@ -35,10 +35,10 @@ describe('Generate Command Prompts', () => {
         let expected: SolutionProject = {
             name: 'test-name',
             environment: 'test-environment',
-            type: 'test-type',
+            template: 'test-template',
             path: 'test-path'
         }
-        subject.askForProjectDetails('test-type').then(actual => {
+        subject.askForProjectDetails('test-template').then(actual => {
             assert.deepEqual(actual, expected);
             done();
         });
@@ -56,12 +56,12 @@ describe('Generate Command Prompts', () => {
             projects: [{
                 name: 'test-server',
                 environment: 'node',
-                type: 'server',
+                template: 'server',
                 path: 'server'
             }, {
                 name: 'test-database',
                 environment: 'node',
-                type: 'database',
+                template: 'database',
                 path: 'database'
             }]
         }
@@ -69,12 +69,12 @@ describe('Generate Command Prompts', () => {
             projects: [{
                 name: 'test-server-rename',
                 environment: 'node',
-                type: 'server',
+                template: 'server',
                 path: 'server'
             }, {
                 name: 'test-database-rename',
                 environment: 'node',
-                type: 'database',
+                template: 'database',
                 path: 'database'
             }]
         }
@@ -187,13 +187,13 @@ describe('Generate Command Prompts', () => {
         let subject = new GenerateCommandPrompts();
         let templates = [{
             environment: "node",
-            type: "test-client",
+            name: "test-client",
             version: "1.0.0",
             file: "node/filePath.zip",
             requires: ["test-server"],
         }, {
             environment: "node",
-            type: "test-server",
+            name: "test-server",
             version: "1.0.0",
             file: "node/filePath.zip",
             requires: ["test-client"]
@@ -209,12 +209,12 @@ describe('Generate Command Prompts', () => {
         let expected: SolutionProject[] = [{
             name: 'my-test-client',
             environment: 'node',
-            type: 'test-client',
+            template: 'test-client',
             path: 'client'
         }, {
             name: 'my-test-server',
             environment: 'node',
-            type: 'test-server',
+            template: 'test-server',
             path: 'server'
         }]
         subject.askForRequiredTemplateDetails(templates).then(actual => {

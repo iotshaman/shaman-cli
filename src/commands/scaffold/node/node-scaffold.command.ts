@@ -26,15 +26,15 @@ export class NodeScaffoldCommand implements IChildCommand {
   run = (): Promise<void> => {
     if (!this.project) return Promise.reject(new Error("Project file has not been assigned to scaffold command."));
     let projectName = this.project.name;
-    if (!this.project.type) return Promise.reject(new Error(`Invalid project type configuration (project=${projectName}).`));
+    if (!this.project.template) return Promise.reject(new Error(`Invalid project template configuration (project=${projectName}).`));
     if (!this.project.path) return Promise.reject(new Error(`Invalid project path configuration (project=${projectName}).`));
-    let projectType = this.project.type, projectPath = this.project.path, name = this.project.name;
+    let projectTemplate = this.project.template, projectPath = this.project.path, name = this.project.name;
     let folderPath = _path.join(this.solutionFolder, projectPath);
-    console.log(`Scaffolding node ${projectType}.`);
+    console.log(`Scaffolding node ${projectTemplate}.`);
     return this.environmentService.checkNamingConvention(name)
       .then(_ => {
-        if (this.project.custom) return this.templateService.getCustomTemplate("node", projectType, this.solution.auth);
-        else return this.templateService.getTemplate("node", projectType);
+        if (this.project.custom) return this.templateService.getCustomTemplate("node", projectTemplate, this.solution.auth);
+        else return this.templateService.getTemplate("node", projectTemplate);
       })
       .then(template => {
         if (this.project.custom) return this.templateService.unzipCustomProjectTemplate(template, folderPath);

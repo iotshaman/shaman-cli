@@ -42,16 +42,16 @@ describe('Scaffold DotNet Environment Command', () => {
       });
   });
 
-  it('run should throw if invalid project type provided', (done) => {
+  it('run should throw if invalid project template provided', (done) => {
     let mockSolution = new MockSolution();
     mockSolution.projects = [new MockDotnetProject()];
-    mockSolution.projects[0].type = '';
+    mockSolution.projects[0].template = '';
     let subject = new DotnetScaffoldCommand(mockSolution, './');
     subject.assignProject(mockSolution.projects[0]);
     subject.run()
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
       .catch((ex: Error) => {
-        expect(ex.message).to.equal("Invalid project type configuration (project=Test).");
+        expect(ex.message).to.equal("Invalid project template configuration (project=Test).");
         done();
       });
   });
@@ -176,7 +176,7 @@ describe('Scaffold DotNet Environment Command', () => {
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let templateServiceMock = createMock<ITemplateService>();
     templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
-      environment: 'dotnet', type: 'library', file: 'path.zip'
+      environment: 'dotnet', template: 'library', file: 'path.zip'
     }]}));
     templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
     let mockSolution = new MockSolution();
@@ -203,7 +203,7 @@ describe('Scaffold DotNet Environment Command', () => {
     sandbox.stub(_cmd, 'spawn').returns(spawnMock);
     let templateServiceMock = createMock<ITemplateService>();
     templateServiceMock.getCustomTemplate = sandbox.stub().returns(Promise.resolve({templates: [{
-      environment: 'dotnet', type: 'library', file: 'path.zip'
+      environment: 'dotnet', template: 'library', file: 'path.zip'
     }]}));
     templateServiceMock.unzipCustomProjectTemplate = sandbox.stub().returns(Promise.resolve());
     let mockSolution = new MockSolution();
@@ -231,13 +231,13 @@ class MockSolution implements Solution {
 class MockDotnetProject implements SolutionProject {
   name: string;
   environment: string;
-  type: string;
+  template: string;
   path: string;
 
   constructor() {
     this.name = 'Test';
     this.environment = 'dotnet';
-    this.type = 'test';
+    this.template = 'test';
     this.path = 'test'
   }
 }
@@ -245,14 +245,14 @@ class MockDotnetProject implements SolutionProject {
 class MockCustomDotnetProject implements SolutionProject {
   name: string;
   environment: string;
-  type: string;
+  template: string;
   path: string;
   custom: boolean;
 
   constructor() {
     this.name = 'Test';
     this.environment = 'dotnet';
-    this.type = 'test';
+    this.template = 'test';
     this.path = 'test'
     this.custom = true;
   }

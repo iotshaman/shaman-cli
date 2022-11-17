@@ -1,6 +1,6 @@
 export class Template {
   environment: string;
-  type: string;
+  name: string;
   version: string;
   file: string;
   requires?: string[];

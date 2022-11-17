@@ -11,7 +11,6 @@ import { IRecipeService } from '../../services/recipe.service';
 import { IGenerateCommandPrompts } from './generate.command.prompts';
 import { ICommand } from '../command';
 import { ITemplateService } from '../../services/template.service';
-import { TemplateAuthorization } from '../../models/solution';
 
 describe('Generate Command', () => {
 
@@ -59,7 +58,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: 'test-client',
                 environment: 'node',
-                type: 'client',
+                template: 'client',
                 path: 'client'
             }]
         }));
@@ -68,7 +67,7 @@ describe('Generate Command', () => {
         promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
             name: 'test-server',
             environment: 'node',
-            type: 'server',
+            template: 'server',
             path: 'server'
         }));
         subject.prompts = promptsMock;
@@ -90,7 +89,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: 'test-client',
                 environment: 'node',
-                type: 'client',
+                template: 'client',
                 path: 'client'
             }]
         }));
@@ -103,13 +102,13 @@ describe('Generate Command', () => {
             .onFirstCall().returns(Promise.resolve({
                 name: 'test-server',
                 environment: 'node',
-                type: 'server',
+                template: 'server',
                 path: 'server'
             }))
             .onSecondCall().returns(Promise.resolve({
                 name: 'test-database',
                 environment: 'node',
-                type: 'database',
+                template: 'database',
                 path: 'database'
             }));
         promptsMock.askIfAddingAnotherProject = sandbox.stub()
@@ -139,7 +138,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "renamed-sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -149,7 +148,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -177,7 +176,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "renamed-sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -187,7 +186,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -215,12 +214,12 @@ describe('Generate Command', () => {
             projects: [{
                 name: "renamed-sample-server",
                 environment: "node",
-                type: "server",
+                template: "server",
                 path: "server"
             }, {
                 name: "renamed-sample-database",
                 environment: "node",
-                type: "database",
+                template: "database",
                 path: "database"
             }],
             transform: [
@@ -237,12 +236,12 @@ describe('Generate Command', () => {
             projects: [{
                 name: "sample-server",
                 environment: "node",
-                type: "server",
+                template: "server",
                 path: "server"
             }, {
                 name: "sample-database",
                 environment: "node",
-                type: "database",
+                template: "database",
                 path: "database"
             }]
         }));
@@ -266,7 +265,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "renamed-sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -276,7 +275,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -303,7 +302,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "renamed-sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -313,7 +312,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -340,7 +339,7 @@ describe('Generate Command', () => {
         promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
             name: 'test-server',
             environment: 'node',
-            type: 'server',
+            template: 'server',
             path: 'server'
         }));
         promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));
@@ -367,13 +366,13 @@ describe('Generate Command', () => {
             .onFirstCall().returns(Promise.resolve({
                 name: 'my-test-server',
                 environment: 'node',
-                type: 'test-server',
+                template: 'test-server',
                 path: 'server'
             }))
             .onSecondCall().returns(Promise.resolve({
                 name: 'my-test-database',
                 environment: 'node',
-                type: 'test-database',
+                template: 'test-database',
                 path: 'database'
             }));
         promptsMock.askIfAddingAnotherProject = sandbox.stub()
@@ -383,14 +382,14 @@ describe('Generate Command', () => {
         promptsMock.askForRequiredTemplateDetails = sandbox.stub().returns(Promise.resolve([{
             name: 'my-test-client',
             environment: 'node',
-            type: 'test-client',
+            template: 'test-client',
             path: 'client'
         }]));
         subject.prompts = promptsMock;
         let templateServiceMock = createMock<ITemplateService>();
         templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({
             environment: "node",
-            type: "test-server",
+            template: "test-server",
             version: "1.0.0",
             file: "node/filePath.zip",
             requires: [
@@ -399,7 +398,7 @@ describe('Generate Command', () => {
         }));
         templateServiceMock.getRequiredTemplates = sandbox.stub().returns(Promise.resolve({
             environment: "node",
-            type: "test-client",
+            template: "test-client",
             version: "1.0.0",
             file: "node/filePath.zip",
             requires: [
@@ -429,7 +428,7 @@ describe('Generate Command', () => {
         promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
                 name: 'my-test-server',
                 environment: 'node',
-                type: 'test-server',
+                template: 'test-server',
                 path: 'server'
             }));
         promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));
@@ -439,7 +438,7 @@ describe('Generate Command', () => {
         let templateServiceMock = createMock<ITemplateService>();
         templateServiceMock.getTemplate = sandbox.stub().returns(Promise.resolve({
             environment: "node",
-            type: "test-server",
+            template: "test-server",
             version: "1.0.0",
             file: "node/filePath.zip",
             requires: [
@@ -469,7 +468,7 @@ describe('Generate Command', () => {
         promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
             name: 'test-server',
             environment: 'node',
-            type: 'server',
+            template: 'server',
             path: 'server'
         }));
         promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));
@@ -495,7 +494,7 @@ describe('Generate Command', () => {
         promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
             name: 'test-server',
             environment: 'node',
-            type: 'server',
+            template: 'server',
             path: 'server'
         }));
         promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));
@@ -523,7 +522,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "renamed-sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -533,7 +532,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: "sample-client",
                 environment: "node",
-                type: "client",
+                template: "client",
                 path: "client"
             }]
         }));
@@ -553,7 +552,7 @@ describe('Generate Command', () => {
             projects: [{
                 name: 'test-client',
                 environment: 'node',
-                type: 'client',
+                template: 'client',
                 path: 'client'
             }]
         }));
@@ -563,7 +562,7 @@ describe('Generate Command', () => {
         promptsMock.askForProjectDetails = sandbox.stub().returns(Promise.resolve({
             name: 'test-server',
             environment: 'node',
-            type: 'server',
+            template: 'server',
             path: 'server'
         }));
         promptsMock.askIfAddingAnotherProject = sandbox.stub().returns(Promise.resolve(false));

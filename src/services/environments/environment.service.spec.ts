@@ -41,7 +41,7 @@ describe('Node Environment Service', () => {
       return Promise.resolve();
     });
     let solution = new Solution();
-    solution.projects = [{ name: 'sample', environment: 'node', type: 'library', path: './sample' }];
+    solution.projects = [{ name: 'sample', environment: 'node', template: 'library', path: './sample' }];
     let subject = new FakeEnvironmentService();
     subject.fileService = fileServiceMock;
     subject.addProjectScaffoldFile("./sample", "sample", solution).then(_ => done());
@@ -55,7 +55,7 @@ describe('Node Environment Service', () => {
       return Promise.resolve();
     });
     let solution = new Solution();
-    solution.projects = [{ name: 'sample', environment: 'node', type: 'library', path: './sample' }];
+    solution.projects = [{ name: 'sample', environment: 'node', template: 'library', path: './sample' }];
     let subject = new FakeEnvironmentService();
     subject.fileService = fileServiceMock;
     subject.addProjectScaffoldFile("./sample", "sample", solution).then(_ => done());
@@ -70,8 +70,8 @@ describe('Node Environment Service', () => {
     });
     let solution = new Solution();
     solution.projects = [
-      { name: 'sample', environment: 'node', type: 'library', path: './sample', include: ['db'] },
-      { name: 'db', environment: 'node', type: 'database', path: './db' }
+      { name: 'sample', environment: 'node', template: 'library', path: './sample', include: ['db'] },
+      { name: 'db', environment: 'node', template: 'database', path: './db' }
     ];
     let subject = new FakeEnvironmentService();
     subject.fileService = fileServiceMock;
@@ -86,7 +86,7 @@ describe('Node Environment Service', () => {
       return Promise.resolve();
     });
     let solution = new Solution();
-    solution.projects = [{ name: 'sample', environment: 'node', type: 'library', path: './sample', specs: { foo: 'bar' } }];
+    solution.projects = [{ name: 'sample', environment: 'node', template: 'library', path: './sample', specs: { foo: 'bar' } }];
     let subject = new FakeEnvironmentService();
     subject.fileService = fileServiceMock;
     subject.addProjectScaffoldFile("./sample", "sample", solution).then(_ => done());

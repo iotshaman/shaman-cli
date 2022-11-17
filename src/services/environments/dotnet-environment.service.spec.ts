@@ -23,7 +23,7 @@ describe('DotNet Environment Service', () => {
 
   it('updateProjectDefinition should call renameFile', (done) => {
     let solution = new Solution();
-    solution.projects = [{ name: 'sample', environment: 'dotnet', type: 'library', path: './sample' }];
+    solution.projects = [{ name: 'sample', environment: 'dotnet', template: 'library', path: './sample' }];
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.renameFile = sandbox.stub().returns(Promise.resolve());
     let subject = new DotnetEnvironmentService();
@@ -37,8 +37,8 @@ describe('DotNet Environment Service', () => {
   it('updateProjectDefinition should throw if invalid dependency provided', (done) => {
     let solution = new Solution();
     solution.projects = [
-      { name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['c'] },
-      { name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp' }
+      { name: 'a', environment: 'dotnet', template: 'library', path: './a', language: 'csharp', include: ['c'] },
+      { name: 'b', environment: 'dotnet', template: 'library', path: './b', language: 'csharp' }
     ];
     let fileServiceMock = createMock<IFileService>();
     fileServiceMock.renameFile = sandbox.stub().returns(Promise.resolve());
@@ -55,8 +55,8 @@ describe('DotNet Environment Service', () => {
   it('updateProjectDefinition should throw if child process returns non-zero status code', (done) => {
     let solution = new Solution();
     solution.projects = [
-      { name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b'] },
-      { name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp' }
+      { name: 'a', environment: 'dotnet', template: 'library', path: './a', language: 'csharp', include: ['b'] },
+      { name: 'b', environment: 'dotnet', template: 'library', path: './b', language: 'csharp' }
     ];
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },
@@ -78,8 +78,8 @@ describe('DotNet Environment Service', () => {
   it('updateProjectDefinition should spawn process to add project dependency', (done) => {
     let solution = new Solution();
     solution.projects = [
-      { name: 'a', environment: 'dotnet', type: 'library', path: './a', language: 'csharp', include: ['b'] },
-      { name: 'b', environment: 'dotnet', type: 'library', path: './b', language: 'csharp' }
+      { name: 'a', environment: 'dotnet', template: 'library', path: './a', language: 'csharp', include: ['b'] },
+      { name: 'b', environment: 'dotnet', template: 'library', path: './b', language: 'csharp' }
     ];
     let spawnMock: any = {
       stdout: { on: sandbox.stub().yields("output") },

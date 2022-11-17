@@ -42,7 +42,7 @@ describe('Run Node Environment Command', () => {
       name: "invalid",
       path: "sample",
       environment: "node",
-      type: "server"
+      template: "server"
     }
     subject.assignProject(sampleProject);
     subject.run()
@@ -60,7 +60,7 @@ describe('Run Node Environment Command', () => {
       name: "sample",
       path: "sample",
       environment: "node",
-      type: "server"
+      template: "server"
     }
     subject.assignProject(sampleProject);
     let spawnMock: any = {
@@ -85,7 +85,7 @@ class SampleSolution implements Solution {
         name: "sample",
         path: "sample",
         environment: "node",
-        type: "server"
+        template: "server"
       }
     ]
   }

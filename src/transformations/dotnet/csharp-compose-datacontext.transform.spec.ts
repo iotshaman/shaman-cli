@@ -53,7 +53,7 @@ describe('Csharp Compose DataContext Transformation', () => {
 
   it('transform should throw if invalid source project found', (done) => {
     let solution = new Solution();
-    solution.projects = [{name: 'svr', environment: "node", type: "server", path: "./svr"}];
+    solution.projects = [{name: 'svr', environment: "node", template: "server", path: "./svr"}];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "svr";
     transformation.sourceProject = "invalid"
@@ -69,8 +69,8 @@ describe('Csharp Compose DataContext Transformation', () => {
   it('transform should call addDatabaseConnectionStringToAppsettingsJson', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'Svr', environment: "dotnet", type: "server", path: "./svr", language: "csharp"},
-      {name: 'Db', environment: "dotnet", type: "database", path: "./Db", language: "csharp"}
+      {name: 'Svr', environment: "dotnet", template: "server", path: "./svr", language: "csharp"},
+      {name: 'Db', environment: "dotnet", template: "database", path: "./Db", language: "csharp"}
     ];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "Svr";
@@ -88,8 +88,8 @@ describe('Csharp Compose DataContext Transformation', () => {
   it('transform should call addConnectionStringToAppConfig', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'Svr', environment: "dotnet", type: "server", path: "./svr", language: "csharp"},
-      {name: 'Db', environment: "dotnet", type: "database", path: "./Db", language: "csharp"}
+      {name: 'Svr', environment: "dotnet", template: "server", path: "./svr", language: "csharp"},
+      {name: 'Db', environment: "dotnet", template: "database", path: "./Db", language: "csharp"}
     ];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "Svr";
@@ -107,8 +107,8 @@ describe('Csharp Compose DataContext Transformation', () => {
   it('transform should call addDataContextComposition', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'Svr', environment: "dotnet", type: "server", path: "./svr", language: "csharp"},
-      {name: 'Db', environment: "dotnet", type: "database", path: "./Db", language: "csharp",
+      {name: 'Svr', environment: "dotnet", template: "server", path: "./svr", language: "csharp"},
+      {name: 'Db', environment: "dotnet", template: "database", path: "./Db", language: "csharp",
         specs: {contextName: "MyContext"}}
     ];
     let transformation = new ProjectTransformation();

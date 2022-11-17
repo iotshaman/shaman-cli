@@ -8,7 +8,7 @@ export class Solution {
 export class SolutionProject {
   name: string;
   environment: string;
-  type: string;
+  template: string;
   path: string;
   custom?: boolean;
   language?: string;

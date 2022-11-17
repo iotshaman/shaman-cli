@@ -103,15 +103,15 @@ export class GenerateCommand implements ICommand {
 
     private checkTemplateRequirements = (projects: SolutionProject[]): Promise<SolutionProject[]> => {
         const taskChain = projects.reduce((a, b) => a.then(_ => {
-            return this.templateService.getTemplate(b.environment, b.type).then(template => {
+            return this.templateService.getTemplate(b.environment, b.template).then(template => {
                 if (!template.requires) return;
                 let missingRequirements = template.requires.filter(r => {
-                    if (!projects.find(p => p.type == r)) return r;
+                    if (!projects.find(p => p.template == r)) return r;
                 });
                 if (missingRequirements.length == 0) return;
-                return this.prompts.askToInstallRequiredTemplates(b.type, missingRequirements).then(agreedToInstall => {
+                return this.prompts.askToInstallRequiredTemplates(b.template, missingRequirements).then(agreedToInstall => {
                     if (!agreedToInstall) return;
-                    return this.templateService.getRequiredTemplates(b.type, missingRequirements)
+                    return this.templateService.getRequiredTemplates(b.template, missingRequirements)
                         .then(rslt => this.prompts.askForRequiredTemplateDetails(rslt))
                         .then(newProjects => projects.push(...newProjects))
                 });

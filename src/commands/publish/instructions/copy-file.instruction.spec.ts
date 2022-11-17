@@ -31,7 +31,7 @@ describe('Copy File Instruction Service', () => {
     let fileServiceMock = createMock<IFileService>();
     let project: SolutionProject = {
       name: 'sample',
-      type: 'server',
+      template: 'server',
       environment: 'node',
       path: 'sample',
       specs: {publish: [{instruction: 'copy', arguments: ['file.txt']}]}
@@ -49,7 +49,7 @@ describe('Copy File Instruction Service', () => {
     let fileServiceMock = createMock<IFileService>();
     let project: SolutionProject = {
       name: 'sample',
-      type: 'server',
+      template: 'server',
       environment: 'node',
       path: 'sample',
       specs: {publish: [{instruction: 'copy', arguments: ['file.txt']}]}

@@ -53,7 +53,7 @@ describe('Node Compose DataContext Transformation', () => {
 
   it('transform should throw if invalid source project found', (done) => {
     let solution = new Solution();
-    solution.projects = [{name: 'svr', environment: "node", type: "server", path: "./svr"}];
+    solution.projects = [{name: 'svr', environment: "node", template: "server", path: "./svr"}];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "svr";
     transformation.sourceProject = "invalid"
@@ -69,8 +69,8 @@ describe('Node Compose DataContext Transformation', () => {
   it('transform should call addMySqlAppConfigurationJson', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'svr', environment: "node", type: "server", path: "./svr"},
-      {name: 'db', environment: "node", type: "database", path: "./db"}
+      {name: 'svr', environment: "node", template: "server", path: "./svr"},
+      {name: 'db', environment: "node", template: "database", path: "./db"}
     ];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "svr";
@@ -88,8 +88,8 @@ describe('Node Compose DataContext Transformation', () => {
   it('transform should call addMySqlAppConfigurationModel', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'svr', environment: "node", type: "server", path: "./svr"},
-      {name: 'db', environment: "node", type: "database", path: "./db"}
+      {name: 'svr', environment: "node", template: "server", path: "./svr"},
+      {name: 'db', environment: "node", template: "database", path: "./db"}
     ];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "svr";
@@ -107,8 +107,8 @@ describe('Node Compose DataContext Transformation', () => {
   it('transform should call addDataContextCompositionType', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'svr', environment: "node", type: "server", path: "./svr"},
-      {name: 'db', environment: "node", type: "database", path: "./db"}
+      {name: 'svr', environment: "node", template: "server", path: "./svr"},
+      {name: 'db', environment: "node", template: "database", path: "./db"}
     ];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "svr";
@@ -126,8 +126,8 @@ describe('Node Compose DataContext Transformation', () => {
   it('transform should call addDataContextComposition', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'svr', environment: "node", type: "server", path: "./svr"},
-      {name: 'db', environment: "node", type: "database", path: "./db"}
+      {name: 'svr', environment: "node", template: "server", path: "./svr"},
+      {name: 'db', environment: "node", template: "database", path: "./db"}
     ];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "svr";
@@ -145,8 +145,8 @@ describe('Node Compose DataContext Transformation', () => {
   it('transform should call addDataContextCompositionType', (done) => {
     let solution = new Solution();
     solution.projects = [
-      {name: 'svr', environment: "node", type: "server", path: "./svr"},
-      {name: 'db', environment: "node", type: "database", path: "./db", specs: {contextName: "MyContext"}}
+      {name: 'svr', environment: "node", template: "server", path: "./svr"},
+      {name: 'db', environment: "node", template: "database", path: "./db", specs: {contextName: "MyContext"}}
     ];
     let transformation = new ProjectTransformation();
     transformation.targetProject = "svr";

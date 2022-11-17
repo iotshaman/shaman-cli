@@ -44,7 +44,7 @@ describe('Transformation Service', () => {
   it('performTransformations should throw if invalid source project provided', (done) => {
     let subject = new TransformationService();
     subject.transformations = [new MockTransformation()];
-    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', type: 'server'};
+    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', template: 'server'};
     let solution: Solution = {name: 'sample', projects: [project], transform: [
       {targetProject: 'sample-server', transformation: 'noop', sourceProject: 'invalid'}
     ]};
@@ -56,9 +56,9 @@ describe('Transformation Service', () => {
       });
   });
 
-  it('performTransformations should throw if invalid tranformation provided', (done) => {
+  it('performTransformations should throw if invalid transformation provided', (done) => {
     let subject = new TransformationService();
-    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', type: 'server'};
+    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', template: 'server'};
     let solution: Solution = {name: 'sample', projects: [project], transform: [{targetProject: 'sample-server', transformation: 'invalid'}]};
     subject.performTransformations(solution, "", ["sample-server"])
       .then(_ => { throw new Error("Expected rejected promise, but promise completed.") })
@@ -71,7 +71,7 @@ describe('Transformation Service', () => {
   it('performTransformations should return resolved promise', (done) => {
     let subject = new TransformationService();
     subject.transformations = [new MockTransformation()];
-    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', type: 'server'};
+    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', template: 'server'};
     let solution: Solution = {name: 'sample', projects: [project], transform: [{targetProject: 'sample-server', transformation: 'mock-transformation'}]};
     subject.performTransformations(solution, "", ["sample-server"]).then(_ => done());
   });
@@ -79,8 +79,8 @@ describe('Transformation Service', () => {
   it('performTransformations (with source project) should return resolved promise', (done) => {
     let subject = new TransformationService();
     subject.transformations = [new MockTransformation()];
-    let project1: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', type: 'server'};
-    let project2: SolutionProject = {name: 'sample-database', environment: 'node', path: './database', type: 'database'};
+    let project1: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', template: 'server'};
+    let project2: SolutionProject = {name: 'sample-database', environment: 'node', path: './database', template: 'database'};
     let solution: Solution = {name: 'sample', projects: [project1, project2], transform: [
       {targetProject: 'sample-server', transformation: 'mock-transformation', sourceProject: 'sample-database'}
     ]};
@@ -91,18 +91,18 @@ describe('Transformation Service', () => {
     let subject = new TransformationService();
     subject.transformations = [new MockTransformation()];
     subject.transformations[0].language = "csharp";
-    let project1: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', type: 'server', language: 'csharp'};
-    let project2: SolutionProject = {name: 'sample-database', environment: 'node', path: './database', type: 'database'};
+    let project1: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', template: 'server', language: 'csharp'};
+    let project2: SolutionProject = {name: 'sample-database', environment: 'node', path: './database', template: 'database'};
     let solution: Solution = {name: 'sample', projects: [project1, project2], transform: [
       {targetProject: 'sample-server', transformation: 'mock-transformation', sourceProject: 'sample-database'}
     ]};
     subject.performTransformations(solution, "", ["sample-server", "Sample-database"]).then(_ => done());
   });
 
-  it('performTransformatoins should return resolved promise if newProjects does not include transformation targetProject', (done) => {
+  it('performTransformations should return resolved promise if newProjects does not include transformation targetProject', (done) => {
     let subject = new TransformationService();
     subject.transformations = [new MockTransformation()];
-    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', type: 'server'};
+    let project: SolutionProject = {name: 'sample-server', environment: 'node', path: './server', template: 'server'};
     let solution: Solution = {name: 'sample', projects: [project], transform: [{targetProject: 'sample-server', transformation: 'mock-transformation'}]};
     subject.performTransformations(solution, "", []).then(_ => done());
   });

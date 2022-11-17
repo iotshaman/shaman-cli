@@ -58,7 +58,7 @@ describe('Node Environment Service', () => {
       return Promise.resolve();
     });
     let solution = new Solution();
-    solution.projects = [{ name: 'sample', environment: 'node', type: 'library', path: './sample' }];
+    solution.projects = [{ name: 'sample', environment: 'node', template: 'library', path: './sample' }];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
     subject.updateProjectDefinition("./sample", "new", solution).then(_ => done());
@@ -70,7 +70,7 @@ describe('Node Environment Service', () => {
     fileServiceMock.writeJson = sandbox.stub().returns(Promise.resolve());
     let solution = new Solution();
     solution.projects = [
-      { name: 'sample', environment: 'node', type: 'library', path: './sample', include: ['invalid'] }
+      { name: 'sample', environment: 'node', template: 'library', path: './sample', include: ['invalid'] }
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
@@ -91,8 +91,8 @@ describe('Node Environment Service', () => {
     });
     let solution = new Solution();
     solution.projects = [
-      { name: 'sample', environment: 'node', type: 'library', path: './sample', include: ['db'] },
-      { name: 'db', environment: 'node', type: 'database', path: './db' }
+      { name: 'sample', environment: 'node', template: 'library', path: './sample', include: ['db'] },
+      { name: 'db', environment: 'node', template: 'database', path: './db' }
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
@@ -108,8 +108,8 @@ describe('Node Environment Service', () => {
     });
     let solution = new Solution();
     solution.projects = [
-      { name: 'sample', environment: 'node', type: 'library', path: './sample', include: ['db'] },
-      { name: 'db', environment: 'node', type: 'database', path: './db' }
+      { name: 'sample', environment: 'node', template: 'library', path: './sample', include: ['db'] },
+      { name: 'db', environment: 'node', template: 'database', path: './db' }
     ];
     let subject = new NodeEnvironmentService();
     subject.fileService = fileServiceMock;
