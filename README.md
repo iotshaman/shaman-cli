@@ -50,7 +50,7 @@ export class Solution {
 export class SolutionProject {
   name: string;
   environment: string;
-  type: string;
+  template: string;
   path: string;
   custom?: boolean;
   language?: string;
@@ -81,7 +81,7 @@ For example, if you have a node js solution that includes a website, library, da
     {
       "name": "sample-website",
       "environment": "node",
-      "type": "client",
+      "template": "client",
       "path": "client",
       "runtimeDependencies": [
         "sample-server"
@@ -90,13 +90,13 @@ For example, if you have a node js solution that includes a website, library, da
     {
       "name": "sample-database",
       "environment": "node",
-      "type": "database",
+      "template": "database",
       "path": "database"
     },
     {
       "name": "sample-library",
       "environment": "node",
-      "type": "library",
+      "template": "library",
       "path": "library",
       "include": [
         "sample-database"
@@ -105,7 +105,7 @@ For example, if you have a node js solution that includes a website, library, da
     {
       "name": "sample-server",
       "environment": "node",
-      "type": "server",
+      "template": "server",
       "path": "server",
       "include": [
         "sample-database",
@@ -126,10 +126,10 @@ For example, if you have a node js solution that includes a website, library, da
 *Note: All paths should be relative to the solution file*
 
 ### Project Specs
-Some project types (for specific environments) allow you to provide "specs" to further customize the auto-generated source code. For more information regarding project specs, please refer to the [project templates](https://github.com/iotshaman/shaman-cli/tree/main/templates) documentation.
+Some project templates (for specific environments) allow you to provide "specs" to further customize the auto-generated source code. For more information regarding project specs, please refer to the [project templates](https://github.com/iotshaman/shaman-cli/tree/main/templates) documentation.
 
 ### Transformations
-Some project types (for specific environments) allow you to perform "transformations" on the auto-generated source code, to create custom source code during initial scaffolding. For example, you can use a transformation to automatically write "data context" composition for a server project (that depends on a database library). For more information regarding project transformations, please refer to the [project templates](https://github.com/iotshaman/shaman-cli/tree/main/templates) documentation.
+Some project templates (for specific environments) allow you to perform "transformations" on the auto-generated source code, to create custom source code during initial scaffolding. For example, you can use a transformation to automatically write "data context" composition for a server project (that depends on a database library). For more information regarding project transformations, please refer to the [project templates](https://github.com/iotshaman/shaman-cli/tree/main/templates) documentation.
 
 ## CLI Reference
 
@@ -168,7 +168,7 @@ shaman generate [-add] [--name=NAME] [--recipe=RECIPE] [--template=TEMPLATE] [--
 
 ### Install Command
 
-The install command requires the existence of a solution file, and will iterate over the available projects and install them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent installs for each. The syntax for the install command is as follows:
+The install command requires the existence of a solution file, and will iterate over the available projects and install them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" templates, and perform independent installs for each. The syntax for the install command is as follows:
 
 ```sh
 shaman install [--environment=ENVIRONMENT] [--filePath=FILEPATH]
@@ -179,7 +179,7 @@ shaman install [--environment=ENVIRONMENT] [--filePath=FILEPATH]
 
 ### Build Command
 
-The build command requires the existence of a solution file, and will iterate over the available projects and build them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" types, and perform independent builds for each. The syntax for the build command is as follows:
+The build command requires the existence of a solution file, and will iterate over the available projects and build them. If no "environment" argument is provided (or wildcard value * is provided), Shaman CLI will iterate over the unique "environment" templates, and perform independent builds for each. The syntax for the build command is as follows:
 
 ```sh
 shaman build [--environment=ENVIRONMENT] [--filePath=FILEPATH]

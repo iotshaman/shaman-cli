@@ -1,5 +1,5 @@
 # .NET Templates
-To scaffold and run your code in a .NET (dotnet) environment, use the value "dotnet" for the "environment" property of your project definition (shaman.json file -> projects). The proceeding templates are available in the "dotnet" environment, and can "include" references (dependencies) to other projects of type "dotnet". 
+To scaffold and run your code in a .NET (dotnet) environment, use the value "dotnet" for the "environment" property of your project definition (shaman.json file -> projects). The proceeding templates are available in the "dotnet" environment, and can "include" references (dependencies) to other projects of the "dotnet" environment. 
 
 ## Requirements
 Before you can use the .NET environment during scaffolding, you will need to install .NET Core on your machine; please ensure your version is >= 5.0.1. Also, since dotnet projects will be added to a .NET solution file (.sln), you will be required to provide a top-level "name" value in your shaman.json file.
@@ -18,7 +18,7 @@ To prevent issues with scaffolding, please make sure all .NET project definition
     {
       "name": "not-upper-camel-case", // MAY CAUSE ERRORS
       "environment": "dotnet",
-      "type": "server",
+      "template": "server",
       "path": "[where you want to store your code]",
       "language": "csharp"
     }
@@ -34,7 +34,7 @@ To prevent issues with scaffolding, please make sure all .NET project definition
     {
       "name": "ThisIsUpperCamelCase", // WORKS LIKE A CHARM
       "environment": "dotnet",
-      "type": "server",
+      "template": "server",
       "path": "[where you want to store your code]",
       "language": "csharp"
     }
@@ -61,7 +61,7 @@ To create a project based on the .NET server template, use the following project
     {
       "name": "[name of your server project]",
       "environment": "dotnet",
-      "type": "server",
+      "template": "server",
       "path": "[where you want to store your code]",
       "language": "csharp",
       "include": [ //optional
@@ -90,7 +90,7 @@ If you have both a server project and a database project included in your soluti
     {
       "name": "SampleCsharpDatabaseLibrary",
       "environment": "dotnet",
-      "type": "database",
+      "template": "database",
       "path": "SampleCsharpDatabaseLibrary",
       "language": "csharp",
       "specs": {
@@ -100,7 +100,7 @@ If you have both a server project and a database project included in your soluti
     {
       "name": "SampleCsharpServer",
       "environment": "dotnet",
-      "type": "server",
+      "template": "server",
       "path": "SampleCsharpServer",
       "language": "csharp",
       "include": [
@@ -133,7 +133,7 @@ To create a project based on the .NET database library template, use the followi
     {
       "name": "[name of your database library project]",
       "environment": "dotnet",
-      "type": "database",
+      "template": "database",
       "path": "[where you want to store your code]",
       "language": "csharp",
       "include": [ //optional
@@ -170,7 +170,7 @@ To create a project based on the .NET library template, use the following projec
     {
       "name": "[name of your library project]",
       "environment": "dotnet",
-      "type": "library",
+      "template": "library",
       "path": "[where you want to store your code]",
       "language": "csharp",
       "include": [ //optional
@@ -201,7 +201,7 @@ To create a project based on the .NET command line utility template, use the fol
     {
       "name": "[name of your library project]",
       "environment": "dotnet",
-      "type": "cli",
+      "template": "cli",
       "path": "[where you want to store your code]",
       "language": "csharp",
       "include": [ //optional

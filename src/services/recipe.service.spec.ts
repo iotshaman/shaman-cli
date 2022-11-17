@@ -40,11 +40,11 @@ describe('Recipe Service', () => {
             recipe: {
                 projects: [{
                     name: "sample-database", environment: "node",
-                    type: "database", path: "database"
+                    template: "database", path: "database"
                 },
                 {
                     name: "sample-server", environment: "node",
-                    type: "server", path: "server",
+                    template: "server", path: "server",
                     include: ["sample-database", "sample-library"]
                 }
                 ],

@@ -1,5 +1,5 @@
 # Node JS Templates
-To scaffold and run your code in a Node JS environment (using Typescript), use the value "node" for the "environment" property of your project definition (shaman.json file -> projects). The proceeding templates are available in the "node" environment, and can "include" references (dependencies) to other projects of type "node". 
+To scaffold and run your code in a Node JS environment (using Typescript), use the value "node" for the "environment" property of your project definition (shaman.json file -> projects). The proceeding templates are available in the "node" environment, and can "include" references (dependencies) to other projects of the "node" environment. 
 
 ## Languages
 The "node" environment only supports the Typescript language. You do not need to specify this in your "project" definitions (shaman.json), since the value "typescript" will be used be default.
@@ -25,7 +25,7 @@ To create a project based on the NodeJS server template, use the following proje
     {
       "name": "[name of your server project]",
       "environment": "node",
-      "type": "server",
+      "template": "server",
       "path": "[where you want to store your code]",
       "include": [ //optional
         "some-dependent-project",
@@ -41,7 +41,7 @@ To create a project based on the NodeJS server template, use the following proje
 The following specs can be configured to customize your server project:
 
 #### Executable
-When publishing, this property will instruct Shaman CLI to create an npm script in the publish output (recommended). To configure, provide a property named "exectuable" to your server's "specs" property, and set the value (boolean) to true.
+When publishing, this property will instruct Shaman CLI to create an npm script in the publish output (recommended). To configure, provide a property named "executable" to your server's "specs" property, and set the value (boolean) to true.
 
 ### Transformations
 The following transformations can be applied to a scaffolded server project.
@@ -56,7 +56,7 @@ If you have both a server project and a database project included in your soluti
     {
       "name": "sample-database",
       "environment": "node",
-      "type": "database",
+      "template": "database",
       "path": "database",
       "specs": {
         "contextName": "MyDataContext"
@@ -65,7 +65,7 @@ If you have both a server project and a database project included in your soluti
     {
       "name": "sample-server",
       "environment": "node",
-      "type": "server",
+      "template": "server",
       "path": "server",
       "include": [
         "sample-database"
@@ -100,7 +100,7 @@ To create a project based on the NodeJS database library template, use the follo
     {
       "name": "[name of your database library project]",
       "environment": "node",
-      "type": "database",
+      "template": "database",
       "path": "[where you want to store your code]",
       "include": [ //optional
         "some-dependent-project",
@@ -139,7 +139,7 @@ To create a project based on the NodeJS library template, use the following proj
     {
       "name": "[name of your library project]",
       "environment": "node",
-      "type": "library",
+      "template": "library",
       "path": "[where you want to store your code]",
       "include": [ //optional
         "some-dependent-project",
@@ -161,7 +161,7 @@ The library project does not yet have any transformations defined.
 The NodeJS client template is built on top of the Shaman Website Compiler and comes pre-built with the following features:
 
 1. A simple website, consisting of HTML / CSS / JS / JSON files
-2. Javascript file minifcation
+2. Javascript file minification
 3. CSS file minification
 4. HTML file minification
 5. HTML Templating (with easy-to-configure models)
@@ -179,7 +179,7 @@ To create a project based on the NodeJS client template, use the following proje
     {
       "name": "[name of your client project]",
       "environment": "node",
-      "type": "client",
+      "template": "client",
       "path": "[where you want to store your code]",
       "include": [ //optional
         "some-dependent-project",

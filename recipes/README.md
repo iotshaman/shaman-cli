@@ -7,7 +7,7 @@ When using the [generate command]([../README.md#generate-command](https://github
         "projects": [{
                 "name": "sample-website",
                 "environment": "node",
-                "type": "client",
+                "template": "client",
                 "path": "client",
                 "runtimeDependencies": [
                     "sample-server"
@@ -16,13 +16,13 @@ When using the [generate command]([../README.md#generate-command](https://github
             {
                 "name": "sample-database",
                 "environment": "node",
-                "type": "database",
+                "template": "database",
                 "path": "database"
             },
             {
                 "name": "sample-library",
                 "environment": "node",
-                "type": "library",
+                "template": "library",
                 "path": "library",
                 "include": [
                     "sample-database"
@@ -31,7 +31,7 @@ When using the [generate command]([../README.md#generate-command](https://github
             {
                 "name": "sample-server",
                 "environment": "node",
-                "type": "server",
+                "template": "server",
                 "path": "server",
                 "include": [
                     "sample-database",

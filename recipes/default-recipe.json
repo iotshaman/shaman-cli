@@ -3,7 +3,7 @@
         "projects": [{
                 "name": "sample-website",
                 "environment": "node",
-                "type": "client",
+                "template": "client",
                 "path": "client",
                 "runtimeDependencies": [
                     "sample-server"
@@ -12,13 +12,13 @@
             {
                 "name": "sample-database",
                 "environment": "node",
-                "type": "database",
+                "template": "database",
                 "path": "database"
             },
             {
                 "name": "sample-library",
                 "environment": "node",
-                "type": "library",
+                "template": "library",
                 "path": "library",
                 "include": [
                     "sample-database"
@@ -27,7 +27,7 @@
             {
                 "name": "sample-server",
                 "environment": "node",
-                "type": "server",
+                "template": "server",
                 "path": "server",
                 "include": [
                     "sample-database",
