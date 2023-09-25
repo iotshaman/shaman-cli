@@ -162,8 +162,8 @@ shaman generate [-add] [--name=NAME] [--recipe=RECIPE] [--template=TEMPLATE] [--
 
 **[add]:** (flag) Instead of creating a new solution file, generate will add new projects to an existing solution file then run the [scaffold command](#scaffold-command). Generate will prompt the user to enter the names of the templates they would like to add. Alternatively, one project can quickly be added to the solution file if the template argument is provided.  
 **[name]:** (optional) The name to be used for the generated solution file. If not provided, generate will prompt the user the enter the name to be used.  
-**[recipe]:** (optional) The name of the recipe to be used for the generated solution file. If not provided, generate will prompt the user the enter the name of the recipe to be used.  
-**[template]:** (optional) The name of the template to be used for the generated solution file. If not provided, generate will prompt the user the enter the name of the template to be used. If using the add flag, generate will add one project (modeled after the template) to the existing solution file.  
+**[recipe]:** (optional) The name of the [recipe](https://github.com/iotshaman/shaman-cli/tree/main/recipes#shaman-cli-recipes) to be used for the generated solution file. If not provided, generate will prompt the user the enter the name of the recipe to be used.  
+**[template]:** (optional) The name of the [template](https://github.com/iotshaman/shaman-cli/tree/%40mason/property-rename/templates) to be used for the generated solution file. If not provided, generate will prompt the user the enter the name of the template to be used. If using the add flag, generate will add one project (modeled after the template) to the existing solution file.  
 **[filePath]:** (optional) Relative path to where the the shaman.json file should be created (including file name). If using the add flag, the relative path to the existing shaman.json file (including file name). If no value is provided, the default value is the current working directory.  
 
 ### Install Command
